@@ -26,7 +26,6 @@ import FieldLabelSettings from './CompSettingsUtils/FieldLabelSettings'
 import FieldSettingsDivider from './CompSettingsUtils/FieldSettingsDivider'
 import HelperTxtSettings from './CompSettingsUtils/HelperTxtSettings'
 import RepeaterButtonSettings from './CompSettingsUtils/RepeaterButtonSettings'
-import RequiredSettings from './CompSettingsUtils/RequiredSettings'
 import SubTitleSettings from './CompSettingsUtils/SubTitleSettings'
 import SimpleAccordion from './StyleCustomize/ChildComp/SimpleAccordion'
 import FieldSettingTitle from './StyleCustomize/FieldSettingTitle'
@@ -159,9 +158,9 @@ function RepeaterFieldSettings() {
 
       <FieldSettingsDivider />
 
-      <RequiredSettings />
+      {/* <RequiredSettings />
 
-      <FieldSettingsDivider />
+      <FieldSettingsDivider /> */}
 
       <FieldHideSettings />
 
@@ -261,7 +260,7 @@ function RepeaterFieldSettings() {
               value={fieldData.btnPosition}
               onChange={handleButtonPosition}
             >
-                {btnPositionList.map(itm => <option key={`btcd-k-${itm.name}`} value={itm.value}>{itm.name}</option>)}
+              {btnPositionList.map(itm => <option key={`btcd-k-${itm.name}`} value={itm.value}>{itm.name}</option>)}
             </select>
           </div>
           <div className={css(FieldStyle.fieldNumber, { py: '0px !important' })}>
@@ -274,7 +273,7 @@ function RepeaterFieldSettings() {
               value={fieldData.btnAlignment}
               onChange={handleButtonAlignment}
             >
-                {btnAlignmentList.map(itm => <option key={`btcd-k-${itm.name}`} value={itm.value}>{itm.name}</option>)}
+              {btnAlignmentList.map(itm => <option key={`btcd-k-${itm.name}`} value={itm.value}>{itm.name}</option>)}
             </select>
           </div>
           <div className={css(FieldStyle.fieldNumber, { py: '0px !important' })}>
@@ -287,7 +286,7 @@ function RepeaterFieldSettings() {
               value={fieldData.btnView}
               onChange={handleButtonView}
             >
-                {btnViewList.map(itm => <option key={`btcd-k-${itm.name}`} value={itm.value}>{itm.name}</option>)}
+              {btnViewList.map(itm => <option key={`btcd-k-${itm.name}`} value={itm.value}>{itm.name}</option>)}
             </select>
           </div>
         </div>

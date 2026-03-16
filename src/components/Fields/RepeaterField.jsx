@@ -15,7 +15,7 @@ import {
   $resizingFld,
   $selectedFieldId,
 } from '../../GlobalStates/GlobalStates'
-import { fitSpecificLayoutItem, getNestedLayoutHeight, handleFieldExtraAttr, reCalculateFldHeights } from '../../Utils/FormBuilderHelper'
+import { addToBuilderHistory, fitSpecificLayoutItem, getLatestState, getNestedLayoutHeight, handleFieldExtraAttr, reCalculateFldHeights } from '../../Utils/FormBuilderHelper'
 import { IS_PRO, deepCopy, isObjectEmpty } from '../../Utils/Helpers'
 import proHelperData from '../../Utils/StaticData/proHelperData'
 import { getCustomAttributes, getCustomClsName, selectInGrid } from '../../Utils/globalHelpers'
@@ -30,6 +30,7 @@ import FieldBlockWrapperLoader from '../Loaders/FieldBlockWrapperLoader'
 import RenderHtml from '../Utilities/RenderHtml'
 import RenderStyle from '../style-new/RenderStyle'
 import { getAbsoluteSize } from '../style-new/styleHelpers'
+import { __ } from '../../Utils/i18nwrap'
 
 /* eslint-disable react/jsx-props-no-spreading */
 function RepeaterField({
@@ -38,7 +39,7 @@ function RepeaterField({
   const { formType } = useParams()
   const styleClassesForRender = deepCopy(styleClasses)
   const [nestedLayouts, setNestedLayouts] = useAtom($nestedLayouts)
-  const [gridNestedLayouts, setGridNestedLayouts] = useState(deepCopy(nestedLayouts[fieldKey]))
+  const [gridNestedLayouts, setGridNestedLayouts] = useState(deepCopy(nestedLayouts[fieldKey] || { lg: [], md: [], sm: [] }))
   const [contextMenu, setContextMenu] = useAtom($contextMenu)
   const [selectedFieldId, setSelectedFieldId] = useAtom($selectedFieldId)
   const setProModal = useSetAtom($proModal)
@@ -49,10 +50,9 @@ function RepeaterField({
   // const breakpoint = useAtomValue($breakpoint)
   const { ref, isComponentVisible, setIsComponentVisible } = useAtomValue($contextMenuRef)
   const breakpoint = useAtomValue($breakpoint)
-  const builderHookStates = useAtomValue($builderHookStates)
   const setIsDraggable = useSetAtom($isDraggable)
   const draggingField = useAtomValue($draggingField)
-  const { recalculateNestedField } = builderHookStates
+  const { recalculateNestedField } = useAtomValue($builderHookStates)
   const { fieldKey: changedFieldKey, parentFieldKey, counter: fieldChangeCounter } = recalculateNestedField
   const navigate = useNavigate()
   const location = useLocation()
@@ -70,13 +70,17 @@ function RepeaterField({
       })
     }
   }, [fieldChangeCounter, parentFieldKey, changedFieldKey])
+
+  useEffect(() => {
+    setGridNestedLayouts(deepCopy(nestedLayouts[fieldKey] || { lg: [], md: [], sm: [] }))
+  }, [nestedLayouts[fieldKey]])
+
   const handleLayoutChange = (lay) => {
     if (lay.findIndex(itm => itm.i === 'shadow_block') < 0) {
       setGridNestedLayouts(prevLayouts => ({ ...prevLayouts, [breakpoint]: lay }))
       startTransition(() => {
         setNestedLayouts(prv => create(prv, draft => {
-          if (!draft[fieldKey]) return
-          draft[fieldKey][breakpoint] = lay
+          if (draft?.[fieldKey]) draft[fieldKey][breakpoint] = lay
         }))
       })
       // addToBuilderHistory(setBuilderHistory, { event: `Layout changed`, state: { layouts: layoutsFromGrid, fldKey: layoutsFromGrid.lg[0].i } }, setUpdateBtn)
@@ -86,12 +90,14 @@ function RepeaterField({
   const onDrop = (e, dropPosition) => {
     const dragFieldData = handleFieldExtraAttr(draggingField.fieldData, 'repeater')
     if (!dragFieldData) return
-    const { newLayouts } = addNewFieldToGridLayout(gridNestedLayouts, dragFieldData, draggingField.fieldSize, dropPosition)
+    const { newLayouts, historyData } = addNewFieldToGridLayout(gridNestedLayouts, dragFieldData, draggingField.fieldSize, dropPosition)
     setGridNestedLayouts(newLayouts)
     startTransition(() => {
       setNestedLayouts(prevLayouts => create(prevLayouts, draftLayouts => { draftLayouts[fieldKey] = newLayouts }))
       setIsDraggable(true)
       reCalculateFldHeights(fieldKey)
+      historyData.state.nestedLayouts = getLatestState('nestedLayouts')
+      addToBuilderHistory(historyData)
     })
   }
   const rptWrp = selectInGrid(`.${fieldKey}-rpt-wrp`)
@@ -237,13 +243,15 @@ function RepeaterField({
   }
 
   const removeNestedLayoutItem = fldKey => {
-    const newLayouts = removeLayoutItem(fldKey, gridNestedLayouts)
+    const { newLayouts, historyData } = removeLayoutItem(fldKey, gridNestedLayouts)
     setGridNestedLayouts(newLayouts)
     startTransition(() => {
       setNestedLayouts(prevLayout => create(prevLayout, draftLayout => {
         draftLayout[fieldKey] = newLayouts
       }))
       reCalculateFldHeights(fieldKey)
+      historyData.state.nestedLayouts = getLatestState('nestedLayouts')
+      addToBuilderHistory(historyData)
     })
     navigate(`/form/builder/${formType}/${formID}/fields-list`, { replace: true })
   }
@@ -289,7 +297,7 @@ function RepeaterField({
                   onDragEnter={e => e.preventDefault()}
                   onMouseMove={() => startTransition(() => { setIsDraggable(false) })}
                   onMouseLeave={() => startTransition(() => { setIsDraggable(true) })}
-                  // onClick={resetContextMenu}
+                // onClick={resetContextMenu}
                 >
                   {!styleMode ? (
                     <ReactGridLayout
@@ -309,7 +317,7 @@ function RepeaterField({
                       margin={[0, 0]}
                       draggableCancel=".no-drg"
                       draggableHandle=".drag"
-                      layout={gridNestedLayouts[breakpoint] || []}
+                      layout={gridNestedLayouts?.[breakpoint] || []}
                       // onBreakpointChange={onBreakpointChange}
                       onDragStart={setResizingFldKey}
                       // onDrag={setResizingWX}
@@ -327,7 +335,7 @@ function RepeaterField({
                         reCalculateFldHeights(fieldKey)
                       }}
                     >
-                      {gridNestedLayouts[breakpoint]?.map(layoutItem => (
+                      {gridNestedLayouts?.[breakpoint]?.map(layoutItem => (
                         <div
                           key={layoutItem.i}
                           data-key={layoutItem.i}
@@ -358,7 +366,7 @@ function RepeaterField({
                     </ReactGridLayout>
                   ) : (
                     <div className="_frm-g">
-                      {gridNestedLayouts[breakpoint]?.map(layoutItem => (
+                      {gridNestedLayouts?.[breakpoint]?.map(layoutItem => (
                         <div
                           key={layoutItem.i}
                           data-key={layoutItem.i}
@@ -389,11 +397,11 @@ function RepeaterField({
                     </div>
                   )}
 
-                  {!gridNestedLayouts[breakpoint]?.length && !draggingField && (
+                  {!gridNestedLayouts?.[breakpoint]?.length && !draggingField && (
                     <div className="empty-layout">
                       <div className="empty-layout-msg">
                         <div className="empty-layout-msg-txt">
-                          <span>Drag and drop fields here</span>
+                          <span>{__("Drag and drop fields here")}</span>
                         </div>
                       </div>
                     </div>

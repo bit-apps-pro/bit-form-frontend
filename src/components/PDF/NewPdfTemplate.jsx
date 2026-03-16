@@ -8,7 +8,8 @@ import { useFela } from 'react-fela'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { $bits, $fieldsArr, $pdfTemplates } from '../../GlobalStates/GlobalStates'
 import BackIcn from '../../Icons/BackIcn'
-import { fontList, pageSizes } from '../../Utils/StaticData/pdfConfigurationData'
+import { pageSizes, pdfFontList } from '../../Utils/StaticData/pdfConfigurationData'
+import { getPdfFontObj } from '../../Utils/globalHelpers'
 import { __ } from '../../Utils/i18nwrap'
 import app from '../../styles/app.style'
 import Btn from '../Utilities/Btn'
@@ -59,8 +60,8 @@ export default function NewPdfTemplate() {
   if (pdf?.id) delete pdf.id
 
   const [tem, setTem] = useState({
-    title: 'New Template',
-    setting: { ...pdf },
+    title: 'Untitled PDF Template',
+    setting: { ...pdf, password: { static: true, pass: '' } },
     body: 'PDF body',
   })
 
@@ -68,7 +69,7 @@ export default function NewPdfTemplate() {
     let val = value
     setTem(prevState => create(prevState, draft => {
       if (path === 'setting->font') {
-        const fontObj = fontList.find((item) => item.name === val)
+        const fontObj = getPdfFontObj(val)
         val = fontObj
       }
       assignNestedObj(draft, path, val)
@@ -86,13 +87,13 @@ export default function NewPdfTemplate() {
   }
 
   const save = () => {
+    const lastIndex = pdfTem.length
     const newPdfTem = create(pdfTem, draft => {
       draft.push(tem)
       draft.push({ updateTem: 1 })
     })
-
     setPdfTem(newPdfTem)
-    navigate(`/form/settings/${formType}/${formID}/pdf-templates`)
+    navigate(`/form/settings/${formType}/${formID}/pdf-templates/${lastIndex}`)
   }
 
   const handleOverride = (e) => {
@@ -119,6 +120,10 @@ export default function NewPdfTemplate() {
       wpMediaMdl.open()
     }
   }
+
+  useEffect(() => {
+    save()
+  }, [])
 
   return (
     <div style={{ width: 900 }}>
@@ -160,7 +165,7 @@ export default function NewPdfTemplate() {
           name="title"
           type="text"
           className="btcd-paper-inp w-9"
-          placeholder="Name"
+          placeholder={__('Template Name')}
           value={tem.title}
         />
       </div>
@@ -178,6 +183,8 @@ export default function NewPdfTemplate() {
             onChangeHandler={(value) => handleInput('body', value)}
             width="100%"
             height={300}
+            mapAllFieldWithTable
+            mapAllField
           />
         </label>
       </div>
@@ -192,15 +199,15 @@ export default function NewPdfTemplate() {
       {/* ============== */}
       {tem.setting.override && (
         <>
-          <div className="mt-2">
-            <label htmlFor="paper_size">
+          <div className={css(cs.size)}>
+            <label htmlFor="paper_size" className={css({ mr: 20, w: 300 })}>
               <b>{__('Paper Size')}</b>
               <select
                 id="paper_size"
                 name="paperSize"
                 onChange={(e) => handleInput('setting->paperSize', e.target.value)}
                 value={tem.setting.paperSize}
-                className="btcd-paper-inp mt-1"
+                className="btcd-paper-inp mt-1 w-100"
               >
                 {pageSizes.map((item, index) => (
                   <option
@@ -212,16 +219,15 @@ export default function NewPdfTemplate() {
                 ))}
               </select>
             </label>
-          </div>
-          <div className="mt-2">
-            <label htmlFor="orientation">
+
+            <label htmlFor="orientation" className={css({ w: 300 })}>
               <b>{__('Orientation')}</b>
               <select
                 id="orientation"
                 name="orientation"
                 onChange={(e) => handleInput('setting->orientation', e.target.value)}
                 value={tem.setting.orientation}
-                className="btcd-paper-inp mt-1"
+                className="btcd-paper-inp mt-1 w-100"
               >
                 <option value="p">{__('Portrait')}</option>
                 <option value="l">{__('Landscape')}</option>
@@ -229,31 +235,34 @@ export default function NewPdfTemplate() {
             </label>
           </div>
 
-          <div className="mt-2">
-            <label htmlFor="font">
+          <div className={css(cs.size)}>
+            <label htmlFor="font" className={css({ mr: 20, w: 300 })}>
               <b>{__('Font Family')}</b>
               <select
                 id="font"
                 name="font"
                 onChange={(e) => handleInput('setting->font', e.target.value)}
-                value={tem.setting.font.name}
+                value={tem.setting?.font?.name}
                 className="btcd-paper-inp mt-1"
               >
-                {fontList.map((item, index) => (
-                  <option
-                    key={`${index}-${item.name}`}
-                    value={item.name}
-                  >
-                    {item.name}
-                  </option>
-                ))}
-
+                {
+                  Object.keys(pdfFontList).map(key => (
+                    <optgroup key={key} label={key}>
+                      {pdfFontList[key].map((item, index) => (
+                        <option
+                          key={`${index}-${item.name}`}
+                          value={item.name}
+                        >
+                          {item.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))
+                }
               </select>
             </label>
-          </div>
 
-          <div className="mt-4">
-            <label htmlFor="fontSize">
+            <label htmlFor="fontSize" className={css({ w: 300 })}>
               <b>{__('Font Size (Pixels)')}</b>
               <input
                 id="fontSize"
@@ -261,14 +270,14 @@ export default function NewPdfTemplate() {
                 onChange={(e) => handleInput('setting->fontSize', e.target.value)}
                 value={tem.setting.fontSize}
                 className="btcd-paper-inp mt-1"
-                placeholder="Font Size"
+                placeholder={__('Font Size')}
                 type="number"
               />
             </label>
           </div>
 
-          <div className="mt-4">
-            <label htmlFor="pdfFileName">
+          <div className={css(cs.size)}>
+            <label htmlFor="pdfFileName" className={css({ w: 300 })}>
               <b>{__('PDF File Name')}</b>
               <input
                 id="pdfFileName"
@@ -276,7 +285,7 @@ export default function NewPdfTemplate() {
                 onChange={(e) => handleInput('setting->pdfFileName', e.target.value)}
                 value={tem.setting?.pdfFileName}
                 className="btcd-paper-inp mt-1"
-                placeholder="PDF File Name"
+                placeholder={__('PDF File Name')}
                 type="text"
               />
             </label>
@@ -291,20 +300,20 @@ export default function NewPdfTemplate() {
                 name="active"
                 onChange={e => watermarkHandler(e, 'txt')}
                 checked={tem.setting?.watermark?.active === 'txt'}
-                title={<small className="txt-dp"><b>Text</b></small>}
+                title={<small className="txt-dp"><b>{__('Text')}</b></small>}
               />
               <CheckBox
                 name="active"
                 onChange={e => watermarkHandler(e, 'img')}
                 checked={tem.setting?.watermark?.active === 'img'}
-                title={<small className="txt-dp"><b>Image</b></small>}
+                title={<small className="txt-dp"><b>{__('Image')}</b></small>}
               />
             </label>
           </div>
           {tem.setting.watermark?.active && (
             <div className={css(cs.bdr)}>
               {tem.setting.watermark.active === 'txt' && (
-                <div className="mt-4">
+                <div className={css(cs.size)}>
                   <label htmlFor="watermarkText">
                     <b>{__('Watermark Text')}</b>
                     <input
@@ -313,7 +322,7 @@ export default function NewPdfTemplate() {
                       onChange={(e) => handleInput('setting->watermark->txt', e.target.value)}
                       value={tem.setting?.watermark?.txt}
                       className="btcd-paper-inp mt-1"
-                      placeholder="Watermark Text"
+                      placeholder={__('Watermark Text')}
                       type="text"
                     />
                   </label>
@@ -331,7 +340,7 @@ export default function NewPdfTemplate() {
                         className="ml-2"
                         onClick={setWpMedia}
                       >
-                        Upload
+                        {__('Upload')}
                       </Btn>
                       {
                         tem.setting.watermark?.img?.src && (
@@ -352,7 +361,7 @@ export default function NewPdfTemplate() {
                         onChange={(e) => handleInput('setting->watermark->img->width', e.target.value)}
                         value={tem.setting?.watermark?.img?.width}
                         className="btcd-paper-inp mt-1"
-                        placeholder="Image width"
+                        placeholder={__('Image width')}
                         type="number"
                       />
                     </label>
@@ -363,7 +372,7 @@ export default function NewPdfTemplate() {
                         onChange={(e) => handleInput('setting->watermark->img->height', e.target.value)}
                         value={tem.setting?.watermark?.img?.height}
                         className="btcd-paper-inp mt-1"
-                        placeholder="Image height"
+                        placeholder={__('Image height')}
                         type="number"
                       />
                     </label>
@@ -376,7 +385,7 @@ export default function NewPdfTemplate() {
                         onChange={(e) => handleInput('setting->watermark->img->posX', e.target.value)}
                         value={tem.setting?.watermark?.img?.posX}
                         className="btcd-paper-inp mt-1"
-                        placeholder="Position x"
+                        placeholder={__('Position X')}
                         type="number"
                       />
                     </label>
@@ -387,7 +396,7 @@ export default function NewPdfTemplate() {
                         onChange={(e) => handleInput('setting->watermark->img->posY', e.target.value)}
                         value={tem.setting?.watermark?.img?.posY}
                         className="btcd-paper-inp mt-1"
-                        placeholder="Position Y"
+                        placeholder={__('Position Y')}
                         type="number"
                       />
                     </label>
@@ -400,7 +409,7 @@ export default function NewPdfTemplate() {
                         name="imgBehind"
                         onChange={e => handleInput('setting->watermark->img->imgBehind', e.target.value)}
                         checked={tem.setting?.watermark?.img?.imgBehind === 'true'}
-                        title={<small className="txt-dp"><b>Yes</b></small>}
+                        title={<small className="txt-dp"><b>{__('Yes')}</b></small>}
                         value="true"
                       />
                       <CheckBox
@@ -408,15 +417,15 @@ export default function NewPdfTemplate() {
                         name="imgBehind"
                         onChange={e => handleInput('setting->watermark->img->imgBehind', e.target.value)}
                         checked={tem.setting?.watermark?.img?.imgBehind === 'false'}
-                        title={<small className="txt-dp"><b>No</b></small>}
+                        title={<small className="txt-dp"><b>{__('No')}</b></small>}
                         value="false"
                       />
                     </label>
                   </div>
                 </>
               )}
-              <div className="mt-2">
-                <label htmlFor="opacity">
+              <div className={css(cs.size)}>
+                <label htmlFor="opacity" className={css({ w: 300 })}>
                   <b>{__('Opacity (0-100)')}</b>
                   <input
                     id="opacity"
@@ -424,13 +433,12 @@ export default function NewPdfTemplate() {
                     onChange={(e) => handleInput('setting->watermark->alpha', e.target.value)}
                     value={tem.setting?.watermark?.alpha}
                     className="btcd-paper-inp mt-1"
-                    placeholder="Opacity"
+                    placeholder={__('Opacity')}
                     max="100"
                     type="number"
                   />
                 </label>
               </div>
-
             </div>
           )}
 
@@ -456,7 +464,7 @@ export default function NewPdfTemplate() {
                 name="direction"
                 onChange={e => handleInput('setting->direction', e.target.value)}
                 checked={tem.setting.direction === 'ltr'}
-                title={<small className="txt-dp"><b>LTR</b></small>}
+                title={<small className="txt-dp"><b>{__('LTR')}</b></small>}
                 value="ltr"
               />
               <CheckBox
@@ -464,7 +472,7 @@ export default function NewPdfTemplate() {
                 name="direction"
                 onChange={e => handleInput('setting->direction', e.target.value)}
                 checked={tem.setting.direction === 'rtl'}
-                title={<small className="txt-dp"><b>RTL</b></small>}
+                title={<small className="txt-dp"><b>{__('RTL')}</b></small>}
                 value="rtl"
               />
             </label>
@@ -485,6 +493,10 @@ export default function NewPdfTemplate() {
 }
 
 const cs = {
+  wrp: {
+    flx: 'space-between',
+    mt: 20,
+  },
   checkbox: {
     mt: 10,
   },

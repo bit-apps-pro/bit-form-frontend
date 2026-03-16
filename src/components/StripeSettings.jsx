@@ -1,9 +1,24 @@
+import { useFela } from 'react-fela'
+import { Link } from 'react-router-dom'
+import BackIcn from '../Icons/BackIcn'
+import app from '../styles/app.style'
 import { __ } from '../Utils/i18nwrap'
 
 export default function StripeSettings({ paySetting, handleInput }) {
+  const { css } = useFela()
+
   return (
     <div>
-      <h2>{__('Stripe Settings')}</h2>
+      <div className={css({ fd: 'row', flx: 'align-center' })}>
+        <Link
+          to="/app-settings/payments"
+          className={`${css(app.btn)} btcd-btn-o-gray`}
+        >
+          <BackIcn className="mr-1" />
+          Back
+        </Link>
+        <h2 className={css({ w: '100%', ta: 'center' })}>{__('Stripe Settings')}</h2>
+      </div>
       <div className="btcd-hr" />
       <div className="flx mt-3">
         <b className="wdt-200">{__('Integration Name:')}</b>
@@ -16,25 +31,6 @@ export default function StripeSettings({ paySetting, handleInput }) {
           onChange={handleInput}
         />
       </div>
-      {/* <div className="flx mt-3">
-        <b className="wdt-150 mr-2">{__('Environment Mode:')}</b>
-        <CheckBox
-          radio
-          name="mode"
-          onChange={handleInput}
-          checked={paySetting.mode === 'test'}
-          title={<small className="txt-dp"><b>Test</b></small>}
-          value="test"
-        />
-        <CheckBox
-          radio
-          name="mode"
-          onChange={handleInput}
-          checked={paySetting.mode === 'live'}
-          title={<small className="txt-dp"><b>Live</b></small>}
-          value="live"
-        />
-      </div> */}
       <div className="flx mt-3">
         <b className="wdt-200">{__('Publishable key:')}</b>
         <input

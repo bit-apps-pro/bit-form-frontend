@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-undef */
+import { useSetAtom } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import Scrollbars from 'react-custom-scrollbars-2'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
 import { useAsyncDebounce } from 'react-table'
-import { useSetAtom } from 'jotai'
 import { $unsplashImgUrl } from '../../../GlobalStates/GlobalStates'
 import CPTIcn from '../../../Icons/CPTIcn'
 import SearchIcon from '../../../Icons/SearchIcon'
@@ -27,7 +27,7 @@ function UnsplashImageViewer({ setModal, selected = '', uploadLbl = '' }) {
   const [collectionPageNo, setCollectionPageNo] = useState(1)
   const [total, setTotal] = useState(10001)
   const { css } = useFela()
-  const clientId = 'n3pcVfA-CTg4OlOQsM3m6lEWLISyoSbtDqP2CfoukyU'
+  const clientId = ''
   const ref = useRef()
 
   const [collections, setCollections] = useState([])

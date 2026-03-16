@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import { __ } from '../../../Utils/i18nwrap'
 import bitsFetch from '../../../Utils/bitsFetch'
+import { __ } from '../../../Utils/i18nwrap'
 
 export const saveIntegConfig = (allintegs, setIntegration, allIntegURL, confTmp, history, id, edit) => {
   const integs = [...allintegs]
@@ -8,13 +8,13 @@ export const saveIntegConfig = (allintegs, setIntegration, allIntegURL, confTmp,
     integs[id] = { ...allintegs[id], ...confTmp }
     integs.push({ editItegration: true })
     setIntegration([...integs])
-    history.push(allIntegURL)
+    history(allIntegURL)
   } else {
     const newInteg = [...integs]
     newInteg.push(confTmp)
     newInteg.push({ newItegration: true })
     setIntegration(newInteg)
-    history.push(allIntegURL)
+    history(allIntegURL)
   }
 }
 

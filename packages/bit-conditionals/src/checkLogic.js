@@ -9,8 +9,23 @@ const checkLogicalOperator = (operator, value1, value2) => {
   }
 }
 
-const compareValueLogic = (logics, fields, targetFieldValue, logicsVal) => {
+const dateTypes = ['date', 'advanced-datetime', 'datetime-local', 'time', 'month', 'week']
+
+const compareValueLogic = (targetFldKey, logics, fields, targetFieldValue, logicsVal, props, rowIndex) => {
+  let logicResult
+  if (dateTypes.includes(fields[logics.field]?.type) && typeof bfDateFieldsLogicCheck !== 'undefined') {
+    logicResult = bfDateFieldsLogicCheck(logics, fields, targetFieldValue, logicsVal, props, rowIndex)
+  }
+  if (logicResult !== undefined) {
+    return logicResult
+  }
   switch (logics.logic) {
+    case 'change':
+    case 'on_click':
+      if (targetFldKey === logics.field) {
+        return true
+      }
+      return false
     case 'equal':
       return checkEqualLogic(logics, fields, targetFieldValue, logicsVal)
     case 'not_equal':
@@ -20,7 +35,7 @@ const compareValueLogic = (logics, fields, targetFieldValue, logicsVal) => {
     case 'not_null':
       return targetFieldValue && targetFieldValue.length > 0
     case 'contain':
-      return checkContainLogic(logics, fields, targetFieldValue, logicsVal)
+      return checkContainLogic(logics, fields, targetFieldValue, logicsVal, props)
     case 'contain_all':
       return checkContainAllLogic(logics, fields, targetFieldValue, logicsVal)
     case 'not_contain':
@@ -39,8 +54,6 @@ const compareValueLogic = (logics, fields, targetFieldValue, logicsVal) => {
       return checkEndWithLogic(logics, fields, targetFieldValue, logicsVal)
     case 'between':
       return checkBetweenLogic(logics, fields, targetFieldValue, logicsVal)
-    case 'on_click':
-      return true
     default:
       return false
   }
@@ -56,7 +69,7 @@ const checkEqualLogic = (logics, fields, targetFieldValue, logicsVal) => {
     const fieldValue = Array.isArray(targetFieldValue)
       ? targetFieldValue
       : JSON.parse(targetFieldValue)
-    const valueToCheck = logicsVal.split(',')
+    const valueToCheck = bfSplit(logicsVal)
     let checker = 0
     fieldValue.forEach(fValue => {
       if (fieldValue.length > 0 && valueToCheck.indexOf(fValue) !== -1) {
@@ -78,7 +91,7 @@ const checkNotEqualLogic = (logics, fields, targetFieldValue, logicsVal) => {
     const fieldValue = Array.isArray(targetFieldValue)
       ? targetFieldValue
       : JSON.parse(targetFieldValue)
-    const valueToCheck = logicsVal.split(',')
+    const valueToCheck = bfSplit(logicsVal)
     if (fieldValue.length !== valueToCheck.length) {
       return true
     }
@@ -93,11 +106,11 @@ const checkNotEqualLogic = (logics, fields, targetFieldValue, logicsVal) => {
   return targetFieldValue !== logicsVal
 }
 
-const checkContainLogic = (logics, fields, targetFieldValue, logicsVal) => {
+const checkContainLogic = (logics, fields, targetFieldValue, logicsVal, props) => {
   if (!targetFieldValue) {
     return false
   }
-  const valueToCheck = logicsVal.split(',')
+  const valueToCheck = bfSplit(logicsVal, props)
   let checker = 0
   if ((fields[logics.field].multiple !== undefined && fields[logics.field].multiple)
     || targetFieldValue === 'check' || Array.isArray(targetFieldValue)
@@ -127,7 +140,7 @@ const checkContainAllLogic = (logics, fields, targetFieldValue, logicsVal) => {
   if (!targetFieldValue) {
     return false
   }
-  const valueToCheck = logicsVal.split(',')
+  const valueToCheck = bfSplit(logicsVal)
   let checker = 0
   if ((fields[logics.field].multiple !== undefined && fields[logics.field].multiple)
     || targetFieldValue === 'check' || Array.isArray(targetFieldValue)
@@ -152,7 +165,7 @@ const checkNotContainLogic = (logics, fields, targetFieldValue, logicsVal) => {
   if (!targetFieldValue) {
     return false
   }
-  const valueToCheck = logicsVal.split(',')
+  const valueToCheck = bfSplit(logicsVal)
   let checker = 0
   if ((fields[logics.field].multiple !== undefined && fields[logics.field].multiple)
     || targetFieldValue === 'check' || Array.isArray(targetFieldValue)
@@ -199,7 +212,8 @@ const checkGreaterOrEqualLogic = (logics, fields, targetFieldValue, logicsVal) =
   if (!targetFieldValue) {
     return false
   }
-  if (fields[logics.field].type === 'number') {
+  const fldType = fields[logics.field].type
+  if (fldType === 'number') {
     return targetFieldValue !== '' && Number(targetFieldValue) >= Number(logicsVal)
   }
   return targetFieldValue !== '' && targetFieldValue >= logicsVal
@@ -233,32 +247,34 @@ const checkBetweenLogic = (logics, fields, targetFieldValue, logicsVal) => {
   if (!targetFieldValue) {
     return false
   }
+  let logicValues = logicsVal
+  if (typeof logicsVal === 'string') logicValues = JSON.parse(logicsVal)
 
   let targetVal = targetFieldValue
-  let minVal = logicsVal.min
-  let maxVal = logicsVal.max
+  let minVal = logicValues.min
+  let maxVal = logicValues.max
   if (fields[logics.field].type === 'number') {
     targetVal = Number(targetFieldValue)
-    minVal = Number(logicsVal.min)
-    maxVal = Number(logicsVal.max)
+    minVal = Number(logicValues.min)
+    maxVal = Number(logicValues.max)
   }
 
   return targetVal >= minVal && targetVal <= maxVal
 }
 
-const cehckIsFunction = (data) => data.match(/\([A-Za-z\s0-9+-\\*]*\)/g)
+const checkIsFunction = (data) => data.match(/\(([^)]*)\)/g)
 
-const getFunctionValue = (funtionName, params, fieldValues, props, fldType) => {
-  switch (funtionName) {
+const getFunctionValue = (functionName, params, fieldValues, props, fldType) => {
+  switch (functionName) {
     case '_bf_length':
       return params.length
     case '_bf_count':
-      if (fldType.match(/check|radio|select/)) { return params.trim().split(',').length }
+      if (fldType.match(/check|radio|select/)) { return bfSplit(params.trim(), props).length }
       return params.split(/\b\W+\b/g).length
     case '_bf_calc':
       return evalMathExpression(params)
     case '_bf_math': {
-      const calcParams = params.split(',')
+      const calcParams = bfSplit(params, props)
       const fieldKey = calcParams[0].substring(2, calcParams[0].length - 1)
       if (isRepeatedField(fieldKey, props)) {
         const repeateFieldKey = checkRepeatedField(fieldKey, props)
@@ -297,17 +313,56 @@ const getFunctionValue = (funtionName, params, fieldValues, props, fldType) => {
       }
       return fieldValues[fieldKey].value || ''
     }
+    case '_bf_format_datetime': {
+      if (typeof bfFormatDateTime !== 'undefined') return bfFormatDateTime(params, props)
+      return params
+    }
+    case '_bf_datetime_difference': {
+      if (typeof bfCalculateDateTimeDifference !== 'undefined') return bfCalculateDateTimeDifference(params, props)
+      return params
+    }
+    case '_bf_add_subtract_datetime': {
+      if (typeof bfAddOrSubtractDateTime !== 'undefined') return bfAddOrSubtractDateTime(params, props)
+      return params
+    }
+    case '_bf_concat': {
+      const concatParams = bfSplit(params, props)
+      const fieldKey = concatParams[0].substring(2, concatParams[0].length - 1)
+      const separator = concatParams[1] || ', '
+      if (isRepeatedField(fieldKey, props)) {
+        const repeateFieldKey = checkRepeatedField(fieldKey, props)
+        const indexes = getRepeatedIndexes(repeateFieldKey, props)
+        let result = ''
+        indexes.forEach(index => {
+          if (index > 1) {
+            result += separator
+          }
+          result += fieldValues[`${fieldKey}[${index}]`].value
+        })
+        return result
+      }
+      return fieldValues[fieldKey].value || ''
+    }
+    case '_bf_number': {
+      const regex = /[\d,.]*\d(?:\.\d+)?/
+      const match = params.match(regex)
+      if (match) {
+        const numericValue = match[0].replace(/,/g, '')
+        return parseFloat(numericValue)
+      }
+      return 0
+    }
     default: return params
   }
 }
 
-export const checkLogic = (logics, fields, props, rowIndex) => {
+export const checkLogic = (targetFldKey, logics, fieldValues, props, rowIndex) => {
   if (Array.isArray(logics)) {
     let conditionStatus = false
     for (let lgcIndx = 0; lgcIndx < logics.length; lgcIndx += 1) {
       const lgc = logics[lgcIndx]
       if (typeof lgc !== 'string') {
-        const isCondition = checkLogic(lgc, fields, props, rowIndex)
+        const isCondition = checkLogic(targetFldKey, lgc, fieldValues, props, rowIndex)
         if (lgcIndx === 0) {
           conditionStatus = isCondition
         }
@@ -320,22 +375,26 @@ export const checkLogic = (logics, fields, props, rowIndex) => {
     return conditionStatus
   }
 
-  const logicsVal = replaceWithField(logics.val, fields, props, rowIndex)
-  const smartFields = Object.entries(props.smartTags).reduce((acc, [key, value]) => ({ ...acc, [`\${${key}${typeof value === 'string' ? '' : '()'}}`]: { value: typeof value === 'string' ? value : (value?.[logics?.smartKey] || ''), type: 'text', multiple: false } }), {})
-  const flds = { ...fields, ...smartFields }
+  const logicsVal = replaceWithField(logics.val, fieldValues, props, rowIndex)
+  const smartFields = Object.entries(props.smartTags)?.reduce((acc, [key, value]) => ({ ...acc, [`\${${key}${typeof value === 'string' ? '' : '()'}}`]: { value: typeof value === 'string' ? value : (value?.[logics?.smartKey] || ''), type: 'text', multiple: false } }), {})
+  const flds = { ...fieldValues, ...smartFields }
   const fldsPropKey = isRepeatedField(logics.field, props) ? `${logics.field}[${rowIndex}]` : logics.field
   const tempLogics = { ...logics, field: fldsPropKey }
   if (flds[fldsPropKey] !== undefined) {
     const targetFieldValue = flds[fldsPropKey].value
-    return compareValueLogic(tempLogics, flds, targetFieldValue, logicsVal)
+    return compareValueLogic(targetFldKey, tempLogics, flds, targetFieldValue, logicsVal, props, rowIndex)
   }
 
-  if (cehckIsFunction(logics.field)) {
-    const funtionName = logics.field.substring(2, logics.field.length - 1).replace(/\([A-Za-z\s0-9+-\\*]*\)/g, '')
-    const targetFieldValue = getFunctionValue(funtionName, flds[logics.smartKey].value, flds, props, flds[logics.smartKey].type)
+  if (checkIsFunction(logics.field)) {
+    const functionName = logics.field.substring(2, logics.field.length - 1).replace(/\([A-Za-z\s0-9+-\\*]*\)/g, '')
+    const targetFieldValue = getFunctionValue(functionName, flds[logics.smartKey].value, flds, props, flds[logics.smartKey].type)
     if (isNaN(targetFieldValue)) flds[logics.field] = { type: 'text' }
     else flds[logics.field] = { type: 'number' }
-    return compareValueLogic(logics, flds, targetFieldValue, logicsVal)
+    return compareValueLogic(targetFldKey, logics, flds, targetFieldValue, logicsVal, props, rowIndex)
+  }
+
+  if (typeof isRepeaterField !== 'undefined' && isRepeaterField(logics.field, props)) {
+    return compareValueLogic(targetFldKey, tempLogics, flds, '', logicsVal, props, rowIndex)
   }
   return false
 }
@@ -343,15 +402,16 @@ export const checkLogic = (logics, fields, props, rowIndex) => {
 const mutateString = (dataString, fieldValues, props, rowIndex) => {
   let mutatedString = dataString
   // select calculation functions
-  const mathFuncMatch = dataString.match(/\${_bf_math\([^)]+\)}/g) || []
-  mathFuncMatch.map(calculation => {
-    const calculationParams = calculation.substring(11, calculation.length - 2)
-    const calculationValue = getFunctionValue('_bf_math', calculationParams, fieldValues, props)
-    mutatedString = mutatedString.replace(calculation, calculationValue)
+  const specialFuncMatch = dataString.match(/\${_(?:bf_math|bf_concat)\([^)]+\)}/g) || []
+  specialFuncMatch.map(funContent => {
+    const funcParams = funContent.substring(funContent.indexOf('(') + 1, funContent.length - 2)
+    const funcName = funContent.substring(2, funContent.indexOf('('))
+    const funcValue = getFunctionValue(funcName, funcParams, fieldValues, props)
+    mutatedString = mutatedString.replace(funContent, funcValue)
   })
 
   // select all fields/functions which are in ${} format and not under ${} format
-  const matchedFields = mutatedString.match(/\${\w[^${}]*}/g)
+  const matchedFields = mutatedString.match(/\${\w[^${}]*}/g) || []
 
   matchedFields.map(field => {
     let fieldName = field
@@ -368,8 +428,8 @@ const mutateString = (dataString, fieldValues, props, rowIndex) => {
           val2Rplc += Number(sV)
         })
       }
-    } else if (cehckIsFunction(fieldName)) {
-      const funcName = fieldName.replace(/\([A-Za-z\s0-9+-\\*]*\)/g, '')
+    } else if (checkIsFunction(fieldName)) {
+      const funcName = fieldName.replace(/\(([^)]*)\)/g, '')
       const params = fieldName.substring(fieldName.indexOf('(') + 1, fieldName.length - 1)
       val2Rplc = getFunctionValue(funcName, params, fieldValues, props, '')
     }

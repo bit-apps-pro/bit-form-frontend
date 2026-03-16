@@ -18,6 +18,7 @@ import EditThriveAutomator from './ThriveAutomator/EditThriveAutomator'
 import EditUncannyAutomator from './UncannyAutomator/EditUncannyAutomator'
 import EditWPWebhooks from './WPWebhooks/EditWPWebhooks'
 import EditSureTriggers from './SureTriggers/EditSureTriggers'
+import { allowedFieldsForIntegration } from './integrationHelper'
 
 const EditZohoAnalytics = lazy(() => import('./ZohoAnalytics/EditZohoAnalytics'))
 const EditZohoBigin = lazy(() => import('./ZohoBigin/EditZohoBigin'))
@@ -67,7 +68,7 @@ export default function EditInteg({ allIntegURL }) {
   const { id } = useParams()
   const [integs, setIntegration] = useAtom($integrations)
   const integrations = deepCopy(integs)
-  const formFields = useAtomValue($fieldsArr)
+  const formFields = allowedFieldsForIntegration(useAtomValue($fieldsArr))
   const { css } = useFela()
 
   const renderIntegByType = () => {

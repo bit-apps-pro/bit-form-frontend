@@ -1,9 +1,13 @@
 // eslint-disable-next-line import/no-cycle
 import { IS_PRO } from '../../Helpers'
+import { __ } from '../../i18nwrap'
 
 export default {
   name: 'Untitled Form',
   theme: 'bitformDefault',
+  formInfo: {
+    formName: 'Untitled Form',
+  },
   fields: {
     'fld_key-1': {
       typ: 'button',
@@ -29,7 +33,7 @@ export default {
     },
     settings: {
       empty_submission: {
-        message: 'Empty form cannot be submitted.',
+        message: __('Empty form cannot be submitted.'),
       },
       blocked_ip: [{ ip: '', status: false }],
       private_ip: [{ ip: '', status: false }],

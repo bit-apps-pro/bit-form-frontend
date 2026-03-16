@@ -7,7 +7,7 @@ import 'tippy.js/dist/tippy.css'
 import 'tippy.js/themes/material.css'
 import QuestionIcn from '../../Icons/QuestionIcn'
 
-export default function Cooltip({ className, children, width = 'auto', icnSize = 20, tip = false }) {
+export default function Cooltip({ className, children, width = 'auto', icnSize = 20, tip = false, tipLabel = '' }) {
   const { css } = useFela()
   return (
     <Tippy
@@ -27,7 +27,7 @@ export default function Cooltip({ className, children, width = 'auto', icnSize =
         data-tipbtn
         className={`${css(c.popper_icn)} ${className}`}
       >
-        {tip ? children : <QuestionIcn size={icnSize} />}
+        {tip ? (tipLabel || children) : <QuestionIcn size={icnSize} />}
       </div>
     </Tippy>
   )

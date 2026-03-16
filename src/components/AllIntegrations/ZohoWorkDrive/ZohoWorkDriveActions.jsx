@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react'
 import MultiSelect from 'react-multiple-select-dropdown-lite'
 import { __ } from '../../../Utils/i18nwrap'
+import { fileUpOrMappableImageFieldTypes } from '../../../Utils/StaticData/allStaticArrays'
 import Loader from '../../Loaders/Loader'
 import Modal from '../../Utilities/Modal'
 import TableCheckBox from '../../Utilities/TableCheckBox'
@@ -111,7 +112,7 @@ export default function ZohoWorkDriveActions({ workDriveConf, setWorkDriveConf, 
     setActionMdl({ show: 'attachments' })
   }
 
-  const getFileUpFields = () => formFields.filter(itm => (itm.type === 'file-up')).map(itm => ({ label: itm.name, value: itm.key }))
+  const getFileUpFields = () => formFields.filter(itm => (fileUpOrMappableImageFieldTypes.includes(itm.type))).map(itm => ({ label: itm.name, value: itm.key }))
 
   useEffect(() => {
     const usersOption = [

@@ -1,17 +1,18 @@
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { memo, useRef, useState } from 'react'
 import { useFela } from 'react-fela'
 import MultiSelect from 'react-multiple-select-dropdown-lite'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { $confirmations, $fieldsArr, $updateBtn } from '../GlobalStates/GlobalStates'
 import CloseIcn from '../Icons/CloseIcn'
 import ExternalLinkIcn from '../Icons/ExternalLinkIcn'
 import StackIcn from '../Icons/StackIcn'
 import TrashIcn from '../Icons/TrashIcn'
+import { deepCopy } from '../Utils/Helpers'
+import { nonMappableFields } from '../Utils/StaticData/allStaticArrays'
+import bitsFetch from '../Utils/bitsFetch'
+import { __ } from '../Utils/i18nwrap'
 import ut from '../styles/2.utilities'
 import app from '../styles/app.style'
-import bitsFetch from '../Utils/bitsFetch'
-import { deepCopy } from '../Utils/Helpers'
-import { __ } from '../Utils/i18nwrap'
 import LoaderSm from './Loaders/LoaderSm'
 import Accordions from './Utilities/Accordions'
 import Button from './Utilities/Button'
@@ -24,6 +25,7 @@ function WebHooks({ removeIntegration }) {
   const [snack, setSnackbar] = useState({ show: false })
   const [allConf, setAllConf] = useAtom($confirmations)
   const fieldsArr = useAtomValue($fieldsArr)
+  const [filterFields] = useState(() => fieldsArr.filter(field => !nonMappableFields.includes(field.typ)))
   const setUpdateBtn = useSetAtom($updateBtn)
   const { css } = useFela()
   const testResponseRef = useRef([])
@@ -243,7 +245,7 @@ function WebHooks({ removeIntegration }) {
                           <TrashIcn size={16} />
                         </Button>
                         <MultiSelect
-                          options={fieldsArr.map(f => ({ label: f.name, value: `\${${f.key}}` }))}
+                          options={filterFields.map(f => ({ label: f.name, value: `\${${f.key}}` }))}
                           className="btcd-paper-drpdwn wdt-200 ml-2"
                           singleSelect
                           onChange={val => handleParam('value', val, i, paramIdx)}

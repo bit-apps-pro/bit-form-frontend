@@ -1,7 +1,7 @@
 // create a react component
 
-import { useFela } from 'react-fela'
 import { useSetAtom } from 'jotai'
+import { useFela } from 'react-fela'
 import { $proModal } from '../../../../GlobalStates/GlobalStates'
 import { __ } from '../../../../Utils/i18nwrap'
 import proHelperData from '../../../../Utils/StaticData/proHelperData'
@@ -20,13 +20,16 @@ export default function PremiumSettingsOverlay({ classes, hideText, proProperty 
               {__('Upgrade now')}
             </span>
           </a>
-          {__(' to unlock it. Check out our')}
-          <a href="https://docs.form.bitapps.pro" target="_blank" rel="noreferrer">
+          {' '}
+          {__('to unlock it. Check out our')}
+          {' '}
+          <a href="https://bitapps.pro/docs/bit-form/" target="_blank" rel="noreferrer">
             <span className={css(style.textLink)}>
-              {__(' documentation ')}
+              {__('documentation')}
+              {' '}
             </span>
           </a>
-          {__(' to learn more about BitForm Pro.')}
+          {__('to learn more about BitForm Pro.')}
         </div>
       )}
       <div aria-label="premium-overlay" className={css(style.overlay, hideText && { h: '100%', tp: 0 })} role="button" onClick={showProModal} onKeyUp={showProModal} tabIndex="0" />

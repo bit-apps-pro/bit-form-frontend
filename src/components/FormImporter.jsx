@@ -4,11 +4,15 @@ import { useSetAtom } from 'jotai'
 import { useResetAtom } from 'jotai/utils'
 import { useState } from 'react'
 import { useFela } from 'react-fela'
+import { useNavigate } from 'react-router-dom'
 import { $forms } from '../GlobalStates/GlobalStates'
-import { deepCopy, generateAndSaveAtomicCss, generateUpdateFormData, getStatesToReset, replaceFormId, setFormReponseDataToStates, setStyleRelatedStates } from '../Utils/Helpers'
+import {
+  deepCopy, generateAndSaveAtomicCss, generateUpdateFormData, getStatesToReset, replaceFormId, setFormReponseDataToStates, setStyleRelatedStates,
+} from '../Utils/Helpers'
 import { formsReducer } from '../Utils/Reducers'
 import bitsFetch from '../Utils/bitsFetch'
-import { JCOF } from '../Utils/globalHelpers'
+import { addDomainName, JCOF } from '../Utils/globalHelpers'
+import { __ } from '../Utils/i18nwrap'
 import ut from '../styles/2.utilities'
 import app from '../styles/app.style'
 import LoaderSm from './Loaders/LoaderSm'
@@ -17,11 +21,12 @@ import TableCheckBox from './Utilities/TableCheckBox'
 
 export default function FormImporter({ setModal, setTempModal, newFormId, setSnackbar }) {
   const setForms = useSetAtom($forms)
-  const [importProp, setImportProp] = useState({ prop: ['all', 'additional', 'confirmation', 'workFlows', 'mailTem', 'integrations', 'reports'] })
+  const [importProp, setImportProp] = useState({ prop: ['all', 'additional', 'confirmation', 'workFlows', 'mailTem', 'integrations', 'reports', 'pdfTem'] })
   const [error, setError] = useState({ formDetail: '', prop: '' })
   const { css } = useFela()
   const [isLoading, setLoading] = useState(false)
   const atomResetters = getStatesToReset().map(stateAtom => useResetAtom(stateAtom))
+  const navigate = useNavigate()
 
   const handleChange = (ev) => {
     if (error[ev.target.name]) {
@@ -31,7 +36,7 @@ export default function FormImporter({ setModal, setTempModal, newFormId, setSna
       const tempProp = importProp.prop
       if (ev.target.checked && tempProp.indexOf(ev.target.value) < 0) {
         if (ev.target.value === 'all') {
-          setImportProp({ ...importProp, prop: ['all', 'additional', 'confirmation', 'workFlows', 'mailTem', 'integrations', 'reports'] })
+          setImportProp({ ...importProp, prop: ['all', 'additional', 'confirmation', 'workFlows', 'mailTem', 'integrations', 'reports', 'pdfTem'] })
           return
         }
         tempProp.push(ev.target.value)
@@ -48,6 +53,7 @@ export default function FormImporter({ setModal, setTempModal, newFormId, setSna
         || tempProp.indexOf('mailTem') < 0
         || tempProp.indexOf('integrations') < 0
         || tempProp.indexOf('reports') < 0
+        || tempProp.indexOf('pdfTem') < 0
       ) {
         delete tempProp[tempProp.indexOf('all')]
       }
@@ -81,6 +87,7 @@ export default function FormImporter({ setModal, setTempModal, newFormId, setSna
       file.value = ''
     }
   }
+
   const handleImport = () => {
     if (!importProp.formDetail?.layout || !importProp.formDetail?.fields) {
       setError({ ...error, formDetail: 'Please select an exported json file' })
@@ -95,7 +102,7 @@ export default function FormImporter({ setModal, setTempModal, newFormId, setSna
     })
 
     if (formDetail.formSettings) {
-      const importFeatures = ['confirmation', 'mailTem', 'integrations']
+      const importFeatures = ['confirmation', 'mailTem', 'integrations', 'pdfTem']
       importFeatures.map(p => {
         if (importProp.prop.indexOf(p) === -1) {
           delete formDetail.formSettings[p]
@@ -105,10 +112,11 @@ export default function FormImporter({ setModal, setTempModal, newFormId, setSna
     setLoading(true)
     const { form_id: oldFormId } = formDetail
     const newFormDetail = replaceFormId(formDetail, `b${oldFormId}`, `b${newFormId}`)
-    const { style, themeVars, themeColors } = newFormDetail
+    const { style, themeVars, themeColors, fields } = newFormDetail
     newFormDetail.style = JCOF.stringify(style)
     newFormDetail.themeVars = JCOF.stringify(themeVars)
     newFormDetail.themeColors = JCOF.stringify(themeColors)
+    newFormDetail.fields = addDomainName(fields)
     const newFormName = `${formDetail.form_name} (imported)`
     newFormDetail.form_name = newFormName
     formDetail.formSettings.formName = newFormName
@@ -119,7 +127,7 @@ export default function FormImporter({ setModal, setTempModal, newFormId, setSna
         const newConfirmations = data.formSettings.confirmation.type.successMsg
         const oldConfirmationStyles = style.lgLightStyles.confirmations
         oldConfirmationStyles.forEach((oldConfirmationStyle, index) => {
-          const newConfirmation = newConfirmations[index]
+          const newConfirmation = newConfirmations[index] || {}
           const { id: newConfirmationId } = newConfirmation
           const { confMsgId: oldConfirmationId } = oldConfirmationStyle
           const newConfirmationStyle = { ...oldConfirmationStyle }
@@ -144,6 +152,7 @@ export default function FormImporter({ setModal, setTempModal, newFormId, setSna
         setSnackbar({ show: true, msg: data.message })
         setTempModal(false)
         setModal(false)
+        navigate('/', { replace: true })
       } else if (response?.data) {
         setSnackbar({ show: true, msg: response.data })
       }
@@ -160,7 +169,7 @@ export default function FormImporter({ setModal, setTempModal, newFormId, setSna
         <br />
         <br />
         <div className="fld-wrp">
-          <div className={`${css(ut.mb1)} fld-lbl`}>Please select property you want to import with form</div>
+          <div className={`${css(ut.mb1)} fld-lbl`}>{__('Please select property you want to import with form')}</div>
           <TableCheckBox title=" All" value="all" checked={importProp.prop.indexOf('all') >= 0} name="prop" onChange={handleChange} />
           <div className={css(cls.inputWraper)}>
 
@@ -173,6 +182,8 @@ export default function FormImporter({ setModal, setTempModal, newFormId, setSna
             <TableCheckBox title=" Email Templates" value="mailTem" checked={importProp.prop.indexOf('mailTem') >= 0} name="prop" onChange={handleChange} />
 
             <TableCheckBox title=" Integrations" value="integrations" checked={importProp.prop.indexOf('integrations') >= 0} name="prop" onChange={handleChange} />
+
+            <TableCheckBox title=" PDF Templates" value="pdfTem" checked={importProp.prop.indexOf('pdfTem') >= 0} name="prop" onChange={handleChange} />
           </div>
         </div>
       </div>

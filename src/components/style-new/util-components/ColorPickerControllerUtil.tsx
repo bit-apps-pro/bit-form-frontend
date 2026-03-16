@@ -21,16 +21,16 @@ import ColorPreview from '../ColorPreview'
 import SimpleGradientColorPicker from '../SimpleGradientColorPicker'
 import { hsla2hsva, hsva2hsla } from '../colorHelpers'
 import { styleToGradientObj } from '../styleHelpers'
-import { colorObj, colorPickerProps, valueObject } from './color-picker'
+import { ColorProp, colorObj, colorPickerProps, valueObject } from './color-picker'
 
 type ControllerUtilType = Omit<colorPickerProps, 'value'> & {
   value: valueObject
 }
 
-export default function ColorPickerControllerUtil({id, value, onChangeHandler, allowSolid=true, allowGradient=true, allowImage=true, allowVariable }:ControllerUtilType) {
+export default function ColorPickerControllerUtil({id, value, onChangeHandler, allowSolid=true, allowGradient=true, allowImage=true, allowVariable, colorProp }:ControllerUtilType) {
   const [controller, setController] = useState({ parent: 'Solid', child: 'Solid', color: 'Custom' })
   const [valueObject, setValueObject] = useState<valueObject>(value)
-  const [color, setColor] = useState(value.color)
+  const [color, setColor] = useState<colorObj>()
   const [bgRepeat, setBgRepeat] = useState(value['background-repeat'])
   const [bgSize, setBgSize] = useState({
     type: 'auto',

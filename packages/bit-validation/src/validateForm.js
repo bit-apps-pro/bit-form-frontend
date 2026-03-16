@@ -3,7 +3,7 @@ let contentId
 let fields
 let fieldKeysByName = {}
 let errors = []
-export default function validateForm({ form, input }, { step } = {}) {
+export default function validateForm({ form, input }, { step, otherOptions } = {}) {
   if (form) contentId = form
   else if (input?.form?.id) [, contentId] = input.form.id.split('form-')
   const props = window?.bf_globals?.[contentId]
@@ -32,7 +32,7 @@ export default function validateForm({ form, input }, { step } = {}) {
   if (form) {
     formEntries = generateFormEntries()
   } else if (input) {
-    if (!props.validateFocusLost) return true
+    if (!props.validateFocusLost && !otherOptions?.validateOnInput) return true
     const fldKey = generateFieldKey(input.name)
     formEntries = generateFormEntries()
     fields = { [fldKey]: fields[fldKey] }
@@ -52,25 +52,27 @@ export default function validateForm({ form, input }, { step } = {}) {
     for (let i = 0; i < indexes.length; i += 1) {
       const index = indexes[i]
       const fldName = index ? `${fldData.fieldName}[${index}]` : fldData.fieldName
-      const selector = index ? `.rpt-index-${index}` : ''
+      const formSelector = `#form-${contentId}`
+      const rowSelector = index ? `.rpt-index-${index}` : ''
       const fldType = fldData.typ
       const fldValue = typeof formEntries[fldName] === 'string' ? formEntries[fldName].trim() : formEntries[fldName]
+      const initFldKey = getInitPropertyName(fldKey, props, index)
 
-      const fldDiv = bfSelect(`#form-${contentId} ${selector} .${fldKey}.fld-hide`)
+      const fldDiv = bfSelect(`${formSelector} ${rowSelector} .${fldKey}.fld-hide, ${formSelector} .fld-hide ${rowSelector} .${fldKey}`)
       if (fldDiv) {
-        generateErrMsg('', fldKey, fldData, selector)
+        generateErrMsg('', fldKey, fldData, rowSelector)
         continue
       }
 
       let errKey = ''
-      if (fldType === 'check') {
+      if (fldType === 'check' || fldType === 'image-select') {
         errKey = typeof checkFldValidation !== 'undefined' ? checkFldValidation(fldValue, fldData) : ''
       }
       if ((fldType === 'check' || fldType === 'radio') && !errKey && typeof customOptionValidation !== 'undefined') errKey = customOptionValidation(contentId, fldKey, fldData)
-      if (!fldValue && !errKey) {
+      if (!fldValue && !errKey && fldValue !== '0') {
         errKey = typeof requiredFldValidation !== 'undefined' ? requiredFldValidation(fldData) : null
       }
-      generateErrMsg(errKey, fldKey, fldData, selector)
+      generateErrMsg(errKey, fldKey, fldData, rowSelector)
       if (errKey) {
         formCanBeSubmitted = false
         continue
@@ -80,15 +82,19 @@ export default function validateForm({ form, input }, { step } = {}) {
       if (fldType === 'number' && typeof nmbrFldValidation !== 'undefined') errKey = nmbrFldValidation(fldValue, fldData)
       else if (fldType === 'email' && typeof emailFldValidation !== 'undefined') errKey = emailFldValidation(fldValue, fldData)
       else if (fldType === 'url' && typeof urlFldValidation !== 'undefined') errKey = urlFldValidation(fldValue, fldData)
-      else if (fldType === 'decision-box' && typeof dcsnbxFldValidation !== 'undefined') errKey = dcsnbxFldValidation(fldValue, fldData)
-      else if ((fldType === 'check' || fldType === 'select' || fldType === 'image-select') && typeof checkMinMaxOptions !== 'undefined') errKey = checkMinMaxOptions(fldValue, fldData, bfSeparator)
-      else if (fldType === 'file-up' && typeof fileupFldValidation !== 'undefined') errKey = fileupFldValidation(fldValue, fldData)
-      else if (fldType === 'advanced-file-up' && typeof advanceFileUpFldValidation !== 'undefined') errKey = advanceFileUpFldValidation(getFieldInstance(fldKey), fldData)
-      else if (fldType === 'phone-number' && typeof phoneNumberFldValidation !== 'undefined') errKey = phoneNumberFldValidation(getFieldInstance(fldKey), fldData)
+      else if (['decision-box', 'gdpr'].includes(fldType) && typeof dcsnbxFldValidation !== 'undefined') errKey = dcsnbxFldValidation(fldValue, fldData)
+      else if ((['check', 'select', 'image-select'].includes(fldType)) && typeof checkMinMaxOptions !== 'undefined') errKey = checkMinMaxOptions(fldValue, fldData, bfSeparator)
+      else if (fldType === 'range' && typeof checkMinMaxValue !== 'undefined') errKey = checkMinMaxValue(fldValue, fldData)
+      else if (fldType === 'file-up' && typeof fileupFldValidation !== 'undefined') errKey = fileupFldValidation(getFieldInstance(initFldKey), fldValue, fldData)
+      else if (fldType === 'advanced-file-up' && typeof advanceFileUpFldValidation !== 'undefined') errKey = advanceFileUpFldValidation(getFieldInstance(initFldKey), fldData)
+      else if (fldType === 'phone-number' && typeof phoneNumberFldValidation !== 'undefined') errKey = phoneNumberFldValidation(getFieldInstance(initFldKey), fldData)
+      else if (fldType === 'currency' && typeof currencyFldValidation !== 'undefined') errKey = currencyFldValidation(getFieldInstance(initFldKey), fldData)
+      if (!errKey && typeof bfDatetimeFldValidation !== 'undefined') errKey = bfDatetimeFldValidation(getFieldInstance(initFldKey), fldValue, fldData)
 
+      if (fldData?.valid?.inputMask && !errKey) errKey = typeof inputMaskValidation !== 'undefined' ? inputMaskValidation(contentId, fldKey, fldValue, fldData) : null
       if (fldData?.valid?.regexr && !errKey) errKey = typeof regexPatternValidation !== 'undefined' ? regexPatternValidation(fldValue, fldData) : null
 
-      generateErrMsg(errKey, fldKey, fldData, selector)
+      generateErrMsg(errKey, fldKey, fldData, rowSelector)
       if (errKey) formCanBeSubmitted = false
     }
   }
@@ -97,6 +103,12 @@ export default function validateForm({ form, input }, { step } = {}) {
 }
 
 const getFieldInstance = fldKey => window?.bf_globals?.[contentId].inits?.[fldKey]
+
+const getInitPropertyName = (fldKey, props, rowIndex) => {
+  const initFldKey = Number(rowIndex) > 1 ? `${fldKey}[${rowIndex}]` : fldKey
+  if (props.inits && !props.inits[initFldKey]) return fldKey
+  return initFldKey
+}
 
 const generateFieldKey = keyName => {
   const fldName = keyName.replace(/\[\d*\]/g, '')

@@ -5,7 +5,7 @@ import TrashIcn from '../../Icons/TrashIcn'
 
 function Drawer(props) {
   return (
-    <div className="btcd-drawer" style={{ right: props.show ? 0 : -420 }}>
+    <div className="btcd-drawer" style={{ right: props.show ? 0 : -620, width: 600 }}>
       <div className="flx flx-between">
         <div className="btcd-drawer-title">{props.title}</div>
         <div className="flx">

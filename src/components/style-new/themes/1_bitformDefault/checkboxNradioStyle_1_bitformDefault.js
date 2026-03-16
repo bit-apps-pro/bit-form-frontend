@@ -101,6 +101,7 @@ export default function checkboxNradioStyle_1_bitformDefault({ fk, type, directi
         'align-items': 'center',
         ...type === 'check' && { 'border-radius': '5px' },
         ...type === 'radio' && { 'border-radius': '50%' },
+        'flex-shrink': 0,
       },
       [`.${fk}-other-inp-wrp`]: { display: 'none' },
       [`.${fk}-other-inp`]: {

@@ -7,11 +7,12 @@ export default function bfReset(contentId, customHook = false) {
   }
 
   const props = window.bf_globals[contentId]
+  typeof resetPlaceholders !== 'undefined' && resetPlaceholders(props)
+  typeof bfResetDefaultValue !== 'undefined' && bfResetDefaultValue(props)
+  typeof customFieldsReset !== 'undefined' && customFieldsReset(props)
+  typeof resetOtherOpt !== 'undefined' && resetOtherOpt(contentId)
   bfSelect(`#form-${contentId}`).reset()
   localStorage.setItem('bf-entry-id', '')
-  typeof resetPlaceholders !== 'undefined' && resetPlaceholders(props)
-  typeof customFieldsReset !== 'undefined' && customFieldsReset(props)
-  typeof resetOtherOpt !== 'undefined' && resetOtherOpt()
   window.bf_globals[contentId].modifiedFields = props.fields
   Object.keys(props.fields).forEach(fk => {
     const errWrp = bfSelect(`#form-${contentId} .${fk}-err-wrp`)
@@ -28,5 +29,9 @@ export default function bfReset(contentId, customHook = false) {
 
   if (props.turnstileSiteKey) {
     window?.turnstile?.reset()
+  }
+
+  if (props.hCaptchaSiteKey) {
+    window?.hcaptcha?.reset()
   }
 }

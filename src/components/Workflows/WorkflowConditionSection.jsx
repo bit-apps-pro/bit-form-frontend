@@ -1,7 +1,7 @@
+import { useSetAtom } from 'jotai'
 import { create } from 'mutative'
 import { Fragment, useState } from 'react'
 import { useFela } from 'react-fela'
-import { useSetAtom } from 'jotai'
 import { hideAll } from 'tippy.js'
 import { $updateBtn, $workflows } from '../../GlobalStates/GlobalStates'
 import CloseIcn from '../../Icons/CloseIcn'
@@ -179,7 +179,7 @@ export default function WorkflowConditionSection({ lgcGrpInd, lgcGrp }) {
               onClick={() => addCondition('else-if')}
             >
               <CloseIcn size="9" className="icn-rotate-45 mr-1" />
-              Add Else If
+              Add &quot;Else If&quot;
             </button>
             {lgcGrp.conditions[lgcGrp.conditions.length - 1].cond_type !== 'else' && (
               <button
@@ -188,7 +188,7 @@ export default function WorkflowConditionSection({ lgcGrpInd, lgcGrp }) {
                 onClick={() => addCondition('else')}
               >
                 <CloseIcn size="9" className="icn-rotate-45 mr-1" />
-                Add Else
+                Add &quot;Else&quot;
               </button>
             )}
           </div>

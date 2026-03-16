@@ -15,7 +15,11 @@ import {
   $resizingFld,
   $selectedFieldId,
 } from '../../GlobalStates/GlobalStates'
-import { cols, fitSpecificLayoutItem, getNestedLayoutHeight, handleFieldExtraAttr, reCalculateFldHeights } from '../../Utils/FormBuilderHelper'
+import {
+  addToBuilderHistory, cols,
+  fitSpecificLayoutItem,
+  getLatestState, getNestedLayoutHeight, handleFieldExtraAttr, reCalculateFldHeights,
+} from '../../Utils/FormBuilderHelper'
 import { IS_PRO, deepCopy, isObjectEmpty } from '../../Utils/Helpers'
 import proHelperData from '../../Utils/StaticData/proHelperData'
 import { getCustomAttributes, getCustomClsName, selectInGrid } from '../../Utils/globalHelpers'
@@ -29,6 +33,7 @@ import InputWrapper from '../InputWrapper'
 import FieldBlockWrapperLoader from '../Loaders/FieldBlockWrapperLoader'
 import RenderStyle from '../style-new/RenderStyle'
 import { getAbsoluteSize } from '../style-new/styleHelpers'
+import { __ } from '../../Utils/i18nwrap'
 
 /* eslint-disable react/jsx-props-no-spreading */
 function SectionField({
@@ -37,7 +42,7 @@ function SectionField({
   const { formType } = useParams()
   const styleClassesForRender = deepCopy(styleClasses)
   const [nestedLayouts, setNestedLayouts] = useAtom($nestedLayouts)
-  const [gridNestedLayouts, setGridNestedLayouts] = useState(deepCopy(nestedLayouts[fieldKey]))
+  const [gridNestedLayouts, setGridNestedLayouts] = useState(deepCopy(nestedLayouts[fieldKey] || { lg: [], md: [], sm: [] }))
   const [contextMenu, setContextMenu] = useAtom($contextMenu)
   const [selectedFieldId, setSelectedFieldId] = useAtom($selectedFieldId)
   const setProModal = useSetAtom($proModal)
@@ -47,10 +52,9 @@ function SectionField({
   const delayRef = useRef(null)
   const { ref, isComponentVisible, setIsComponentVisible } = useAtomValue($contextMenuRef)
   const breakpoint = useAtomValue($breakpoint)
-  const builderHookStates = useAtomValue($builderHookStates)
+  const { recalculateNestedField } = useAtomValue($builderHookStates)
   const setIsDraggable = useSetAtom($isDraggable)
   const draggingField = useAtomValue($draggingField)
-  const { recalculateNestedField } = builderHookStates
   const { fieldKey: changedFieldKey, parentFieldKey, counter: fieldChangeCounter } = recalculateNestedField
   const navigate = useNavigate()
   const location = useLocation()
@@ -66,11 +70,17 @@ function SectionField({
     }
   }, [fieldChangeCounter, parentFieldKey, changedFieldKey])
 
+  useEffect(() => {
+    setGridNestedLayouts(deepCopy(nestedLayouts[fieldKey] || { lg: [], md: [], sm: [] }))
+  }, [nestedLayouts[fieldKey]])
+
   const handleLayoutChange = (lay) => {
     if (lay.findIndex(itm => itm.i === 'shadow_block') < 0) {
       setGridNestedLayouts(prevLayouts => ({ ...prevLayouts, [breakpoint]: lay }))
       startTransition(() => {
-        setNestedLayouts(prevLayouts => create(prevLayouts, draftLayouts => { draftLayouts[fieldKey][breakpoint] = lay }))
+        setNestedLayouts(prevLayouts => create(prevLayouts, draftLayouts => {
+          if (draftLayouts?.[fieldKey]) draftLayouts[fieldKey][breakpoint] = lay
+        }))
       })
       // addToBuilderHistory(setBuilderHistory, { event: `Layout changed`, state: { layouts: layoutsFromGrid, fldKey: layoutsFromGrid.lg[0].i } }, setUpdateBtn)
     }
@@ -79,12 +89,14 @@ function SectionField({
   const onDrop = (e, dropPosition) => {
     const dragFieldData = handleFieldExtraAttr(draggingField.fieldData, 'section')
     if (!dragFieldData) return
-    const { newLayouts } = addNewFieldToGridLayout(gridNestedLayouts, dragFieldData, draggingField.fieldSize, dropPosition)
+    const { newLayouts, historyData } = addNewFieldToGridLayout(gridNestedLayouts, dragFieldData, draggingField.fieldSize, dropPosition)
     setGridNestedLayouts(newLayouts)
     startTransition(() => {
       setIsDraggable(true)
       setNestedLayouts(prevLayouts => create(prevLayouts, draftLayouts => { draftLayouts[fieldKey] = newLayouts }))
       reCalculateFldHeights(fieldKey)
+      historyData.state.nestedLayouts = getLatestState('nestedLayouts')
+      addToBuilderHistory(historyData)
     })
   }
   const inpWrpElm = selectInGrid(`.${fieldKey}-inp-fld-wrp`)
@@ -219,11 +231,13 @@ function SectionField({
   }
 
   const removeNestedLayoutItem = fldKey => {
-    const newLayouts = removeLayoutItem(fldKey, gridNestedLayouts)
+    const { newLayouts, historyData } = removeLayoutItem(fldKey, gridNestedLayouts)
     setGridNestedLayouts(newLayouts)
     startTransition(() => {
       setNestedLayouts(prevLayouts => create(prevLayouts, draftLayouts => { draftLayouts[fieldKey] = newLayouts }))
       reCalculateFldHeights()
+      historyData.state.nestedLayouts = getLatestState('nestedLayouts')
+      addToBuilderHistory(historyData)
     })
     navigate(`/form/builder/${formType}/${formID}/fields-list`, { replace: true })
   }
@@ -271,7 +285,7 @@ function SectionField({
                 margin={[0, 0]}
                 draggableCancel=".no-drg"
                 draggableHandle=".drag"
-                layout={gridNestedLayouts[breakpoint]}
+                layout={gridNestedLayouts?.[breakpoint]}
                 // onBreakpointChange={onBreakpointChange}
                 onDragStart={setResizingFldKey}
                 onDrag={setResizingWX}
@@ -289,7 +303,7 @@ function SectionField({
                   reCalculateFldHeights(fieldKey)
                 }}
               >
-                {gridNestedLayouts[breakpoint]?.map(layoutItem => (
+                {gridNestedLayouts?.[breakpoint]?.map(layoutItem => (
                   <div
                     key={layoutItem.i}
                     data-key={layoutItem.i}
@@ -317,7 +331,7 @@ function SectionField({
               </ReactGridLayout>
             ) : (
               <div className="_frm-g">
-                {gridNestedLayouts[breakpoint].map(layoutItem => (
+                {gridNestedLayouts?.[breakpoint].map(layoutItem => (
                   <div
                     key={layoutItem.i}
                     data-key={layoutItem.i}
@@ -345,11 +359,11 @@ function SectionField({
               </div>
             )}
 
-            {!gridNestedLayouts[breakpoint]?.length && !draggingField && (
+            {!gridNestedLayouts?.[breakpoint]?.length && !draggingField && (
               <div className="empty-layout">
                 <div className="empty-layout-msg">
                   <div className="empty-layout-msg-txt">
-                    <span>Drag and drop fields here</span>
+                    <span>{__("Drag and drop fields here")}</span>
                   </div>
                 </div>
               </div>

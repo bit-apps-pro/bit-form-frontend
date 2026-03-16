@@ -22,13 +22,12 @@ function Forgot({ fields, dataConf, setDataConf, pages, type, status }) {
   ]
 
   useEffect(() => {
-    const tmpConf = create(dataConf, draft => {
+    setDataConf(tmpConf => create(tmpConf, draft => {
       if (!draft[type]?.forgot_map?.[0]?.forgotField) {
         // eslint-disable-next-line no-param-reassign
         draft[type].forgot_map = forgotField.filter(fld => fld.required).map(fl => ({ formField: '', forgotField: fl.key, required: fl.required }))
       }
-    })
-    setDataConf(tmpConf)
+    }))
   }, [])
 
   const inputHandler = (e) => {

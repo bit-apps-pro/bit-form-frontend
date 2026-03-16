@@ -18,6 +18,7 @@ import ThriveAutomator from './ThriveAutomator/ThriveAutomator'
 import UncannyAutomator from './UncannyAutomator/UncannyAutomator'
 import WPWebhooks from './WPWebhooks/WPWebhooks'
 import SureTriggers from './SureTriggers/SureTriggers'
+import { allowedFieldsForIntegration } from './integrationHelper'
 
 const ZohoCRM = lazy(() => import('./ZohoCRM/ZohoCRM'))
 const ZohoAnalytics = lazy(() => import('./ZohoAnalytics/ZohoAnalytics'))
@@ -67,7 +68,8 @@ export default function NewInteg({ allIntegURL }) {
   const { integUrlName } = useParams()
   const [integs, setIntegration] = useAtom($integrations)
   const integrations = deepCopy(integs)
-  const formFields = useAtomValue($fieldsArr)
+  // const formFields = useAtomValue($fieldsArr)
+  const formFields = allowedFieldsForIntegration(useAtomValue($fieldsArr))
   const { css } = useFela()
 
   const renderIntegByName = () => {

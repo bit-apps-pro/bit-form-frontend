@@ -3,11 +3,10 @@ import { __ } from '../../../Utils/i18nwrap'
 import tutorialLinks from '../../../Utils/StaticData/tutorialLinks'
 import TutorialLink from '../../Utilities/TutorialLink'
 import AuthorizeBtn from '../AuthorizeBtn'
-import NextBtn from '../NextBtn'
 import { fetchAllList, handleAuthorize } from './AcumbamailCommonFunc'
 
 export default function AcumbamailAuthorization({
-  acumbamailConf, setAcumbamailConf, step, setstep, isLoading, setIsLoading, setSnackbar, isInfo,
+  acumbamailConf, setAcumbamailConf, step, setstep, isLoading, setIsLoading, setSnackbar, isInfo, authorizedAction,
 }) {
   const [isAuthorized, setisAuthorized] = useState(false)
   const [error, setError] = useState({ dataCenter: '', clientId: '' })
@@ -29,15 +28,17 @@ export default function AcumbamailAuthorization({
     setAcumbamailConf(newConf)
   }
 
+  if (isAuthorized) authorizedAction()
+
   return (
-    <div className="btcd-stp-page" style={{ ...{ width: step === 1 && 900 }, ...{ height: step === 1 && 'auto' } }}>
+    <div className="btcd-stp-page" style={{ width: 900, height: 'auto' }}>
 
       <TutorialLink
         title={tutorialLinks.acumbamail.title}
         youTubeLink={tutorialLinks.acumbamail.link}
       />
 
-      <div className="mt-3"><b>{__('Integration Name:', 'bit-integrations')}</b></div>
+      <div className="mt-3"><b>{__('Integration Name:', 'bit-form')}</b></div>
       <input
         className="btcd-paper-inp w-6 mt-1"
         onChange={handleInput}
@@ -62,7 +63,7 @@ export default function AcumbamailAuthorization({
         </a>
       </small>
 
-      <div className="mt-3"><b>{__('Auth Token:', 'bit-integrations')}</b></div>
+      <div className="mt-3"><b>{__('Auth Token:', 'bit-form')}</b></div>
       <input
         className="btcd-paper-inp w-6 mt-1"
         onChange={handleInput}
@@ -89,10 +90,10 @@ export default function AcumbamailAuthorization({
             )}
           />
           <br />
-          <NextBtn
+          {/* <NextBtn
             nextPageHandler={() => nextPage()}
             disabled={!isAuthorized}
-          />
+          /> */}
         </>
       )}
     </div>

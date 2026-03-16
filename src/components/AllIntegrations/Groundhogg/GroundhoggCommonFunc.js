@@ -1,7 +1,7 @@
 import toast from 'react-hot-toast'
 import bitsFetch from '../../../Utils/bitsFetch'
-import { deepCopy } from '../../../Utils/Helpers'
-import { sprintf, __ } from '../../../Utils/i18nwrap'
+import { __ } from '../../../Utils/i18nwrap'
+import { saveConnectedIntegrationApp } from '../integrationHelper'
 
 export const handleInput = (e, groundhoggConf, setGroundhoggConf) => {
   const newConf = { ...groundhoggConf }
@@ -65,6 +65,7 @@ export const handleAuthorize = (confTmp, setConf, setError, setisAuthorized, set
       if (result && result.success) {
         const newConf = { ...confTmp }
         setConf(newConf)
+        saveConnectedIntegrationApp(newConf)
         setisAuthorized(true)
         setIsLoading(false)
         toast.success(__('Authorization Successful'))

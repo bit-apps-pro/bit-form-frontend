@@ -1,19 +1,20 @@
-import { useState } from 'react'
 import { useAtomValue } from 'jotai'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { $bits } from '../../../GlobalStates/GlobalStates'
 import { __ } from '../../../Utils/i18nwrap'
 import tutorialLinks from '../../../Utils/StaticData/tutorialLinks'
 import CopyText from '../../Utilities/CopyText'
 import TutorialLink from '../../Utilities/TutorialLink'
 import AuthorizeBtn from '../AuthorizeBtn'
-import NextBtn from '../NextBtn'
 import { handleMailChimpAuthorize, refreshAudience } from './MailChimpCommonFunc'
 
 export default function MailChimpAuthorization({
-  formID, sheetConf, setSheetConf, step, setstep, isLoading, setisLoading, setSnackbar, redirectLocation, isInfo,
+  formID, sheetConf, setSheetConf, step, setstep, isLoading, setisLoading, setSnackbar, redirectLocation, isInfo, allIntegURL, authorizedAction,
 }) {
   const bits = useAtomValue($bits)
-  const { siteURL } = bits
+  const navigate = useNavigate()
+  const { siteURL, oAuthRedirectURL } = bits
   const [isAuthorized, setisAuthorized] = useState(false)
   const [error, setError] = useState({ dataCenter: '', clientId: '', clientSecret: '' })
   const nextPage = () => {
@@ -33,15 +34,22 @@ export default function MailChimpAuthorization({
     setSheetConf(newConf)
   }
 
+  useEffect(() => {
+    console.log('isAuthorized', isAuthorized)
+    if (isAuthorized) {
+      authorizedAction()
+    }
+  }, [isAuthorized])
+
   return (
     <>
       <TutorialLink
         title={tutorialLinks.mailChimp.title}
         youTubeLink={tutorialLinks.mailChimp.link}
       />
-      <div className="btcd-stp-page" style={{ ...{ width: step === 1 && 900 }, ...{ height: step === 1 && `${100}%` } }}>
+      <div className="btcd-stp-page" style={{ width: 900, height: `${100}%` }}>
         <div className="mt-3">
-          <b>{__('Integration Name:')}</b>
+          <b>{__('Authorize App Name:')}</b>
         </div>
         <input
           className="btcd-paper-inp w-6 mt-1"
@@ -49,7 +57,7 @@ export default function MailChimpAuthorization({
           name="name"
           value={sheetConf.name}
           type="text"
-          placeholder={__('Integration Name...')}
+          placeholder={__('Authorize App Name...')}
           disabled={isInfo}
         />
         <div className="mt-3">
@@ -61,7 +69,7 @@ export default function MailChimpAuthorization({
           <b>{__('Authorized Redirect URIs:')}</b>
         </div>
         <CopyText
-          value={redirectLocation || `${window.location.href}`}
+          value={(redirectLocation || `${oAuthRedirectURL}`)}
           className="field-key-cpy w-6 ml-0"
           readOnly={isInfo}
         />
@@ -114,10 +122,10 @@ export default function MailChimpAuthorization({
               handleAuthorize={() => handleMailChimpAuthorize('mailChimp', 'mChimp', sheetConf, setSheetConf, setError, setisAuthorized, setisLoading, setSnackbar)}
             />
             <br />
-            <NextBtn
+            {/* <NextBtn
               nextPageHandler={() => nextPage()}
               disabled={!isAuthorized}
-            />
+            /> */}
           </>
         )}
       </div>

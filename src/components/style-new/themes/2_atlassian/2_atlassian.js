@@ -6,6 +6,7 @@ import { cleanObj, mergeNestedObj } from '../../../../Utils/globalHelpers'
 import { msgDefaultConfig } from '../../../../Utils/StaticData/form-templates/defaultConfirmation'
 import confirmMsgCssStyles from '../../../ConfirmMessage/confirmMsgCssStyles'
 import { defaultDarkThemeColors, defaultFont, defaultLgLightform, defaultLgLightThemeVars, defaultLightThemeColors } from '../1_bitformDefault/1_bitformDefault'
+import advancedDatetimeStyle_2_atlassian from './advancedDatetimeStyle_2_atlassian'
 import advancedFileUp_2_atlassian from './advancedFileUp_2_atlassian'
 import buttonStyle_2_atlassian from './buttonStyle_2_atlassian'
 import checkboxNradioStyle_2_atlassian from './checkboxNradioStyle_2_atlassian'
@@ -15,9 +16,13 @@ import decisionBoxStyle_2_atlassian from './decisionBoxStyle_2_atlassian'
 import dividerStyle_2_atlassian from './dividerStyle_2_atlassian'
 import dropdownStyle_2_atlassian from './dropdownStyle_2_atlassian'
 import fileUploadStyle_2_atlassian from './fileUpload_2_atlassian'
+import gdprStyle_2_atlassian from './gdprStyle_2_atlassian'
+import hcaptchaStyle_2_atlassian from './hcaptchaStyle_2_atlassian'
+import hiddenStyle_2_atlassian from './hiddenStyle_2_atlassian'
 import htmlStyle_2_atlassian from './htmlStyle_2_atlassian'
 import imageSelectStyle_2_atlassian from './imageSelectStyle_2_atlassian'
 import imageStyle_2_atlassian from './imageStyle_2_atlassian'
+import mollieStyle_2_atlassian from './mollieStyle_2_atlassian'
 import multiStepeStyle_2_atlassian from './multiStepStyle_2_atlassian'
 import paypalStyle_2_atlassian from './paypalStyle_2_atlassian'
 import phoneNumberStyle_2_atlassian from './phoneNumberStyle_2_atlassian'
@@ -28,6 +33,8 @@ import repeaterStyle_2_atlassian from './repeaterStyle_2_atlassian'
 import sectionStyle_2_atlassian from './sectionStyle_2_atlassian'
 import selectStyle_2_atlassian from './selectStyle_2_atlassian'
 import signatureStyle_2_atlassian from './signatureStyle_2_atlassian'
+import sliderStyle_2_atlassian from './sliderStyle_2_atlassian'
+import spacerStyle_2_atlassian from './spacerStyle_2_atlassian'
 import stripeStyle_2_atlassian from './stripeStyle_2_atlassian'
 import textStyle_2_atlassian from './textStyle_2_atlassian'
 import titleStyle_2_atlassian from './titleStyle_2_atlassian'
@@ -74,8 +81,14 @@ export default function atlassianTheme({
       const { fldPrefix, fldSuffix } = textOptions
       return text({ type, fk, breakpoint, colorScheme, fldPrefix, fldSuffix })
     }
+    case 'range': {
+      const { fldPrefix, fldSuffix } = textOptions
+      return slider({ type, fk, breakpoint, colorScheme, fldPrefix, fldSuffix })
+    }
     case 'decision-box':
       return decisionBox({ type, fk, direction, breakpoint, colorScheme })
+    case 'gdpr':
+      return gdprAgreement({ type, fk, direction, breakpoint, colorScheme })
     case 'check':
     case 'radio':
       return checkNradioBox({ type, fk, direction, breakpoint, colorScheme })
@@ -85,6 +98,8 @@ export default function atlassianTheme({
       return image({ type, fk, breakpoint, colorScheme })
     case 'divider':
       return divider({ type, fk, breakpoint, colorScheme })
+    case 'spacer':
+      return spacer({ type, fk, breakpoint, colorScheme })
     case 'button': {
       const { align, txtAlign, btnTyp, fulW } = buttonOptions
       return button({
@@ -95,6 +110,8 @@ export default function atlassianTheme({
       return advancedFileUP({ type, fk, breakpoint, colorScheme })
     case 'html':
       return html({ type, fk, breakpoint, colorScheme })
+    case 'shortcode':
+      return shortcode({ type, fk, breakpoint, colorScheme })
     case 'currency':
       return currency({ type, fk, direction, breakpoint, colorScheme })
     case 'country':
@@ -103,6 +120,8 @@ export default function atlassianTheme({
       return recaptcha({ type, fk, breakpoint, colorScheme })
     case 'turnstile':
       return turnstile({ type, fk, breakpoint, colorScheme })
+    case 'hcaptcha':
+      return hcaptcha({ type, fk, breakpoint, colorScheme })
     case 'file-up':
       return fileUp({ type, fk, breakpoint, colorScheme })
     case 'html-select':
@@ -111,10 +130,14 @@ export default function atlassianTheme({
       return select({ type, fk, direction, breakpoint, colorScheme })
     case 'phone-number':
       return phoneNumber({ type, fk, direction, breakpoint, colorScheme })
+    case 'hidden':
+      return hidden({ type, fk, breakpoint, colorScheme })
     case 'paypal':
       return paypal({ type, fk, breakpoint, colorScheme })
     case 'stripe':
       return stripe({ type, fk, breakpoint, colorScheme })
+    case 'mollie':
+      return mollie({ type, fk, breakpoint, colorScheme })
     case 'razorpay':
       return razorpay({ type, fk, breakpoint, colorScheme })
     case 'section':
@@ -127,6 +150,8 @@ export default function atlassianTheme({
       return rating({ type, fk, breakpoint, colorScheme })
     case 'image-select':
       return imageSelect({ type, fk, breakpoint, colorScheme })
+    case 'advanced-datetime':
+      return advancedDateTime({ type, fk, breakpoint, colorScheme })
     default: {
       fieldsArr?.map(([fieldKey, fieldData]) => {
         lgLightFieldStyles[fieldKey] = atlassianTheme({ fieldKey, type: fieldData.typ, breakpoint: 'lg', colorScheme: 'light', textOptions: { fldPrefix: !!fieldData.prefixIcn, fldSuffix: !!fieldData.suffixIcn }, buttonOptions: { align: fieldData.align, txtAlign: fieldData.txtAlign, btnTyp: fieldData.btnTyp, fulW: fieldData.fulW } })
@@ -162,12 +187,15 @@ export default function atlassianTheme({
 const lgLightThemeVars = {
   ...defaultLgLightThemeVars,
   '--g-bdr-rad': '3px', // border radius
-  '--btn-p': '9px 15px', // button padding
+  '--btn-p': '12px 15px', // button padding
   '--g-bdr-width': '2px', // border width
   '--fld-lbl-fs': '12px', // field label font size
   '--lbl-font-w': 600, // field font weight
   '--lbl-wrp-m': '0 0 4px 0', // label wrapper for margin
   '--fld-fs': '14px', // field font size
+  '--err-m': '4px 0 0 0', // error messages margin
+  '--err-bdr-rad': '3px', // error message border radius
+  '--err-p': '7px', // error messages padding
   '--g-font-family': "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif", // default font family inherit from theme
 
 }
@@ -195,6 +223,8 @@ const lightThemeColors = {
   '--gfs': '76%', // global font color saturation
   '--gfl': '15%', // global font color lightness
   '--gfa': '100%', // global font color opacity
+  '--err-bg': 'hsla(0, 100%, 96%, 100%)', // error messages background color
+  '--err-bdr-clr': 'hsla(0, 55%, 78%, 100%)', // error message border color
 }
 
 const darkThemeColors = {
@@ -246,6 +276,44 @@ const text = ({ type, fk, breakpoint, colorScheme, fldPrefix, fldSuffix }) => {
       overrideGlobalTheme: [],
       fieldSize: 'medium',
       classes: textStyle_2_atlassian({ fk, type, breakpoint, colorScheme, fldPrefix, fldSuffix }),
+    }
+  }
+  return {}
+}
+
+const advancedDateTime = ({ type, fk, breakpoint, colorScheme, fldPrefix, fldSuffix }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'atlassian',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: advancedDatetimeStyle_2_atlassian({ fk, type, breakpoint, colorScheme, fldPrefix, fldSuffix }),
+    }
+  }
+  return {}
+}
+
+const hidden = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'atlassian',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: hiddenStyle_2_atlassian({ fk, type, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+const slider = ({ type, fk, breakpoint, colorScheme, fldPrefix, fldSuffix }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'atlassian',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: sliderStyle_2_atlassian({ fk, type, breakpoint, colorScheme, fldPrefix, fldSuffix }),
     }
   }
   return {}
@@ -328,6 +396,19 @@ const decisionBox = ({ type, fk, direction, breakpoint, colorScheme }) => {
   return {}
 }
 
+const gdprAgreement = ({ type, fk, direction, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'atlassian',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: gdprStyle_2_atlassian({ fk, direction, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
 const checkNradioBox = ({ type, fk, direction, breakpoint, colorScheme }) => {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return {
@@ -380,6 +461,19 @@ const divider = ({ type, fk, breakpoint, colorScheme }) => {
   return {}
 }
 
+const spacer = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'atlassian',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: spacerStyle_2_atlassian({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
 const button = ({
   type, fk, direction, breakpoint, colorScheme, align, txtAlign, btnTyp, fulW,
 }) => {
@@ -411,6 +505,19 @@ const advancedFileUP = ({ type, fk, breakpoint, colorScheme }) => {
 }
 
 const html = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'atlassian',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: htmlStyle_2_atlassian({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
+const shortcode = ({ type, fk, breakpoint, colorScheme }) => {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return {
       theme: 'atlassian',
@@ -469,6 +576,19 @@ const turnstile = ({ type, fk, breakpoint, colorScheme }) => {
       overrideGlobalTheme: [],
       fieldSize: 'medium',
       classes: turnstileStyle_2_atlassian({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
+const hcaptcha = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'atlassian',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: hcaptchaStyle_2_atlassian({ fk, breakpoint, colorScheme }),
     }
   }
   return {}
@@ -547,6 +667,19 @@ const stripe = ({ type, fk, breakpoint, colorScheme }) => {
       overrideGlobalTheme: [],
       fieldSize: 'medium',
       classes: stripeStyle_2_atlassian({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
+const mollie = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'atlassian',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: mollieStyle_2_atlassian({ fk, breakpoint, colorScheme }),
     }
   }
   return {}

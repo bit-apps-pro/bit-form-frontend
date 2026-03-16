@@ -9,6 +9,7 @@ import Loader from '../../Loaders/Loader'
 import ConfirmModal from '../../Utilities/ConfirmModal'
 import TableCheckBox from '../../Utilities/TableCheckBox'
 import { refreshTags, refreshUsers } from './ZohoBiginCommonFunc'
+import { fileUpOrMappableImageFieldTypes } from '../../../Utils/StaticData/allStaticArrays'
 
 export default function ZohoBiginActions({ tab, formID, formFields, biginConf, setBiginConf, setSnackbar }) {
   const [recOwnerMdl, setrecOwnerMdl] = useState(false)
@@ -137,7 +138,7 @@ export default function ZohoBiginActions({ tab, formID, formFields, biginConf, s
           defaultValue={tab === 0 ? biginConf.actions.attachments : biginConf.relatedlists[tab - 1].actions.attachments}
           className="mt-2 w-9"
           onChange={(val) => actionHandler(val, 'attachments')}
-          options={formFields.filter(itm => (itm.type === 'file-up')).map(itm => ({ label: itm.name, value: itm.key }))}
+          options={formFields.filter(itm => (fileUpOrMappableImageFieldTypes.includes(itm.type))).map(itm => ({ label: itm.name, value: itm.key }))}
         />
       </ConfirmModal>
 
@@ -157,7 +158,7 @@ export default function ZohoBiginActions({ tab, formID, formFields, biginConf, s
           defaultValue={tab === 0 ? biginConf.actions.photo : biginConf.relatedlists[tab - 1].actions.photo}
           className="mt-2 w-9"
           onChange={(val) => actionHandler(val, 'photo')}
-          options={formFields.filter(itm => (itm.type === 'file-up')).map(itm => ({ label: itm.name, value: itm.key }))}
+          options={formFields.filter(itm => (fileUpOrMappableImageFieldTypes.includes(itm.type))).map(itm => ({ label: itm.name, value: itm.key }))}
           singleSelect
         />
       </ConfirmModal>

@@ -35,7 +35,8 @@ export default function WebHooksStepTwo({ saveConfig, edit, disabled }) {
             onClick={saveConfig}
             className={`${css(app.btn)}`}
           >
-            {__('Finish & Save ')}
+            {__('Finish & Save')}
+            {' '}
             &nbsp;✔
           </Btn>
         </div>

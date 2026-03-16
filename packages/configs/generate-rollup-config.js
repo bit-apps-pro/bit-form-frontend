@@ -1,16 +1,23 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import babel from '@rollup/plugin-babel'
+import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 import livereload from 'rollup-plugin-livereload'
 import serve from 'rollup-plugin-serve'
 import { getPackageFileList } from './package-helpers'
 
-export default function generateRollupConfig() {
-  const packageJson = require('./package.json') // eslint-disable-line global-require, import/no-unresolved
+export default function generateRollupConfig(options = {}) {
+  const {
+    isFrontend = true,
+    useBrowserResolution = isFrontend,
+    commonJSPackages = [], // Empty array = NO CommonJS processing by default
+    esmPackages = [],
+  } = options
+
+  const packageJson = require('./package.json')
   const inputFileName = packageJson.name
   const fileNames = getPackageFileList(inputFileName)
-
   const isDev = process.env.NODE_ENV === 'dev'
 
   const terserOptions = {
@@ -21,12 +28,6 @@ export default function generateRollupConfig() {
     output: {
       comments: false,
     },
-    // mangle: {
-    //   properties: true,
-    //   reserved: [
-    //     'bit_country_field',
-    //   ]
-    // }
   }
 
   const external = [
@@ -40,7 +41,16 @@ export default function generateRollupConfig() {
       serve({ open: true, port: 3030 }),
       livereload(),
     ] : [],
-    resolve(),
+    resolve({
+      browser: useBrowserResolution,
+      preferBuiltins: !isFrontend, // ← This uses isFrontend!
+    }),
+    // Conditionally add CommonJS plugin only if needed
+    ...(commonJSPackages.length > 0 ? [commonjs({
+      include: commonJSPackages.map(pkg => new RegExp(`node_modules\\/(${pkg})`)),
+      exclude: esmPackages.map(pkg => new RegExp(`node_modules\\/(${pkg})`)),
+      transformMixedEsModules: false,
+    })] : []),
     babel({
       presets: [
         [
@@ -75,5 +85,9 @@ export default function generateRollupConfig() {
     external,
     plugins,
     output: getOutputConfig(fileName),
+    onwarn: (warning) => {
+      if (warning.code === 'THIS_IS_UNDEFINED') return
+      console.warn(warning.message)
+    },
   }))
 }

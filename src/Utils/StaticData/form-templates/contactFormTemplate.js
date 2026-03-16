@@ -1,6 +1,9 @@
 export default {
   name: 'Contact Form',
   theme: 'bitformDefault',
+  formInfo: {
+    formName: 'Contact Form',
+  },
   fields: {
     'fld_key-1': {
       typ: 'button',
@@ -120,7 +123,6 @@ export default {
         x: 0,
         y: 252,
         i: 'fld_key-1',
-
       },
     ],
     md: [],

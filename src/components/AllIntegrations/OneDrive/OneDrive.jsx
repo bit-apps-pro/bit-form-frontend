@@ -1,4 +1,6 @@
 /* eslint-disable no-unused-expressions */
+import { __ } from '@wordpress/i18n'
+import { create } from 'mutative'
 import { useEffect, useState } from 'react'
 import 'react-multiple-select-dropdown-lite/dist/index.css'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -6,29 +8,67 @@ import SnackMsg from '../../Utilities/SnackMsg'
 import Steps from '../../Utilities/Steps'
 import { saveIntegConfig, setGrantTokenResponse } from '../IntegrationHelpers/IntegrationHelpers'
 
+import Modal from '../../Utilities/Modal'
+import ConnectedAppsList from '../ConnectedAppsList'
+import { getConnectedAppList } from '../integrationHelper'
 import IntegrationStepThree from '../IntegrationHelpers/IntegrationStepThree'
 import NextBtn from '../NextBtn'
 import OneDriveAuthorization from './OneDriveAuthorization'
+import { getAllOneDriveFolders } from './OneDriveCommonFunc'
 import OneDriveIntegLayout from './OneDriveIntegLayout'
 
 function OneDrive({ formFields, setIntegration, integrations, allIntegURL }) {
   const history = useNavigate()
-  const { flowID } = useParams()
+  const { formID } = useParams()
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState(1)
+  const [showMdl, setShowMdl] = useState(false)
   const [snack, setSnackbar] = useState({ show: false })
 
   const [oneDriveConf, setOneDriveConf] = useState({
     name: 'OneDrive',
     type: 'OneDrive',
-    clientId: process.env.NODE_ENV === 'development' ? '199b3457-1778-47a7-bc49-e319cd426e25' : '',
-    clientSecret: process.env.NODE_ENV === 'development' ? 'gjI7Q~GQy9LxqgdznSUsrrDiCFMFKGpOepjbf' : '',
+    clientId: process.env.NODE_ENV === 'development' ? '' : '',
+    clientSecret: process.env.NODE_ENV === 'development' ? '' : '',
     field_map: [{ formField: '', OneDriveFormField: '' }],
     folder: '',
     folderMap: [],
     foldersList: [],
     actions: {},
   })
+  const connectedOneDriveApps = getConnectedAppList([oneDriveConf.type])
+
+  const authorizedAction = () => {
+    setTimeout(() => { history(`${allIntegURL}/new/${oneDriveConf.type}`) }, 1000)
+    setShowMdl(false)
+  }
+
+  const authAppCardClickAction = (app, i) => {
+    if (app.integration_type === oneDriveConf.type) {
+      const appDetails = JSON.parse(app.integration_details)
+      setOneDriveConf(draftoneDriveConf => create(draftoneDriveConf, tempOneDriveConf => {
+        tempOneDriveConf.parentAppId = app.id
+        tempOneDriveConf.clientId = appDetails.clientId
+        tempOneDriveConf.clientSecret = appDetails.clientSecret
+        tempOneDriveConf.tokenDetails = appDetails.tokenDetails
+      }))
+      setStep(2)
+    }
+  }
+
+  useEffect(() => {
+    setOneDriveConf(draftOneDriveConf => create(draftOneDriveConf, tempOneDriveConf => {
+      const selectedApp = connectedOneDriveApps.find(app => app.id === oneDriveConf.parentAppId)
+      if (selectedApp) {
+        const appDetails = JSON.parse(selectedApp.integration_details)
+        tempOneDriveConf.clientId = appDetails.clientId
+        tempOneDriveConf.clientSecret = appDetails.clientSecret
+        tempOneDriveConf.tokenDetails = appDetails.tokenDetails
+      }
+    }))
+    if (oneDriveConf?.parentAppId) getAllOneDriveFolders(formID, oneDriveConf, setOneDriveConf, setIsLoading, setSnackbar)
+  }, [oneDriveConf.parentAppId])
+
   useEffect(() => {
     window.opener && setGrantTokenResponse('oneDrive')
   }, [])
@@ -39,22 +79,49 @@ function OneDrive({ formFields, setIntegration, integrations, allIntegURL }) {
 
   return (
     <div>
+      <Modal
+        title={__('Authorize New One Drive App')}
+        show={showMdl}
+        setModal={(() => setShowMdl(false))}
+      >
+        <OneDriveAuthorization
+          formID={formID}
+          oneDriveConf={oneDriveConf}
+          setOneDriveConf={setOneDriveConf}
+          step={step}
+          setStep={setStep}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          setSnackbar={setSnackbar}
+          authorizedAction={authorizedAction}
+        />
+      </Modal>
       <SnackMsg snack={snack} setSnackbar={setSnackbar} />
       <div className="txt-center w-9 mt-2 cal-width">
         <Steps step={3} active={step} />
       </div>
 
       {/* STEP 1 */}
-      <OneDriveAuthorization
-        flowID={flowID}
-        oneDriveConf={oneDriveConf}
-        setOneDriveConf={setOneDriveConf}
-        step={step}
-        setStep={setStep}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
-        setSnackbar={setSnackbar}
-      />
+      {
+        (connectedOneDriveApps.length > 0 && step === 1) && (
+          <ConnectedAppsList allIntegURL={allIntegURL} specificTypes={[oneDriveConf.type]} onClickAction={authAppCardClickAction} allowAddNew addNewAction={() => setShowMdl(true)} />
+        )
+      }
+      {
+        step === 1 && connectedOneDriveApps.length === 0 && (
+          <OneDriveAuthorization
+            formID={formID}
+            oneDriveConf={oneDriveConf}
+            setOneDriveConf={setOneDriveConf}
+            step={step}
+            setStep={setStep}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+            setSnackbar={setSnackbar}
+            authorizedAction={authorizedAction}
+          />
+        )
+      }
 
       <div
         className="btcd-stp-page"
@@ -67,13 +134,14 @@ function OneDrive({ formFields, setIntegration, integrations, allIntegURL }) {
         }}
       >
         <OneDriveIntegLayout
-          flowID={flowID}
+          formID={formID}
           formFields={formFields}
           oneDriveConf={oneDriveConf}
           setOneDriveConf={setOneDriveConf}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
           setSnackbar={setSnackbar}
+          setShowMdl={setShowMdl}
         />
 
         <NextBtn

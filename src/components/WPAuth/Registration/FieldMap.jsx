@@ -3,6 +3,7 @@ import { $updateBtn } from '../../../GlobalStates/GlobalStates'
 import TrashIcn from '../../../Icons/TrashIcn'
 import { deepCopy } from '../../../Utils/Helpers'
 import { __ } from '../../../Utils/i18nwrap'
+import { fileUpOrMappableImageFieldTypes } from '../../../Utils/StaticData/allStaticArrays'
 import MtInput from '../../Utilities/MtInput'
 import { addFieldMap, delFieldMap, handleFieldMapping } from './UserHelperFunction'
 
@@ -37,8 +38,8 @@ export default function FieldMap({
           <option value="">{__('Select Field')}</option>
           {
             fieldType === 'file'
-              ? formFields.map(f => f.type === 'file-up' && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)
-              : formFields?.map(f => f.type !== 'file-up' && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)
+              ? formFields.map(f => fileUpOrMappableImageFieldTypes.includes(f.type) && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)
+              : formFields?.map(f => !fileUpOrMappableImageFieldTypes.includes(f.type) && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)
           }
           {fieldType !== 'file' && <option value="custom">{__('Custom...')}</option>}
         </select>

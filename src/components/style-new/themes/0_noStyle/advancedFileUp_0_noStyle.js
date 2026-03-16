@@ -48,12 +48,14 @@ export default function advancedFileUp_0_noStyle({ fk, breakpoint, colorScheme }
       [`.${fk}-inp-wrp .filepond--panel-root`]: {
         'background-color': 'var(--bg-10)',
       },
-
+      [`.${fk}-inp-wrp .filepond--panel`]: {
+        // 'border-radius': '0.5em',
+        outline: '1px solid var(--bg-0)',
+      },
       /* the border radius of the file item */
       [`.${fk}-inp-wrp .filepond--item-panel`]: {
         // 'border-radius': '0.5em',
         'background-color': 'var(--bg-30)',
-        outline: '1px solid var(--bg-0)',
       },
 
       /* error state color */

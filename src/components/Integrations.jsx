@@ -69,9 +69,11 @@ import wpWebhooks from '../resource/img/integ/wpWebhooks.svg'
 import zapier from '../resource/img/integ/zapier.svg'
 import zohoflow from '../resource/img/integ/zohoflow.svg'
 import style from '../styles/integrations.style'
+import ConnectedAppInfo from './AllIntegrations/ConnectedAppInfo'
 import EditInteg from './AllIntegrations/EditInteg'
 import IntegInfo from './AllIntegrations/IntegInfo'
 import NewInteg from './AllIntegrations/NewInteg'
+import ErrorBoundary from './ErrorBoundary'
 import ConfirmModal from './Utilities/ConfirmModal'
 import Modal from './Utilities/Modal'
 import SnackMsg from './Utilities/SnackMsg'
@@ -96,7 +98,7 @@ function Integrations() {
     { type: 'Zoho CRM', logo: zohoCRM },
     { type: 'Web Hooks', logo: webhooks },
     { type: 'Zapier', logo: zapier },
-    { type: 'Integromat', logo: integromat },
+    { type: 'Integromat', logo: integromat, title: 'Make(Integromat)' },
     { type: 'Integrately', logo: integrately },
     { type: 'Pabbly', logo: pabbly },
     { type: 'Zoho Flow', logo: zohoflow },
@@ -278,49 +280,39 @@ function Integrations() {
         body={confMdl.body}
         action={confMdl.action}
       />
-      <Routes>
-        <Route
-          index
-          element={(
-            <>
-              <h2>{__('Integrations')}</h2>
-              <h5>
-                How to setup Integrations:
-                &nbsp;
-                <a href={tutorialLinks.integrations.link} target="_blank" rel="noreferrer" className="yt-txt ml-1 mr-1">
-                  YouTube
-                </a>
-                <a href={tutorialLinks.integrations.link} target="_blank" rel="noreferrer" className="doc-txt">
-                  Documentation
-                </a>
-              </h5>
-              <div className={css(style.integWrp)}>
-                <Modal
-                  title={__('Available Integrations')}
-                  show={showMdl}
-                  setModal={closeIntegModal}
-                  style={{ width: 1000 }}
-                >
-                  <div className=" btcd-inte-wrp txt-center">
-                    <input
-                      aria-label="Search Ingegration"
-                      type="search"
-                      className="btcd-paper-inp w-5 mt-3"
-                      onChange={searchInteg}
-                      placeholder="Search Integrations..."
-                      style={{ height: 37 }}
-                    />
-                    <div className="flx flx-center flx-wrp pb-3">
-                      {availableIntegs.map((inte, i) => (
-                        <div
-                          key={`inte-sm-${i + 2}`}
-                          onClick={() => !inte.disable && setNewInteg(inte)}
-                          onKeyDown={() => !inte.disable && setNewInteg(inte)}
-                          role="button"
-                          tabIndex="0"
-                          className={`${css(style.thumb)} ${inte.disable && !inte.pro && css(style.integCardDisabled)}`}
-                        >
-                          {/* {(inte.pro && !isPro) && (
+      <ErrorBoundary>
+        <Routes>
+          <Route
+            index
+            element={(
+              <>
+                {integrations.length === 0 && (
+                  <div>
+                    <h3>{__('Available Integrations')}</h3>
+                    <p>
+                      {__('Integrate your form with your favorite apps and services.')}
+                    </p>
+                    <div className=" btcd-inte-wrp txt-center">
+                      <input
+                        aria-label="Search Ingegration"
+                        type="search"
+                        className="btcd-paper-inp w-5 mt-3"
+                        onChange={searchInteg}
+                        placeholder="Search platforms for integrate..."
+                        style={{ height: 37 }}
+                        autoFocus
+                      />
+                      <div className="flx flx-center flx-wrp pb-3">
+                        {availableIntegs.map((inte, i) => (
+                          <div
+                            key={`inte-sm-${i + 2}`}
+                            onClick={() => !inte.disable && setNewInteg(inte)}
+                            onKeyDown={() => !inte.disable && setNewInteg(inte)}
+                            role="button"
+                            tabIndex="0"
+                            className={`${css(style.thumb)} ${inte.disable && !inte.pro && css(style.integCardDisabled)}`}
+                          >
+                            {/* {(inte.pro && !isPro) && (
                             <div className={css(style.thumbPro)}>
                               <a className={css(style.thumbProTxt)} href="https://www.bitapps.pro/bit-form" target="_blank" rel="noreferrer">
                                 {__('Available on')}
@@ -329,91 +321,156 @@ function Integrations() {
                               </a>
                             </div>
                           )} */}
-                          <img className={css(style.thumbImg)} loading="lazy" src={inte.logo} alt="" />
-                          <div className={css(style.thumbTitle)}>
-                            {inte.title || inte.type}
+                            <img className={css(style.thumbImg)} loading="lazy" src={inte.logo} alt="" />
+                            <div className={css(style.thumbTitle)}>
+                              {inte.title || inte.type}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {integrations.length > 0 && (
+                  <>
+                    <h2>{__('Integrations')}</h2>
+                    <h5>
+                      {__("How to setup Integrations:")}
+                      &nbsp;
+                      <a href={tutorialLinks.integrations.link} target="_blank" rel="noreferrer" className="yt-txt ml-1 mr-1">
+                        {__("YouTube")}
+                      </a>
+                      <a href={tutorialLinks.integrations.link} target="_blank" rel="noreferrer" className="doc-txt">
+                        {__("Documentation")}
+                      </a>
+                    </h5>
+                    <div className={css(style.integWrp)}>
+                      <Modal
+                        title={__('Available Integrations')}
+                        show={showMdl}
+                        setModal={closeIntegModal}
+                        style={{ width: 1000 }}
+                      >
+                        <div className=" btcd-inte-wrp txt-center">
+                          <input
+                            aria-label="Search Ingegration"
+                            type="search"
+                            className="btcd-paper-inp w-5 mt-3"
+                            onChange={searchInteg}
+                            placeholder="Search Integrations..."
+                            style={{ height: 37 }}
+                            autoFocus
+                          />
+                          <div className="flx flx-center flx-wrp pb-3">
+                            {availableIntegs.map((inte, i) => (
+                              <div
+                                key={`inte-sm-${i + 2}`}
+                                onClick={() => !inte.disable && setNewInteg(inte)}
+                                onKeyDown={() => !inte.disable && setNewInteg(inte)}
+                                role="button"
+                                tabIndex="0"
+                                className={`${css(style.thumb)} ${inte.disable && !inte.pro && css(style.integCardDisabled)}`}
+                              >
+                                {/* {(inte.pro && !isPro) && (
+                            <div className={css(style.thumbPro)}>
+                              <a className={css(style.thumbProTxt)} href="https://www.bitapps.pro/bit-form" target="_blank" rel="noreferrer">
+                                {__('Available on')}
+                                <br />
+                                {__('Pro')}
+                              </a>
+                            </div>
+                          )} */}
+                                <img className={css(style.thumbImg)} loading="lazy" src={inte.logo} alt="" />
+                                <div className={css(style.thumbTitle)}>
+                                  {inte.title || inte.type}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </Modal>
+
+                      <div
+                        role="button"
+                        className={css(style.itegCard)}
+                        tabIndex="0"
+                        onClick={() => setShowMdl(true)}
+                        onKeyDown={() => setShowMdl(true)}
+                      >
+                        <div className={css(style.integPlus)}><PlusIcn size={80} /></div>
+                      </div>
+
+                      {integrations.map((inte, i) => (
+                        <div role="button" className={css(style.itegCard)} key={`inte-${i + 3}`}>
+                          {!avoidIntegsForInfo.includes(inte.type) ? (
+                            <Link to={`${allIntegURL}/info/${i}`}>
+                              {getLogo(inte.type)}
+                            </Link>
+                          ) : (
+                            <>{getLogo(inte.type)}</>
+                          )}
+                          <div className="py-1" title={`${inte.name} | ${inte.type}`}>
+                            {!avoidIntegsForInfo.includes(inte.type) ? (
+                              <Link
+                                to={`${allIntegURL}/info/${i}`}
+                                className={css(style.integTitle)}
+                              >
+                                {inte.name}
+                              </Link>
+                            ) : (
+                              <p className={css(style.integTitle)}>{inte.name}</p>
+                            )}
+                            <small className={css(style.integSubtitle)}>{inte.type}</small>
+                          </div>
+                          <div className={`${css(style.actionWrp)} action-wrp`}>
+                            <Tip msg={__('Delete')}>
+                              <button
+                                className={`${css(style.actionBtn)}`}
+                                onClick={() => inteDelConf(i)}
+                                type="button"
+                              >
+                                <TrashIcn size={18} />
+                              </button>
+                            </Tip>
+                            <Tip msg={__('Clone')}>
+                              <button
+                                className={`${css(style.actionBtn)}`}
+                                onClick={() => inteCloneConf(i)}
+                                type="button"
+                              >
+                                <CopyIcn stroke={2.5} size="18" />
+                              </button>
+                            </Tip>
+                            {typeof (integs.find(int => int.type === inte.type)?.info) !== 'boolean' && (
+                              <Tip msg={__('Edit')}>
+                                <Link
+                                  to={`${allIntegURL}/edit/${i}`}
+                                  className={`${css(style.actionBtn)}`}
+                                  type="button"
+                                >
+                                  <EditIcn size={19} />
+                                </Link>
+                              </Tip>
+                            )}
                           </div>
                         </div>
                       ))}
                     </div>
-                  </div>
-                </Modal>
+                  </>
+                )}
 
-                <div
-                  role="button"
-                  className={css(style.itegCard)}
-                  tabIndex="0"
-                  onClick={() => setShowMdl(true)}
-                  onKeyDown={() => setShowMdl(true)}
-                >
-                  <div className={css(style.integPlus)}><PlusIcn size={80} /></div>
-                </div>
-
-                {integrations.map((inte, i) => (
-                  <div role="button" className={css(style.itegCard)} key={`inte-${i + 3}`}>
-                    {!avoidIntegsForInfo.includes(inte.type) ? (
-                      <Link to={`${allIntegURL}/info/${i}`}>
-                        {getLogo(inte.type)}
-                      </Link>
-                    ) : (
-                      <>{getLogo(inte.type)}</>
-                    )}
-                    <div className="py-1" title={`${inte.name} | ${inte.type}`}>
-                      {!avoidIntegsForInfo.includes(inte.type) ? (
-                        <Link
-                          to={`${allIntegURL}/info/${i}`}
-                          className={css(style.integTitle)}
-                        >
-                          {inte.name}
-                        </Link>
-                      ) : (
-                        <p className={css(style.integTitle)}>{inte.name}</p>
-                      )}
-                      <small className={css(style.integSubtitle)}>{inte.type}</small>
-                    </div>
-                    <div className={`${css(style.actionWrp)} action-wrp`}>
-                      <Tip msg={__('Delete')}>
-                        <button
-                          className={`${css(style.actionBtn)}`}
-                          onClick={() => inteDelConf(i)}
-                          type="button"
-                        >
-                          <TrashIcn size={18} />
-                        </button>
-                      </Tip>
-                      <Tip msg={__('Clone')}>
-                        <button
-                          className={`${css(style.actionBtn)}`}
-                          onClick={() => inteCloneConf(i)}
-                          type="button"
-                        >
-                          <CopyIcn stroke={2.5} size="18" />
-                        </button>
-                      </Tip>
-                      {typeof (integs.find(int => int.type === inte.type)?.info) !== 'boolean' && (
-                        <Tip msg={__('Edit')}>
-                          <Link
-                            to={`${allIntegURL}/edit/${i}`}
-                            className={`${css(style.actionBtn)}`}
-                            type="button"
-                          >
-                            <EditIcn size={19} />
-                          </Link>
-                        </Tip>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        />
-        <Route path="new/:integUrlName/*" element={<NewInteg allIntegURL={allIntegURL} />} />
-        {integrations?.length
-          && (<Route path="/edit/:id/*" element={<EditInteg allIntegURL={allIntegURL} />} />)}
-        {integrations && integrations.length > 0
-          && (<Route path="/info/:id/*" element={<IntegInfo allIntegURL={allIntegURL} />} />)}
-      </Routes>
+              </>
+            )}
+          />
+          <Route path="new/:integUrlName/*" element={<NewInteg allIntegURL={allIntegURL} />} />
+          <Route path="/app-info/:id/*" element={<ConnectedAppInfo allIntegURL={allIntegURL} />} />
+          {integrations?.length
+            && (<Route path="/edit/:id/*" element={<EditInteg allIntegURL={allIntegURL} />} />)}
+          {integrations && integrations.length > 0
+            && (<Route path="/info/:id/*" element={<IntegInfo allIntegURL={allIntegURL} />} />)}
+        </Routes>
+      </ErrorBoundary>
     </div>
   )
 }

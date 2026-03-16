@@ -1,20 +1,58 @@
-import { useAtomValue } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { $bits } from '../GlobalStates/GlobalStates'
+import { $bits, $previewWindow } from '../GlobalStates/GlobalStates'
 import ExternalLinkIcn from '../Icons/ExternalLinkIcn'
 import ut from '../styles/2.utilities'
+import { __ } from '../Utils/i18nwrap'
 
 export default function FormPreviewBtn() {
   const { css } = useFela()
   const { formID } = useParams()
   const bits = useAtomValue($bits)
+  const [previewWindow, setPreviewWindow] = useAtom($previewWindow)
+
+  // Handle the preview button click
+  const handlePreviewClick = () => {
+    const previewUrl = `${bits.siteURL}/bitform-form-view/${formID}`
+
+    /// Case 1: No existing preview window or window was closed
+    if (!previewWindow || previewWindow.closed) {
+      const newWindow = window.open(previewUrl, '_blank')
+      if (newWindow) {
+        setPreviewWindow(newWindow)
+      }
+      return
+    }
+    try {
+      // Case 2: Existing window has different form ID
+      if (!previewWindow.location.href.includes(`/bitform-form-view/${formID}`)) {
+        previewWindow.location.href = previewUrl
+      }
+      // Case 3: Existing window has same form ID
+      previewWindow.focus()
+      previewWindow.location.reload(true)
+    } catch (error) {
+      // Handle cross-origin errors by opening new window
+      const newWindow = window.open(previewUrl, '_blank')
+      setPreviewWindow(newWindow)
+    }
+  }
 
   return (
-    <a href={`${bits.siteURL}/bitform-form-view/${formID}`} target="_blank" className={css(style.shareIcn)} rel="noreferrer">
-      <span>Preview</span>
+    <button
+      type="button"
+      title="Preview Form"
+      aria-label="Preview Form"
+      onClick={handlePreviewClick}
+      // href={`${bits.siteURL}/bitform-form-view/${formID}`}
+      // target="_blank"
+      className={css(style.shareIcn)}
+    // rel="noreferrer"
+    >
+      <span>{__('Preview')}</span>
       <ExternalLinkIcn size={13} className={css(ut.ml1)} />
-    </a>
+    </button>
   )
 }
 

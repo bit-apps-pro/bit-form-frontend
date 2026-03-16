@@ -3,6 +3,7 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { $fields, $updateBtn, $workflows } from '../../GlobalStates/GlobalStates'
+import CopyIcn from '../../Icons/CopyIcn'
 import TrashIcn from '../../Icons/TrashIcn'
 import { IS_PRO } from '../../Utils/Helpers'
 import placeholderAllowTypes from '../../Utils/StaticData/placeholderAllowTypes'
@@ -53,7 +54,7 @@ function ActionBlock({
         }, [])
       }
     }
-    if (type === 'decision-box') {
+    if (['decision-box', 'gdpr'].includes(type)) {
       const fldData = fields?.[fieldKey]
       return [
         { label: fldData?.msg?.checked, value: fldData?.msg?.checked },
@@ -87,7 +88,7 @@ function ActionBlock({
     setWorkflows(prv => create(prv, draft => {
       const { fields: fldActions } = draft[lgcGrpInd].conditions[condGrpInd].actions
       fldActions[actionInd].field = val
-      fldActions[actionInd].val = ''
+      if (typeof fldActions[actionInd].val === 'undefined') fldActions[actionInd].val = ''
     }))
     setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
   }
@@ -102,13 +103,23 @@ function ActionBlock({
     setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
   }
 
+  const cloneAction = () => {
+    setWorkflows(prv => create(prv, draft => {
+      const { fields: fldActions } = draft[lgcGrpInd].conditions[condGrpInd].actions
+      const newAction = { ...fldActions[actionInd] }
+      fldActions.splice(actionInd + 1, 0, newAction)
+    }))
+    setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
+  }
+
   const fldType = fields[action.field]?.typ || ''
   const isNotFileUpField = fields[action.field]?.typ !== 'file-up' && fields[action.field]?.typ !== 'advanced-file-up'
   const isNotButtonField = fields[action.field]?.typ !== 'button'
   const isTitleField = fields[action.field]?.typ === 'title'
+  const advancedDateTimeTypes = ['advanced-datetime'].includes(fields[action.field]?.typ)
   const isNotSubmitAction = actionType !== 'onsubmit'
   const isNotValidateAction = actionType !== 'onvalidate'
-  const isDecisionBox = fields[action.field]?.typ === 'decision-box'
+  const isDecisionBox = ['decision-box', 'gdpr'].includes(fields[action.field]?.typ)
   const isAllowPlaceholder = placeholderAllowTypes.includes(fields[action.field]?.typ)
   const isForm = action.field === '_bf_form'
 
@@ -172,19 +183,20 @@ function ActionBlock({
               {(isNotSubmitAction && isNotValidateAction && isNotFileUpField && isNotButtonField) && <option value="sub-titl">{__('Sub Title')}</option>}
               {isAllowPlaceholder && <option value="placeholder">{__('Placeholder')}</option>}
               {(isNotSubmitAction && isNotValidateAction && isNotFileUpField && isNotButtonField && !isTitleField) && <option value="hlp-txt">{__('Helper Text')}</option>}
+              {(advancedDateTimeTypes) && <option value="config-option">{__('Config Option')}</option>}
               {isTitleField && <option value="title">{__('Title')}</option>}
             </>
           )}
       </MtSelect>
 
-      {(['value', 'activelist', 'lbl', 'ct', 'sub-titl', 'hlp-txt', 'title', 'placeholder'].includes(action.action)) && (
+      {(['value', 'activelist', 'lbl', 'ct', 'sub-titl', 'hlp-txt', 'title', 'placeholder', 'config-option'].includes(action.action)) && (
         <>
           <div className={css({ w: 100, flx: 'align-center', h: 35, mt: 5 })}>
             <div className={css({ w: '100%', bd: '#b9c5ff', h: '0.5px' })} />
           </div>
           <CalculatorField
             label="Value"
-            type={type.match(/select|check|radio|number/g) ? 'text' : type}
+            type={type.match(/select|check|radio|number|range|hidden/g) ? 'text' : type}
             onChange={changeAtnVal}
             value={action.val || ''}
             options={getOptions()}
@@ -193,6 +205,9 @@ function ActionBlock({
         </>
       )}
       <div className="btcd-li-side-btn">
+        <Button onClick={cloneAction} icn className="ml-2 sh-sm white">
+          <CopyIcn />
+        </Button>
         <Button onClick={delAction} icn className="ml-2 sh-sm white">
           <TrashIcn />
         </Button>

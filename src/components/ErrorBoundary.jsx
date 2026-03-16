@@ -3,33 +3,38 @@ import { Component } from 'react'
 export default class ErrorBoundary extends Component {
   constructor(props) {
     super(props)
-    this.state = { error: null, errorInfo: null }
+    this.state = {
+      error: null,
+      errorInfo: null,
+    }
   }
 
   componentDidCatch(error, errorInfo) {
-    // Catch errors in any components below and re-render with error message
-    this.setState({
-      error,
-      errorInfo,
-    })
-    // You can also log error messages to an error reporting service here
+    this.setState({ error, errorInfo })
+    console.error('Caught by ErrorBoundary:', error, errorInfo)
+  }
+
+  componentDidUpdate(prevProps) {
+    // Reset error state if the resetKey has changed
+    if (this.props.resetKey !== prevProps.resetKey && this.state.error) {
+      this.setState({ error: null, errorInfo: null })
+    }
   }
 
   render() {
     if (this.state.errorInfo) {
-      // Error path
       return (
-        <div>
-          <h2>Something went wrong.</h2>
+        <div style={{ background: '#ffeef0', padding: '0.5rem', border: '1px solid red' }}>
+          <h4>Something went wrong.</h4>
           <details style={{ whiteSpace: 'pre-wrap' }}>
-            {this.state.error && this.state.error.toString()}
+            {this.state.error?.toString()}
             <br />
-            {this.state.errorInfo.componentStack}
+            {this.state.errorInfo?.componentStack}
           </details>
         </div>
       )
     }
-    // Normally, just render children
+
     return this.props.children
   }
 }

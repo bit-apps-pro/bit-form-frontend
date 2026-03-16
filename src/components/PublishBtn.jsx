@@ -1,20 +1,32 @@
+import { useAtomValue } from 'jotai'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
+import { $formInfo } from '../GlobalStates/GlobalStates'
+import { __ } from '../Utils/i18nwrap'
 import CoolCopy from './Utilities/CoolCopy'
 import Downmenu from './Utilities/Downmenu'
 
 export default function PublishBtn() {
   const { css } = useFela()
   const { formID } = useParams()
-
+  const formInfo = useAtomValue($formInfo)
+  const { conversationalSettings = {} } = formInfo
   return (
     <Downmenu>
       <button type="button" className={css(style.shareIcn)}>
-        Publish
+        {__('Publish')}
       </button>
       <div className={css(style.downmenu)}>
-        <div className={css(style.title)}>Short Code</div>
-        <CoolCopy cls={css(style.downmenuinput)} value={`[bitform id='${formID}']`} />
+        <div>
+          <div className={css(style.title)}>Short Code</div>
+          <CoolCopy cls={css(style.downmenuinput)} value={`[bitform id='${formID}']`} />
+        </div>
+        {conversationalSettings.enable && (
+          <div>
+            <div className={css(style.title)}>Conversational Form Short Code</div>
+            <CoolCopy cls={css(style.downmenuinput)} value={`[bitform id='${formID}' type='conversational']`} />
+          </div>
+        )}
       </div>
     </Downmenu>
   )
@@ -43,9 +55,12 @@ const style = {
     ':hover': { bd: 'var(--b-35-33)' },
   },
   downmenu: {
-    w: 200,
+    w: 260,
     px: 5,
     py: 8,
+    dy: 'flex',
+    fd: 'column',
+    gp: 10,
   },
   downmenuinput: {
     w: '100% !important',

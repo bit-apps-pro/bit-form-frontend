@@ -49,11 +49,11 @@ export default function PaypalField({ fieldKey, formID, attr, isBuilder, styleCl
     if (fieldData?.locale) urlQueryParams.locale = fieldData.locale
     if (fieldData?.disableFunding) urlQueryParams['disable-funding'] = fieldData.disableFunding
     if (isSubscription) {
-      urlQueryParams['intent'] = 'subscription'
-      urlQueryParams['vault'] = 'true'
+      urlQueryParams.intent = 'subscription'
+      urlQueryParams.vault = 'true'
     }
     if (!isSubscription && fieldData?.currency) {
-      urlQueryParams['currency'] = fieldData.currency
+      urlQueryParams.currency = fieldData.currency
     }
     const src = `https://www.paypal.com/sdk/js?${new URLSearchParams(urlQueryParams).toString()}`
     const srcData = {
@@ -122,7 +122,13 @@ export default function PaypalField({ fieldKey, formID, attr, isBuilder, styleCl
             <div ref={paypalElemnRaf} id={`${fieldKey}-paypal-wrp`} />
           </div>
         )}
-        {(!isLoading && (!loaded || !clientID)) && <p>Select a config from field settings to render the PayPal.</p>}
+        {(!isLoading && (!loaded || !clientID)) && (
+          <p>
+            Please select a PayPal account from
+            <strong> Field Settings </strong>
+            to load PayPal field.
+          </p>
+        )}
         {isLoading && <p>Loading PayPal...</p>}
       </InputWrapper>
     </>

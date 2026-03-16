@@ -7,6 +7,7 @@ import ConfirmModal from '../../Utilities/ConfirmModal'
 import TableCheckBox from '../../Utilities/TableCheckBox'
 import Loader from '../../Loaders/Loader'
 import { refreshOwners, refreshProducts } from './ZohoDeskCommonFunc'
+import { fileUpOrMappableImageFieldTypes } from '../../../Utils/StaticData/allStaticArrays'
 
 export default function ZohoDeskActions({ deskConf, setDeskConf, formID, formFields, setSnackbar }) {
   const [isLoading, setisLoading] = useState(false)
@@ -191,7 +192,7 @@ export default function ZohoDeskActions({ deskConf, setDeskConf, formID, formFie
           defaultValue={deskConf.actions.attachments}
           className="mt-2 w-9"
           onChange={(val) => actionHandler(val, 'attachments')}
-          options={formFields.filter(itm => (itm.type === 'file-up')).map(itm => ({ label: itm.name, value: itm.key }))}
+          options={formFields.filter(itm => (fileUpOrMappableImageFieldTypes.includes(itm.type))).map(itm => ({ label: itm.name, value: itm.key }))}
         />
       </ConfirmModal>
     </div>

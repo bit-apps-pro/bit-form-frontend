@@ -41,7 +41,42 @@ const getTurnstileState = () => {
   }
 }
 
+const getHCaptchaState = () => {
+  if (!window.bits) return {}
+  if (window.bits?.allFormSettings?.hcaptcha) {
+    const { hcaptcha } = window.bits.allFormSettings
+    if (Array.isArray(hcaptcha)) return hcaptcha[0]
+    return hcaptcha
+  }
+  return {
+    siteKey: '',
+    secretKey: '',
+  }
+}
+
+const getConnectedIntegrationApps = () => {
+  if (!window.bits) return []
+  if (window.bits?.allFormSettings?.connectedIntegrationApps) {
+    const connectedApps = window.bits?.allFormSettings?.connectedIntegrationApps || []
+    if (Array.isArray(connectedApps)) return connectedApps
+    return [connectedApps]
+  }
+  return []
+}
+
+const getDefaultGlobalMessages = () => {
+  if (!window.bits) return {}
+  if (window.bits?.appSettings?.globalMessages) {
+    const globalMessages = window.bits?.appSettings?.globalMessages || {}
+    return globalMessages
+  }
+  return {}
+}
+
 export const $payments = atom(paymentsState())
 export const $reCaptchaV2 = atom(getReCaptchaState('v2'))
 export const $reCaptchaV3 = atom(getReCaptchaState('v3'))
 export const $turnstile = atom(getTurnstileState())
+export const $hCaptcha = atom(getHCaptchaState())
+export const $connectedApps = atom(getConnectedIntegrationApps())
+export const $globalMessages = atom(getDefaultGlobalMessages())

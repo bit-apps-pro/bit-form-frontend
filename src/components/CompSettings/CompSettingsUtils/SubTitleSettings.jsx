@@ -17,6 +17,7 @@ import Icons from '../Icons'
 import FieldIconSettings from '../StyleCustomize/ChildComp/FieldIconSettings'
 import SimpleAccordion from '../StyleCustomize/ChildComp/SimpleAccordion'
 import AutoResizeInput from './AutoResizeInput'
+import { sanitizeHTML } from '../../../Utils/globalHelpers'
 
 export default function SubTitleSettings() {
   const [fields, setFields] = useAtom($fields)
@@ -57,7 +58,8 @@ export default function SubTitleSettings() {
       delete fieldData.subtitle
       reCalculateFldHeights(fldKey)
     } else {
-      fieldData.subtitle = value
+      const val = sanitizeHTML(value)
+      fieldData.subtitle = val
     }
 
     const allFields = create(fields, draft => { draft[fldKey] = fieldData })

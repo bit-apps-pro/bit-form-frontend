@@ -43,7 +43,7 @@ export default function Apikey() {
       })
     toast.promise(apiSaveProm, {
       success: data => data,
-      failed: data => data,
+      error: data => data,
       loading: __('Saving API key...'),
     })
   }
@@ -69,6 +69,16 @@ export default function Apikey() {
 
         <SnackMsg snack={snack} setSnackbar={setSnack} />
         <h2>{__('API Integration')}</h2>
+        <small className="d-blk mt-1 mb-1">
+          <a
+            className="btcd-link"
+            href="https://bitapps.pro/docs/bit-form/api/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {__('Learn more about Bit Form API')}
+          </a>
+        </small>
         <div className="btcd-hr" />
 
         <div className="mt-2">
@@ -107,7 +117,7 @@ export default function Apikey() {
         <button
           type="button"
           onClick={(e) => handleSubmit(e)}
-          className={`${css(app.btn)} btn-md f-right blue`}
+          className={`${css(app.btn)} btn-lg f-left blue`}
           disabled={isLoading}
         >
           {__('Save')}

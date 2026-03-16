@@ -16,7 +16,7 @@ export default function paypalStyle_1_BitformDefault({ fk, breakpoint, colorSche
         'border-width': 'var(--fld-wrp-bdr-width, 0)',
       },
 
-      [`.${fk}-inp-wrp`]: { position: 'relative', margin: 'var(--fld-m, 0)' },
+      [`.${fk}-inp-wrp`]: { position: 'relative', margin: '0px' },
 
       [`.${fk}-paypal-wrp`]: {
         width: '100%',

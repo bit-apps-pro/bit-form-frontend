@@ -1,15 +1,16 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable no-param-reassign */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useState } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom, useAtomValue } from 'jotai'
 import { $fields, $selectedFieldId } from '../../../GlobalStates/GlobalStates'
 import { $styles } from '../../../GlobalStates/StylesState'
 import ut from '../../../styles/2.utilities'
 import FieldStyle from '../../../styles/FieldStyle.style'
-import { addToBuilderHistory, reCalculateFldHeights } from '../../../Utils/FormBuilderHelper'
+import { addToBuilderHistory, escapeBackslashPattern, generateBackslashPattern, reCalculateFldHeights } from '../../../Utils/FormBuilderHelper'
+import { sanitizeHTML } from '../../../Utils/globalHelpers'
 import { deepCopy } from '../../../Utils/Helpers'
 import { __ } from '../../../Utils/i18nwrap'
 import tippyHelperMsg from '../../../Utils/StaticData/tippyHelperMsg'
@@ -18,7 +19,7 @@ import {
   iconElementLabel,
   isStyleExist,
   setIconFilterValue,
-  styleClasses
+  styleClasses,
 } from '../../style-new/styleHelpers'
 import Modal from '../../Utilities/Modal'
 import Icons from '../Icons'
@@ -26,7 +27,7 @@ import FieldIconSettings from '../StyleCustomize/ChildComp/FieldIconSettings'
 import SimpleAccordion from '../StyleCustomize/ChildComp/SimpleAccordion'
 import AutoResizeInput from './AutoResizeInput'
 
-export default function FieldLabelSettings() {
+export default function FieldLabelSettings({ hideIcons }) {
   const { fieldKey: fldKey } = useParams()
   const [fields, setFields] = useAtom($fields)
   const fieldData = deepCopy(fields[fldKey])
@@ -42,7 +43,8 @@ export default function FieldLabelSettings() {
     if (value === '') {
       delete fieldData.lbl
     } else {
-      fieldData.lbl = value.replace(/\\\\/g, '$_bf_$')
+      const val = sanitizeHTML(value)
+      fieldData.lbl = escapeBackslashPattern(val)
     }
     // eslint-disable-next-line no-param-reassign
     const allFields = create(fields, draft => { draft[fldKey] = fieldData })
@@ -118,31 +120,33 @@ export default function FieldLabelSettings() {
               id="fld-lbl-stng"
               ariaLabel="Label input"
               changeAction={setLabel}
-              value={label.replace(/\$_bf_\$/g, '\\')}
+              value={generateBackslashPattern(label)}
             />
           </div>
 
-          <div className={css(ut.mt1)}>
-            <FieldIconSettings
-              label="Leading Icon"
-              iconSrc={fieldData?.lblPreIcn}
-              styleRoute="lbl-pre-i"
-              setIcon={() => setIconModel('lblPreIcn')}
-              removeIcon={() => removeIcon('lblPreIcn')}
-              isPro
-              proProperty="leadingIcon"
-            />
+          {!hideIcons && (
+            <div className={css(ut.mt1)}>
+              <FieldIconSettings
+                label="Leading Icon"
+                iconSrc={fieldData?.lblPreIcn}
+                styleRoute="lbl-pre-i"
+                setIcon={() => setIconModel('lblPreIcn')}
+                removeIcon={() => removeIcon('lblPreIcn')}
+                isPro
+                proProperty="leadingIcon"
+              />
 
-            <FieldIconSettings
-              label="Trailing Icon"
-              iconSrc={fieldData?.lblSufIcn}
-              styleRoute="lbl-suf-i"
-              setIcon={() => setIconModel('lblSufIcn')}
-              removeIcon={() => removeIcon('lblSufIcn')}
-              isPro
-              proProperty="trailingIcon"
-            />
-          </div>
+              <FieldIconSettings
+                label="Trailing Icon"
+                iconSrc={fieldData?.lblSufIcn}
+                styleRoute="lbl-suf-i"
+                setIcon={() => setIconModel('lblSufIcn')}
+                removeIcon={() => removeIcon('lblSufIcn')}
+                isPro
+                proProperty="trailingIcon"
+              />
+            </div>
+          )}
         </div>
       </SimpleAccordion>
       <Modal

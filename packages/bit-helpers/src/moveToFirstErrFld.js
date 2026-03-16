@@ -17,15 +17,19 @@ export default function moveToFirstErrFld(props, fldKeys = []) {
     if (fldMinStep === -1 && isErrKeyExists) fldMinStep = layIndx
     return [...fldAcc, ...layKeys]
   }, [])
-  if (isMultiStep && fldMinStep > -1) {
+  if (isMultiStep && fldMinStep > -1 && props.inits.multi_step_form.step !== fldMinStep + 1) {
     props.inits.multi_step_form.step = fldMinStep + 1
+  }
+  if (props.inits?.conversational_form) {
+    props.inits.conversational_form.activeFieldStep = fldKeys[0]
   }
   fldKeysBasedOnLayOrder.some(fldKey => fldKeys.some(errKey => {
     const [fk, rowIndx] = getFldKeyAndRowIndx(errKey)
     if (fldKey === fk) {
       const selector = rowIndx ? `.rpt-index-${rowIndx}` : ''
       const fld = bfSelect(`#form-${props.contentId} ${selector} .btcd-fld-itm.${fldKey}`)
-      scrollToElm(fld)
+      // scrollToElm(fld)
+      setTimeout(() => scrollToElm(fld), 0)
       return true
     }
     return false

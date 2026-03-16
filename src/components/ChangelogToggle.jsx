@@ -7,14 +7,16 @@ import ExternalLinkIcn from '../Icons/ExternalLinkIcn'
 import changelogInfo from '../Utils/StaticData/changelogInfo'
 import bitsFetch from '../Utils/bitsFetch'
 import { __ } from '../Utils/i18nwrap'
+import Btn from './Utilities/Btn'
 import Modal from './Utilities/Modal'
 
 export default function ChangelogToggle() {
   const [bits, setBits] = useAtom($bits)
-  const [show, setShow] = useState(bits.changelogVersion !== bits.version)
-  const currentChangelog = '2.9.0'
+  const currentChangelog = '2.21.0'
+  const [show, setShow] = useState(bits.changelogVersion !== bits.version && (bits.version === currentChangelog || !bits.permission))
   const currenChangelog = changelogInfo[currentChangelog]
   const { css } = useFela()
+  const changelogDocLink = 'https://bit-form.com/wp-docs/free-changelogs/'
 
   const setChangeLogVersion = () => {
     setShow(false)
@@ -28,6 +30,17 @@ export default function ChangelogToggle() {
 
   if (!currenChangelog) return
 
+  const permissionHandler = (permission) => {
+    bitsFetch({
+      permission,
+    }, 'bitforms_analytics_permission')
+      .then(() => {
+        setBits(prevBits => ({ ...prevBits, permission }))
+        setChangeLogVersion()
+      })
+    setShow(false)
+  }
+
   return (
     <div className="changelog-toggle">
       <button
@@ -39,14 +52,21 @@ export default function ChangelogToggle() {
         {/* <QuestionIcn size={25} /> */}
         <ChangelogIcn size={25} />
       </button>
-      <Modal sm show={show} onCloseMdl={setChangeLogVersion}>
+      <Modal
+        sm
+        show={show}
+        onCloseMdl={setChangeLogVersion}
+        showCloseBtn={bits.permission}
+        closeOnOutsideClick={!!bits.permission}
+        escKeyEvent={bits.permission}
+      >
         <div>
           <div className="flx flx-col flx-center">
             <h3 className={css({ m: 5 })}>{__('What\'s New?')}</h3>
           </div>
           <div>
             <h3 className={css({ m: 0 })}>
-              <a href="https://bitapps.pro/docs/bit-form/changelog/" target="_blank" rel="noreferrer">
+              <a href={changelogDocLink} target="_blank" rel="noreferrer">
                 {`Version ${currentChangelog}`}
                 <ExternalLinkIcn size="14" />
               </a>
@@ -54,23 +74,58 @@ export default function ChangelogToggle() {
             <p className={css({ m: '0px 5px 5px' })}>{`Date: ${currenChangelog.date}`}</p>
           </div>
           <div className={css(styles.content)}>
-            {Object.entries(currenChangelog.changes).map(([titile, obj]) => (
-              <div className={css({ p: '0px 5px' })} key={titile}>
-                <span className={css(styles.bdg, styles[titile])}>{obj.label}</span>
+            {Object.entries(currenChangelog.changes).map(([title, obj]) => (
+              <div className={css({ p: '0px 5px' })} key={title}>
+                <span className={css(styles.bdg, styles[title])}>{obj.label}</span>
                 {obj.tag && <span className={css(styles.tag)}>{obj.tag}</span>}
                 <ul className={css(styles.ul, { mt: 5 })}>
-                  {obj.list.map((tempObj, index) => getChangesList(tempObj, css, `${titile}-${index}`))}
+                  {obj.list.map((tempObj, index) => getChangesList(tempObj, css, `${title}-${index}`))}
                 </ul>
               </div>
             ))}
           </div>
-          <div className={css({})}>
+          <div>
             <span className={css({ m: '0px 5px 5px' })}>{__('For more details,')}</span>
-            <a href="https://bitapps.pro/docs/bit-form/changelog/" target="_blank" rel="noreferrer">
-              {__('Click here ')}
+            <a
+              href={changelogDocLink}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {__('Click here')}
+              {' '}
               <ExternalLinkIcn size="14" />
             </a>
           </div>
+          {!bits.permission && (
+            <>
+              <hr />
+              <p className={css(styles.optinTitle)}>Opt-In For Plugin Improvement</p>
+              <p className={css({ m: '5px 0px' })}>
+                <strong>{__('Note:')}</strong>
+                {' '}
+                {__('Accept and continue to share usage data for improvements, or skip for using the plugin.')}
+                <a href="https://bitapps.pro/privacy-policy/" target="_blank" rel="noreferrer">
+                  {__('Click here to see terms')}
+                  {' '}
+                  <ExternalLinkIcn size="12" />
+                </a>
+              </p>
+              <div className={css({ flx: 'center-between' })}>
+                <Btn
+                  size="sm"
+                  variant="secondary-outline"
+                  onClick={() => permissionHandler(false)}
+                >
+                  {__('Skip')}
+                </Btn>
+                <Btn
+                  onClick={() => permissionHandler(true)}
+                >
+                  {__('Accept And Continue')}
+                </Btn>
+              </div>
+            </>
+          )}
         </div>
       </Modal>
     </div>
@@ -95,7 +150,6 @@ function getChangesList(listObj, css, parentKey = '') {
             </ul>
           )
         }
-
       </Fragment>
     )
   }
@@ -165,14 +219,24 @@ const styles = {
   },
   imporovement: {
     bd: '#00FFBF',
-    c: '#24292e',
+    cr: '#24292e',
   },
   fixed: {
     bd: '#FFD000',
-    c: '#24292e',
+    cr: '#24292e',
   },
   coming: {
     bd: '#00ffe9',
-    c: '#24292e',
+    cr: '#24292e',
+  },
+  bitAppsNotice: {
+    bd: '#00ffe9',
+    cr: '#24292e',
+  },
+  optinTitle: {
+    ta: 'center',
+    m: '0px',
+    fs: '14px',
+    fw: '700',
   },
 }

@@ -1,5 +1,5 @@
-import { useNavigate, useParams } from 'react-router-dom'
 import { useAtomValue } from 'jotai'
+import { useNavigate, useParams } from 'react-router-dom'
 import { $fields, $selectedFieldId } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import LayerAccordion from '../CompSettings/StyleCustomize/ChildComp/LayerAccordion'
@@ -113,7 +113,7 @@ export default function ElementConfiguration({ fldKey }) {
         )
       }
 
-      {(fieldObj.lbl || fieldObj.lblPreIcn || fieldObj.lblSufIcn) && !fieldObj.typ.match(/^(decision-box|razorpay|paypal)$/gi)?.[0] && (
+      {(fieldObj.lbl || fieldObj.lblPreIcn || fieldObj.lblSufIcn) && !fieldObj.typ.match(/^(decision-box|gdpr|razorpay|paypal)$/gi)?.[0] && (
         <>
           {!(fieldObj.lblPreIcn || fieldObj.lblSufIcn || (fieldObj.valid.req && fieldObj.valid.reqShow)) && (
             <NavBtn
@@ -249,7 +249,7 @@ export default function ElementConfiguration({ fldKey }) {
           styleOverride={isLabelOverrideStyles(styles, fldKey, 'image')}
         />
       )}
-      {fieldObj.typ.match(/^(text|number|password|username|email|url|date|datetime-local|time|month|week|color|textarea|)$/)
+      {fieldObj.typ.match(/^(text|number|password|username|email|url|date|datetime-local|time|month|week|color|textarea|range|hidden|advanced-datetime|)$/)
         && (
           <>
             {!(fieldObj.prefixIcn || fieldObj.suffixIcn) && (

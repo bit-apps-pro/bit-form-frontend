@@ -1,7 +1,7 @@
 import toast from 'react-hot-toast'
 import bitsFetch from '../../../Utils/bitsFetch'
-import { deepCopy } from '../../../Utils/Helpers'
-import { sprintf, __ } from '../../../Utils/i18nwrap'
+import { __ } from '../../../Utils/i18nwrap'
+import { saveConnectedIntegrationApp } from '../integrationHelper'
 
 export const handleInput = (e, acumbamailConf, setAcumbamailConf, setIsLoading, setSnackbar, formID) => {
   const newConf = { ...acumbamailConf }
@@ -106,6 +106,7 @@ export const handleAuthorize = (confTmp, setConf, setError, setisAuthorized, set
         setConf(newConf)
         setisAuthorized(true)
         setIsLoading(false)
+        saveConnectedIntegrationApp(newConf)
         toast.success(__('Authorized successfully'))
         return
       }

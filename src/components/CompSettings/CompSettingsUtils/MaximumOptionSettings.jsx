@@ -1,20 +1,22 @@
 /* eslint-disable no-param-reassign */
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
+import { $globalMessages } from '../../../GlobalStates/AppSettingsStates'
 import { $fields } from '../../../GlobalStates/GlobalStates'
-import { addToBuilderHistory, setRequired } from '../../../Utils/FormBuilderHelper'
+import { addToBuilderHistory } from '../../../Utils/FormBuilderHelper'
 import { IS_PRO, deepCopy } from '../../../Utils/Helpers'
 import { __ } from '../../../Utils/i18nwrap'
 import FieldStyle from '../../../styles/FieldStyle.style'
+import SingleToggle from '../../Utilities/SingleToggle'
 import SimpleAccordion from '../StyleCustomize/ChildComp/SimpleAccordion'
 import ErrorMessageSettings from './ErrorMessageSettings'
-import SingleToggle from '../../Utilities/SingleToggle'
 
 export default function MaximumOptionSettings({ cls, tip, checkIsPro }) {
   const { fieldKey: fldKey } = useParams()
   const [fields, setFields] = useAtom($fields)
+  const globalMessages = useAtomValue($globalMessages)
   const fieldData = deepCopy(fields[fldKey])
   const max = fieldData.mx || ''
   const adminLabel = fieldData.adminLbl || ''
@@ -28,7 +30,7 @@ export default function MaximumOptionSettings({ cls, tip, checkIsPro }) {
       fieldData.mx = e.target.value
       if (!fieldData.err) fieldData.err = {}
       if (!fieldData.err.mx) fieldData.err.mx = {}
-      fieldData.err.mx.dflt = `<p style="margin:0">Maximum ${e.target.value} option${Number(e.target.value) > 1 ? 's' : ''}</p>`
+      fieldData.err.mx.dflt = globalMessages?.err?.[fieldData.typ]?.mx || globalMessages?.err?.mx || `<p style="margin:0">Maximum ${e.target.value} option${Number(e.target.value) > 1 ? 's' : ''}</p>`
       fieldData.err.mx.show = true
     }
     const allFields = create(fields, draft => { draft[fldKey] = fieldData })

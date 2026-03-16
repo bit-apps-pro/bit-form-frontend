@@ -6,7 +6,7 @@ import { $activeBuilderStep } from '../GlobalStates/FormBuilderStates'
 import {
   $additionalSettings, $allLayouts,
   $bits,
-  $breakpoint, $breakpointSize, $builderHelperStates, $builderHistory, $builderHookStates, $builderRightPanelScroll, $builderSettings, $colorScheme, $confirmations, $customCodes, $deletedFldKey, $draggableModal, $draggingField, $fieldLabels, $fields, $flags, $formAbandonment, $formId, $formInfo, $integrations, $isNewThemeStyleLoaded, $layouts, $mailTemplates, $nestedLayouts, $newFormId, $reportId,
+  $breakpoint, $breakpointSize, $builderHelperStates, $builderHistory, $builderHookStates, $builderRightPanelScroll, $builderSettings, $colorScheme, $confirmations, $customCodes, $deletedFldKey, $draggableModal, $draggingField, $fieldLabels, $fields, $flags, $formAbandonment, $formId, $formInfo, $formPermissions, $frontendTable, $frontendTables, $integrations, $isNewThemeStyleLoaded, $layouts, $mailTemplates, $nestedLayouts, $newFormId, $pdfTemplates, $previewWindow, $reportId,
   $reportSelector,
   $reports,
   $selectedFieldId, $unsplashImgUrl, $unsplashMdl, $updateBtn, $workflows,
@@ -19,7 +19,7 @@ import { $darkThemeColors, $lightThemeColors } from '../GlobalStates/ThemeColors
 import { $themeVarsLgDark, $themeVarsLgLight, $themeVarsMdDark, $themeVarsMdLight, $themeVarsSmDark, $themeVarsSmLight } from '../GlobalStates/ThemeVarsState'
 import confirmMsgCssStyles from '../components/ConfirmMessage/confirmMsgCssStyles'
 import { updateGoogleFontUrl } from '../components/style-new/styleHelpers'
-import { addToBuilderHistory, isValidJsonString, prepareLayout } from './FormBuilderHelper'
+import { addToBuilderHistory, getLatestState, isValidJsonString, prepareLayout } from './FormBuilderHelper'
 import atomicStyleGenarate, { generateNestedLayoutCSSText } from './atomicStyleGenarate'
 import bitsFetch from './bitsFetch'
 import { JCOF } from './globalHelpers'
@@ -232,7 +232,7 @@ export const dateTimeFormatter = (dateStr, format) => {
 
   const allFormatkeys = Object.keys(allFormatObj)
 
-  for (let v = 0; v < format.length; v += 1) {
+  for (let v = 0; v < format?.length; v += 1) {
     if (format[v] === '\\') {
       v += 1
       formattedDate += format[v]
@@ -291,22 +291,63 @@ export const checkValidEmail = email => {
   return false
 }
 export const makeFieldsArrByLabel = (fields, labels = [], fldsToFilter = []) => {
-  const fldArrByLabel = Object.entries(fields).filter(fld => !fldsToFilter.includes(fld[1].typ)).map(([fldKey, fld]) => {
-    const fldByLabel = labels.find(lbl => lbl.key === fldKey)
+  const fieldsArr = sortFieldsByLayout(fields)
+
+  const fldArrByLabel = fieldsArr?.filter(fld => !fldsToFilter.includes(fld.typ)).map(fld => {
+    const fldByLabel = labels.find(lbl => lbl.key === fld?.fldKey)
     return {
       ...fld,
-      key: fldKey,
+      key: fld?.fldKey,
       type: fld.typ,
       name: fldByLabel?.adminLbl
         || fldByLabel?.name
         || fld.adminLbl
         || fld.lbl
         || fld.txt // for submit button
-        || fldKey,
+        || fld?.fldKey,
     }
   })
 
-  return sortArrOfObj(fldArrByLabel, 'name')
+  // return sortArrOfObj(fldArrByLabel, 'name')
+  return fldArrByLabel
+}
+
+export const sortFieldsByLayout = (fields) => {
+  const allLayouts = getAtom($allLayouts)
+  const nestedLayouts = getAtom($nestedLayouts)
+
+  const fieldsArr = []
+  const addedKeys = new Set()
+  const processLayout = (layout) => {
+    layout?.lg?.forEach(layObj => {
+      if (fields[layObj.i]) {
+        fieldsArr.push({ ...fields[layObj.i], fldKey: layObj.i })
+        addedKeys.add(layObj.i)
+      }
+      if (nestedLayouts[layObj.i]) {
+        nestedLayouts[layObj.i]?.lg?.forEach(nestedLayObj => {
+          if (fields[nestedLayObj.i]) {
+            fieldsArr.push({ ...fields[nestedLayObj.i], fldKey: nestedLayObj.i })
+            addedKeys.add(nestedLayObj.i)
+          }
+        })
+      }
+    })
+  }
+
+  if (Array.isArray(allLayouts)) {
+    allLayouts.forEach(layout => processLayout(layout?.layout))
+  } else {
+    processLayout(allLayouts)
+  }
+
+  // Push remaining fields that were not added
+  Object.keys(fields).forEach(key => {
+    if (!addedKeys.has(key)) {
+      fieldsArr.push({ ...fields[key], fldKey: key })
+    }
+  })
+  return fieldsArr
 }
 
 export const getFileExts = filename => filename.split('.').pop()
@@ -362,6 +403,18 @@ export const getNewFormId = (allForms) => {
     }
   })
   return max + 1
+}
+
+export const getNewTableId = (bits, tableId) => {
+  console.log({ tableId })
+  let newTableId
+  if (tableId === 0) {
+    newTableId = parseInt(bits.tablesLastId) + 1
+  } else {
+    newTableId = tableId + 1
+  }
+  console.log({ newTableId })
+  return newTableId
 }
 
 export const sortByField = (array, fieldKey, typ) => array.sort((a, b) => {
@@ -561,11 +614,13 @@ export const getStatesToReset = () => [
   $builderRightPanelScroll,
   $builderSettings,
   $confirmations,
+  $formPermissions,
   $colorScheme,
   $customCodes,
   $draggingField,
   $deletedFldKey,
   $draggableModal,
+  $previewWindow,
   $formId,
   $formInfo,
   $fieldLabels,
@@ -576,6 +631,7 @@ export const getStatesToReset = () => [
   $allLayouts,
   $nestedLayouts,
   $mailTemplates,
+  $pdfTemplates,
   $reports,
   $reportId,
   $selectedFieldId,
@@ -604,6 +660,9 @@ export const getStatesToReset = () => [
   $themeVarsSmDark,
 
   $styles,
+
+  $frontendTables,
+  $frontendTable,
 ]
 
 export const trimCSS = (cssStr = '') => cssStr.replace(/\/\*[^*]*\*+([^/][^*]*\*+)*\//g, '').replace(/\n/gm, '')
@@ -626,23 +685,23 @@ export const setFormReponseDataToStates = (responseData) => {
   const formsSessionDataFound = false
   if (!formsSessionDataFound) {
     setAtom($layouts, responseData.form_content.layout)
-    addToBuilderHistory({ state: { layouts: responseData.form_content.layout } }, false, 0)
-  }
-  if (!formsSessionDataFound) {
     setAtom($nestedLayouts, responseData.form_content.nestedLayout)
-    addToBuilderHistory({ state: { nestedLayouts: responseData.form_content.nestedLayout } }, false, 0)
-  }
-  if (!formsSessionDataFound) {
     setAtom($fields, responseData.form_content.fields)
-    addToBuilderHistory({ state: { fields: responseData.form_content.fields } }, false, 0)
-  }
-  if (!formsSessionDataFound) {
     setAtom($formInfo, oldInfo => ({ ...oldInfo, ...responseData.form_content.formInfo, formName: responseData.form_content.form_name }))
+    addToBuilderHistory({
+      state: {
+        $allLayouts: getLatestState('allLayouts'),
+        nestedLayouts: responseData.form_content.nestedLayout,
+        fields: responseData.form_content.fields,
+        formInfo: { ...responseData.form_content.formInfo, ormName: responseData.form_content.form_name },
+      },
+    }, false, 0)
   }
   setAtom($workflows, responseData.workFlows)
   setAtom($additionalSettings, responseData.additional)
   setAtom($integrations, responseData.formSettings.integrations)
   setAtom($confirmations, responseData.formSettings.confirmation)
+  setAtom($formPermissions, responseData.formSettings.formPermissions)
   setAtom($mailTemplates, responseData.formSettings.mailTem)
   if (!formsSessionDataFound && responseData.builderSettings) setAtom($builderSettings, responseData.builderSettings)
   setAtom($reportId, {
@@ -651,6 +710,7 @@ export const setFormReponseDataToStates = (responseData) => {
   })
   setAtom($fieldLabels, responseData.Labels)
   setAtom($reports, responseData.reports || [])
+  setAtom($customCodes, responseData.customCode)
 }
 
 export const getConfirmationStyle = (formData) => {
@@ -748,6 +808,7 @@ export const generateUpdateFormData = (savedFormId) => {
   const breakpointSize = getAtom($breakpointSize)
   const customCodes = getAtom($customCodes)
   const confirmations = getAtom($confirmations)
+  const formPermissions = getAtom($formPermissions)
   const mailTemplates = getAtom($mailTemplates)
   const allIntegrations = getAtom($integrations)
   const builderSettings = getAtom($builderSettings)
@@ -829,6 +890,7 @@ export const generateUpdateFormData = (savedFormId) => {
     formSettings: {
       formName,
       confirmation: confirmations,
+      formPermissions,
       mailTem: mailTemplates,
       integrations: allIntegrations,
     },
@@ -892,14 +954,16 @@ export const generateReportData = (allResp, fields, filterOptions) => {
     }
     if (checkedStatus.includes(respObj.__entry_status)) {
       reportedFields.forEach((fieldKey) => {
-        const optionsObj = (fields[fieldKey].opt || []).reduce((acc, opt) => {
-          const { val, lbl } = opt
-          return {
-            ...acc,
-            [val || lbl]: lbl,
-          }
-        }
-          , {})
+        const optionsObj = (fields[fieldKey].opt || []).reduce(
+          (acc, opt) => {
+            const { val, lbl } = opt
+            return {
+              ...acc,
+              [val || lbl]: lbl,
+            }
+          },
+          {},
+        )
 
         let entryData = respObj[fieldKey]
         entryData = isValidJsonString(entryData) ? JSON.parse(entryData) : entryData
@@ -956,4 +1020,53 @@ export const getLastNthDate = (n) => {
   date.setDate(date.getDate() - n)
   // const dateStr = date.toISOString().split('T')[0]
   return date
+}
+
+export function objectToCssText(obj) {
+  let cssText = ''
+  const selectors = Object.keys(obj)
+  const selectorsCount = selectors.length
+  if (!selectorsCount) return ''
+
+  for (let i = 0; i < selectorsCount; i += 1) {
+    const selector = selectors[i]
+    if (!Object.prototype.hasOwnProperty.call(obj, selector)) continue
+    cssText += selector
+    cssText += '{'
+    const definations = obj[selector]
+    cssText += generatePropertyRules(definations)
+    cssText += '}'
+  }
+
+  cssText = cssText
+    .replace(/::after/gm, ':after')
+    .replace(/::before/gm, ':before')
+    .replace(/(?:\s+|:|,)0+\./gm, match => (match[0] !== '0' ? `${match[0]}.` : '.'))
+    .replace(/\s*border\s*:\s*medium\s*none/gm, 'border:none')
+
+  return cssText
+}
+
+const generatePropertyRules = (definations) => {
+  let cssText = ''
+  let len = Object.entries(definations).length
+  const props = Object.keys(definations)
+  const propsCount = props.length
+  for (let j = 0; j < propsCount; j += 1) {
+    const prop = props[j]
+    if (!Object.prototype.hasOwnProperty.call(definations, prop)) continue
+    const value = definations[prop]
+    const valueIsObject = typeof value === 'object' && value !== null
+    cssText += prop
+    if (!valueIsObject) cssText += ':'
+    if (valueIsObject) {
+      cssText += `{${generatePropertyRules(value)}}`
+    } else cssText += value
+    // eslint-disable-next-line no-plusplus
+    if (--len !== 0 && !valueIsObject) {
+      cssText += ';'
+    }
+  }
+
+  return cssText
 }

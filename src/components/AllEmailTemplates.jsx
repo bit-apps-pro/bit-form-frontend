@@ -1,10 +1,10 @@
 /* eslint-disable react/no-unstable-nested-components */
+import { useAtom } from 'jotai'
 import { create } from 'mutative'
 import { useState } from 'react'
 import { useFela } from 'react-fela'
 import toast from 'react-hot-toast'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { useAtom } from 'jotai'
 import { $mailTemplates } from '../GlobalStates/GlobalStates'
 import CopyIcn from '../Icons/CopyIcn'
 import EditIcn from '../Icons/EditIcn'
@@ -16,10 +16,10 @@ import app from '../styles/app.style'
 import bitsFetch from '../Utils/bitsFetch'
 import { deepCopy } from '../Utils/Helpers'
 import { __ } from '../Utils/i18nwrap'
+import tutorialLinks from '../Utils/StaticData/tutorialLinks'
 import Button from './Utilities/Button'
 import ConfirmModal from './Utilities/ConfirmModal'
 import Table from './Utilities/Table'
-import tutorialLinks from '../Utils/StaticData/tutorialLinks'
 
 export default function AllEmailTemplates({ formID }) {
   const [mailTem, setMailTem] = useAtom($mailTemplates)
@@ -122,13 +122,13 @@ export default function AllEmailTemplates({ formID }) {
       />
       <h2>{__('Email Templates')}</h2>
       <h5>
-        How to setup Email Templates & Send Email Notification:
+        {__('How to setup Email Templates & Send Email Notification:')}
         &nbsp;
         <a href={tutorialLinks.emailTemplates.link} target="_blank" rel="noreferrer" className="yt-txt ml-1 mr-1">
-          YouTube
+          {__('YouTube')}
         </a>
         <a href={tutorialLinks.emailTemplatesDoc.link} target="_blank" rel="noreferrer" className="doc-txt">
-          Documentation
+          {__('Documentation')}
         </a>
       </h5>
       <div className="">

@@ -1,9 +1,9 @@
-import { memo, useEffect, useState } from 'react'
 import { useAtomValue } from 'jotai'
+import { memo, useEffect, useState } from 'react'
 import { $bits, $fieldLabels } from '../../GlobalStates/GlobalStates'
 import DocIcn from '../../Icons/DocIcn'
-import bitsFetch from '../../Utils/bitsFetch'
 import { dateTimeFormatter } from '../../Utils/Helpers'
+import bitsFetch from '../../Utils/bitsFetch'
 import { __ } from '../../Utils/i18nwrap'
 import Loader from '../Loaders/Loader'
 import CopyText from '../Utilities/CopyText'
@@ -31,13 +31,13 @@ function FormEntryTimeline({ formID, entryID, integrations }) {
 
     return () => setLog([])
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [entryID])
 
   const replaceFieldWithLabel = str => {
     const pattern = /\${\w[^ ${}]*}/g
     const pattern2 = /[\]["]/g
-    const key = str.match(pattern)?.[0] || ''
-    const field = key ? allLabels.find(label => `$\{${label.key}}` === key) : ''
+    const key = str.match(pattern)?.[0] || str
+    const field = key ? allLabels.find(label => `$\{${label.key}}` === key || label.key === key) : ''
     const fieldName = field ? field.adminLbl : ''
     const replacedField = fieldName ? str.replace(pattern, fieldName) : ''
     return replacedField ? replacedField.replace(pattern2, '') : 'Field Deleted'

@@ -1,18 +1,18 @@
 /* eslint-disable no-param-reassign */
+import { useAtom } from 'jotai'
 import { create } from 'mutative'
 import { useEffect, useState } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
 import { $fields } from '../../../GlobalStates/GlobalStates'
 import app from '../../../styles/app.style'
-import { addToBuilderHistory, getLatestState } from '../../../Utils/FormBuilderHelper'
+import { addToBuilderHistory, getLatestState, reCalculateFldHeights } from '../../../Utils/FormBuilderHelper'
 import { deepCopy } from '../../../Utils/Helpers'
 import { __ } from '../../../Utils/i18nwrap'
 import Modal from '../../Utilities/Modal'
 import TinyMCE from '../../Utilities/TinyMCE'
 
-export default function DecisionBoxLabelModal({ labelModal, setLabelModal }) {
+export default function DecisionBoxLabelModal({ labelModal, setLabelModal, title }) {
   const { fieldKey: fldKey } = useParams()
   const { css } = useFela()
   const [fields, setFields] = useAtom($fields)
@@ -29,12 +29,14 @@ export default function DecisionBoxLabelModal({ labelModal, setLabelModal }) {
     setFields(prevState => create(prevState, draft => {
       draft[fldKey].lbl = val
     }))
+    reCalculateFldHeights(fldKey)
     addToBuilderHistory({ event: 'Modify Decision Box Label', type: 'change_decision_label', state: { fields: getLatestState('fields'), fldKey } })
   }
 
   const cancelModal = () => {
     fieldData.lbl = value
     setFields(allFields => create(allFields, draft => { draft[fldKey] = fieldData }))
+    reCalculateFldHeights(fldKey)
     addToBuilderHistory({ event: 'Cancel Decision Box Label Editing', type: 'cancel_decision_label_edit', state: { fields: getLatestState('fields'), fldKey } })
     setLabelModal(false)
   }
@@ -44,7 +46,7 @@ export default function DecisionBoxLabelModal({ labelModal, setLabelModal }) {
       md
       show={labelModal}
       setModal={cancelModal}
-      title={__('Edit Decision Box Label')}
+      title={title || __('Edit Decision Box Label')}
     >
       <TinyMCE
         id={fldKey}

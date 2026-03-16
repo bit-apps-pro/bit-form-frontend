@@ -87,6 +87,7 @@ export default function checkboxNradioStyle_4_individual({ fk, type, direction, 
         transition: 'all 0.2s',
         'justify-content': 'center',
         'align-items': 'center',
+        'flex-shrink': 0,
       },
       [`.${fk}-other-inp-wrp`]: { display: 'none' },
       [`.${fk}-other-inp`]: {

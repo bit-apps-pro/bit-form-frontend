@@ -7,26 +7,25 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/label-has-associated-control */
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { create } from 'mutative'
 import { memo, useRef, useState } from 'react'
 import { useFela } from 'react-fela'
 import MultiSelect from 'react-multiple-select-dropdown-lite'
 import 'react-multiple-select-dropdown-lite/dist/index.css'
 import { useParams } from 'react-router-dom'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { $fields, $selectedFieldId, $updateBtn } from '../../GlobalStates/GlobalStates'
-import { $styles } from '../../GlobalStates/StylesState'
+import { $globalMessages } from '../../GlobalStates/AppSettingsStates'
+import { $fields, $updateBtn } from '../../GlobalStates/GlobalStates'
 import BdrDottedIcn from '../../Icons/BdrDottedIcn'
 import CloseIcn from '../../Icons/CloseIcn'
 import ut from '../../styles/2.utilities'
 import FieldStyle from '../../styles/FieldStyle.style'
-import { addToBuilderHistory } from '../../Utils/FormBuilderHelper'
+import { addToBuilderHistory, escapeBackslashPattern, generateBackslashPattern } from '../../Utils/FormBuilderHelper'
 import { deepCopy, IS_PRO } from '../../Utils/Helpers'
 import { __ } from '../../Utils/i18nwrap'
 import autofillList from '../../Utils/StaticData/autofillList'
 import predefinedPatterns from '../../Utils/StaticData/patterns.json'
 import tippyHelperMsg from '../../Utils/StaticData/tippyHelperMsg'
-import { addDefaultStyleClasses, iconElementLabel, isStyleExist, paddingGenerator, setIconFilterValue, styleClasses } from '../style-new/styleHelpers'
 import Btn from '../Utilities/Btn'
 import Downmenu from '../Utilities/Downmenu'
 import Modal from '../Utilities/Modal'
@@ -41,13 +40,12 @@ import FieldLabelSettings from './CompSettingsUtils/FieldLabelSettings'
 import FieldReadOnlySettings from './CompSettingsUtils/FieldReadOnlySettings'
 import FieldSettingsDivider from './CompSettingsUtils/FieldSettingsDivider'
 import HelperTxtSettings from './CompSettingsUtils/HelperTxtSettings'
+import InputIconsSettings from './CompSettingsUtils/InputIconsSettings'
 import PlaceholderSettings from './CompSettingsUtils/PlaceholderSettings'
 import RequiredSettings from './CompSettingsUtils/RequiredSettings'
 import SubTitleSettings from './CompSettingsUtils/SubTitleSettings'
 import UniqFieldSettings from './CompSettingsUtils/UniqFieldSettings'
 import EditOptions from './EditOptions/EditOptions'
-import Icons from './Icons'
-import FieldIconSettings from './StyleCustomize/ChildComp/FieldIconSettings'
 import SimpleAccordion from './StyleCustomize/ChildComp/SimpleAccordion'
 import FieldSettingTitle from './StyleCustomize/FieldSettingTitle'
 import SizeAndPosition from './StyleCustomize/StyleComponents/SizeAndPosition'
@@ -58,12 +56,9 @@ function TextFieldSettings() {
   if (!fldKey) return <>No field exist with this field key</>
   const setUpdateBtn = useSetAtom($updateBtn)
   const [optionMdl, setOptionMdl] = useState(false)
-  const [icnMdl, setIcnMdl] = useState(false)
-  const [icnType, setIcnType] = useState('')
-  const [styles, setStyles] = useAtom($styles)
   const [fields, setFields] = useAtom($fields)
   const fieldData = deepCopy(fields[fldKey])
-  const selectedFieldId = useAtomValue($selectedFieldId)
+  const globalMessages = useAtomValue($globalMessages)
   const patternTippy = useRef()
   const adminLabel = fieldData.adminLbl || ''
   const imputMode = fieldData.inputMode || 'text'
@@ -72,12 +67,14 @@ function TextFieldSettings() {
   const ac = fieldData?.ac ? fieldData.ac.trim().split(',') : ['Off']
   const min = fieldData.mn || ''
   const max = fieldData.mx || ''
+  const inputMask = fieldData.valid.inputMask || ''
   const regexr = fieldData.valid.regexr || ''
   const flags = fieldData.valid.flags || ''
+  const globalErrMsg = globalMessages.err || {}
   const { css } = useFela()
 
-  const generateBackslashPattern = str => str.replace(/\$_bf_\$/g, '\\')
-  const escapeBackslashPattern = str => str.replace(/\\/g, '$_bf_$')
+  // const generateBackslashPattern = str => str.replace(/\$_bf_\$/g, '\\')
+  // const escapeBackslashPattern = str => str.replace(/\\/g, '$_bf_$')
 
   // function setAutoComplete(e) {
   //   if (e.target.checked) {
@@ -89,20 +86,6 @@ function TextFieldSettings() {
   //   setFields(allFields)
   //   addToBuilderHistory({ event: `Auto complete ${e.target.checked ? 'on' : 'off'}: ${adminLabel || fieldData.lbl || fldKey}`, type: 'autocomplete_on_off', state: { fields: allFields, fldKey } })
   // }
-
-  const hideAdminLabel = (e) => {
-    if (e.target.checked) {
-      fieldData.adminLbl = fieldData.lbl || fldKey
-      fieldData.adminLblHide = true
-    } else {
-      fieldData.adminLblHide = false
-      delete fieldData.adminLbl
-    }
-    const req = e.target.checked ? 'on' : 'off'
-    const allFields = create(fields, draft => { draft[fldKey] = fieldData })
-    setFields(allFields)
-    addToBuilderHistory({ event: `Admin label ${req}:  ${fieldData.lbl || adminLabel || fldKey}`, type: `adminlabel_${req}`, state: { fields: allFields, fldKey } })
-  }
 
   const hideDefalutValue = (e) => {
     if (!IS_PRO) return
@@ -136,7 +119,7 @@ function TextFieldSettings() {
       fieldData.mn = e.target.value
       if (!fieldData.err) fieldData.err = {}
       if (!fieldData.err.mn) fieldData.err.mn = {}
-      fieldData.err.mn.dflt = `<p style="margin:0">Minimum number is ${e.target.value}<p>`
+      fieldData.err.mn.dflt = globalErrMsg[fieldData.typ]?.mn || globalErrMsg?.mn || `<p style="margin:0">Minimum number is ${e.target.value}<p>`
       fieldData.err.mn.show = true
     }
     const allFields = create(fields, draft => { draft[fldKey] = fieldData })
@@ -151,7 +134,7 @@ function TextFieldSettings() {
       fieldData.mx = e.target.value
       if (!fieldData.err) fieldData.err = {}
       if (!fieldData.err.mx) fieldData.err.mx = {}
-      fieldData.err.mx.dflt = `<p style="margin:0">Maximum number is ${e.target.value}</p>`
+      fieldData.err.mx.dflt = globalErrMsg[fieldData.typ]?.mx || globalErrMsg?.mx || `<p style="margin:0">Maximum number is ${e.target.value}</p>`
       fieldData.err.mx.show = true
     }
     const allFields = create(fields, draft => { draft[fldKey] = fieldData })
@@ -170,7 +153,7 @@ function TextFieldSettings() {
       if (!fieldData.err) fieldData.err = {}
       if (!fieldData.err.regexr) fieldData.err.regexr = {}
       const ifPredefined = predefinedPatterns.find(opt => opt.val === val)
-      fieldData.err.regexr.dflt = `<p style="margin:0">${ifPredefined ? ifPredefined.msg : 'Pattern not matched'}</p>`
+      fieldData.err.regexr.dflt = ifPredefined ? `<p style="margin:0">${ifPredefined.msg}</p>` : (globalErrMsg[fieldData.typ]?.regexr || globalErrMsg?.regexr || '<p style="margin:0">Pattern not matched</p>')
       fieldData.err.regexr.show = true
       if (fieldData.typ === 'password') {
         delete fieldData.valid.validations
@@ -193,7 +176,7 @@ function TextFieldSettings() {
       if (!fieldData.err) fieldData.err = {}
       if (!fieldData.err.regexr) fieldData.err.regexr = {}
       const ifPredefined = predefinedPatterns.find(opt => opt.val === val)
-      fieldData.err.regexr.dflt = `<p style="margin:0">${ifPredefined ? ifPredefined.msg : 'Pattern not matched'}</p>`
+      fieldData.err.regexr.dflt = ifPredefined ? `<p style="margin:0">${ifPredefined.msg}</p>` : (globalErrMsg[fieldData.typ]?.regexr || globalErrMsg?.regexr || '<p style="margin:0">Pattern not matched</p>')
       fieldData.err.regexr.show = true
       if (fieldData.typ === 'password') {
         delete fieldData.valid.validations
@@ -202,6 +185,24 @@ function TextFieldSettings() {
     const allFields = create(fields, draft => { draft[fldKey] = fieldData })
     setFields(allFields)
     addToBuilderHistory({ event: `Regex Pattern updated: ${fieldData.lbl || adminLabel || fldKey}`, type: 'set_regexr', state: { fields: allFields, fldKey } })
+  }
+
+  // write a function to set the input mask as set regexr
+  const setInputMask = e => {
+    if (!IS_PRO) return
+    const { value } = e.target
+    if (value === '') {
+      delete fieldData.valid.inputMask
+    } else {
+      fieldData.valid.inputMask = escapeBackslashPattern(value)
+      if (!fieldData.err) fieldData.err = {}
+      if (!fieldData.err.inputMask) fieldData.err.inputMask = {}
+      fieldData.err.inputMask.dflt = (globalErrMsg[fieldData.typ]?.inputMask || globalErrMsg?.inputMask || `<p style="margin:0">${__('Pattern not matched')}</p>`)
+      fieldData.err.inputMask.show = true
+    }
+    const allFields = create(fields, draft => { draft[fldKey] = fieldData })
+    setFields(allFields)
+    addToBuilderHistory({ event: `Input Mask updated: ${fieldData.lbl || adminLabel || fldKey}`, type: 'set_input_mask', state: { fields: allFields, fldKey } })
   }
 
   const setFlags = e => {
@@ -257,7 +258,7 @@ function TextFieldSettings() {
       fieldData.err.regexr.dflt = generatePasswordErrMsg(validations)
       fieldData.err.regexr.show = true
     } else {
-      fieldData.err.regexr.dflt = '<p style="margin:0">Pattern not matched</p>'
+      fieldData.err.regexr.dflt = globalErrMsg[fieldData.typ]?.regexr || globalErrMsg?.regexr || '<p style="margin:0">Pattern not matched</p>'
       delete fieldData.valid.regexr
       delete fieldData.err.regexr.show
     }
@@ -344,27 +345,6 @@ function TextFieldSettings() {
     setFields(allFields)
     addToBuilderHistory({ event: `Field Input mode update to ${value}: ${fieldData.lbl || adminLabel || fldKey}`, type: 'change_input_mode', state: { fields: allFields, fldKey } })
   }
-  const setIconModel = (typ) => {
-    if (!isStyleExist(styles, fldKey, styleClasses[typ])) addDefaultStyleClasses(selectedFieldId, typ)
-    setIconFilterValue(typ, fldKey)
-    setIcnType(typ)
-    setIcnMdl(true)
-  }
-
-  const removeIcon = (iconType) => {
-    if (fieldData[iconType]) {
-      delete fieldData[iconType]
-      const allFields = create(fields, draft => { draft[fldKey] = fieldData })
-      setFields(allFields)
-      const newStyles = create(styles, draft => {
-        const { padding } = styles.fields[selectedFieldId].classes[`.${selectedFieldId}-fld`]
-        if (iconType === 'prefixIcn') draft.fields[selectedFieldId].classes[`.${selectedFieldId}-fld`].padding = paddingGenerator(padding, 'left', false)
-        if (iconType === 'suffixIcn') draft.fields[selectedFieldId].classes[`.${selectedFieldId}-fld`].padding = paddingGenerator(padding, '', false)
-      })
-      setStyles(newStyles)
-      addToBuilderHistory({ event: `${iconElementLabel[iconType]} Icon Deleted`, type: `delete_${iconType}`, state: { fldKey, fields: allFields, styles: newStyles } })
-    }
-  }
 
   const handleSuggestions = newSuggestions => {
     fieldData.suggestions = newSuggestions
@@ -413,35 +393,7 @@ function TextFieldSettings() {
 
         <FieldSettingsDivider />
 
-        <SimpleAccordion
-          id="inp-icn-stng"
-          title={__('Input Icons')}
-          className={css(FieldStyle.fieldSection)}
-          toggleAction={hideAdminLabel}
-          toggleChecked
-          open
-          // disable={!fieldData?.adminLbl}
-          isPro
-          proProperty="inputIcons"
-        >
-          <div className={css(ut.mt2)}>
-            <FieldIconSettings
-              label="Leading Icon"
-              iconSrc={fieldData?.prefixIcn}
-              styleRoute="pre-i"
-              setIcon={() => setIconModel('prefixIcn')}
-              removeIcon={() => removeIcon('prefixIcn')}
-            />
-            <FieldIconSettings
-              label="Trailing Icon"
-              iconSrc={fieldData?.suffixIcn}
-              styleRoute="suf-i"
-              setIcon={() => setIconModel('suffixIcn')}
-              removeIcon={() => removeIcon('suffixIcn')}
-            />
-
-          </div>
-        </SimpleAccordion>
+        <InputIconsSettings />
 
         <FieldSettingsDivider />
 
@@ -484,7 +436,63 @@ function TextFieldSettings() {
             <FieldSettingsDivider />
           </>
         )}
-
+        {
+          ['number', 'date', 'datetime-local', 'time', 'month', 'week'].includes(fieldData.typ) && (
+            <>
+              <SimpleAccordion id="nmbr-stng" title="Value Range(Min/Max):" className={css(FieldStyle.fieldSection)}>
+                {/* <input aria-label="Maximum number for this field" className={css(FieldStyle.input)} type="text" value={placeholder} onChange={setPlaceholder} /> */}
+                <div className={css({ mx: 5 })}>
+                  <div className={css(FieldStyle.fieldNumber, { py: '0px !important' })}>
+                    <span>{__('Minimum:')}</span>
+                    <input
+                      data-testid="nmbr-stng-min-inp"
+                      title="Minimum value for this field"
+                      aria-label="Minimum value for this field"
+                      placeholder="Type minimum value here..."
+                      // className={css(FieldStyle.inputNumber, FieldStyle.w140)}
+                      className={css(FieldStyle.input, FieldStyle.w140)}
+                      type={fieldData.typ}
+                      value={min}
+                      onChange={setMin}
+                    />
+                  </div>
+                  {/* <SingleInput inpType="number" title={__('Min:')} value={min} action={setMin} cls={css(FieldStyle.input)} /> */}
+                  {fieldData.mn && (
+                    <ErrorMessageSettings
+                      id="nmbr-stng-min"
+                      type="mn"
+                      title="Min Error Message"
+                      tipTitle={`By enabling this feature, user will see the error message when input value is less than ${fieldData.mn}`}
+                    />
+                  )}
+                  <div className={css(FieldStyle.fieldNumber, { py: '0px !important' })}>
+                    <span>{__('Maximum:')}</span>
+                    <input
+                      data-testid="nmbr-stng-max-inp"
+                      title="Maximum value for this field"
+                      aria-label="Maximum value for this field"
+                      placeholder="Type maximun value here..."
+                      className={css(FieldStyle.input, FieldStyle.w140)}
+                      type={fieldData.typ}
+                      value={max}
+                      onChange={setMax}
+                    />
+                  </div>
+                  {/* <SingleInput inpType="number" title={__('Max:')} value={max} action={setMax} cls={css(FieldStyle.input)} /> */}
+                  {fieldData.mx && (
+                    <ErrorMessageSettings
+                      id="nmbr-stng-max"
+                      type="mx"
+                      title="Max Error Message"
+                      tipTitle={`By enabling this feature, user will see the error message when input value is greater than ${fieldData.mx}`}
+                    />
+                  )}
+                </div>
+              </SimpleAccordion>
+              <FieldSettingsDivider />
+            </>
+          )
+        }
         {!(fieldData.typ === 'password'
           || fieldData.typ === 'date'
           || fieldData.typ === 'time'
@@ -578,6 +586,40 @@ function TextFieldSettings() {
                   >
                     {inputModeList.map(itm => <option key={itm} value={itm}>{itm}</option>)}
                   </select>
+                </div>
+              </SimpleAccordion>
+              <FieldSettingsDivider />
+            </>
+          )
+        }
+
+        {
+          fieldData.typ.match(/^(text|textarea|url|username|)$/) && (
+            <>
+              <SimpleAccordion
+                id="inp-mod-stng"
+                title={__('Input Mask')}
+                className={css(FieldStyle.fieldSection, FieldStyle.hover_tip)}
+                tip={tippyHelperMsg.inputMask}
+                tipProps={{ width: 250, icnSize: 17 }}
+              >
+                <div className={css(FieldStyle.placeholder)}>
+                  <AutoResizeInput
+                    id="input-mask"
+                    ariaLabel="Input mask for this Field"
+                    placeholder="e.g. (999) 999-9999"
+                    list="patterns"
+                    value={generateBackslashPattern(inputMask)}
+                    changeAction={setInputMask}
+                  />
+                  {inputMask && (
+                    <ErrorMessageSettings
+                      id="ptrn-stng-expn"
+                      type="inputMask"
+                      title="Error Message"
+                      tipTitle={tippyHelperMsg.patternsErrMsg}
+                    />
+                  )}
                 </div>
               </SimpleAccordion>
               <FieldSettingsDivider />
@@ -693,63 +735,6 @@ function TextFieldSettings() {
         <FieldSettingsDivider />
 
         {
-          fieldData.typ === 'number' && (
-            <>
-              <SimpleAccordion id="nmbr-stng" title="Number Range(Min/Max):" className={css(FieldStyle.fieldSection)}>
-                {/* <input aria-label="Maximum number for this field" className={css(FieldStyle.input)} type="text" value={placeholder} onChange={setPlaceholder} /> */}
-                <div className={css({ mx: 5 })}>
-                  <div className={css(FieldStyle.fieldNumber, { py: '0px !important' })}>
-                    <span>{__('Min:')}</span>
-                    <input
-                      data-testid="nmbr-stng-min-inp"
-                      title="Minimum number for this field"
-                      aria-label="Minimum number for this field"
-                      placeholder="Type minimum number here..."
-                      // className={css(FieldStyle.inputNumber, FieldStyle.w140)}
-                      className={css(FieldStyle.input, FieldStyle.w140)}
-                      type="number"
-                      value={min}
-                      onChange={setMin}
-                    />
-                  </div>
-                  {/* <SingleInput inpType="number" title={__('Min:')} value={min} action={setMin} cls={css(FieldStyle.input)} /> */}
-                  {fieldData.mn && (
-                    <ErrorMessageSettings
-                      id="nmbr-stng-min"
-                      type="mn"
-                      title="Min Error Message"
-                      tipTitle={`By enabling this feature, user will see the error message when input number is less than ${fieldData.mn}`}
-                    />
-                  )}
-                  <div className={css(FieldStyle.fieldNumber, { py: '0px !important' })}>
-                    <span>{__('Max:')}</span>
-                    <input
-                      data-testid="nmbr-stng-max-inp"
-                      title="Maximum number for this field"
-                      aria-label="Maximum number for this field"
-                      placeholder="Type maximun number here..."
-                      className={css(FieldStyle.input, FieldStyle.w140)}
-                      type="number"
-                      value={max}
-                      onChange={setMax}
-                    />
-                  </div>
-                  {/* <SingleInput inpType="number" title={__('Max:')} value={max} action={setMax} cls={css(FieldStyle.input)} /> */}
-                  {fieldData.mx && (
-                    <ErrorMessageSettings
-                      id="nmbr-stng-max"
-                      type="mx"
-                      title="Max Error Message"
-                      tipTitle={`By enabling this feature, user will see the error message when input number is greater than ${fieldData.mx}`}
-                    />
-                  )}
-                </div>
-              </SimpleAccordion>
-              <FieldSettingsDivider />
-            </>
-          )
-        }
-        {
           fieldData.typ.match(/^(url|number|email|)$/) && (
             <>
               <SimpleAccordion id="nmbr-stng" title="Invalid Error Message:" className={css(FieldStyle.fieldSection)}>
@@ -844,7 +829,7 @@ function TextFieldSettings() {
               <>
                 <UniqFieldSettings
                   type="userUnique"
-                  title="Validate as User Unique"
+                  title={__('Validate as User Unique')}
                   tipTitle={tippyHelperMsg.userUnique}
                   className={css(FieldStyle.fieldSection, FieldStyle.hover_tip)}
                   isUnique="show"
@@ -859,7 +844,7 @@ function TextFieldSettings() {
             <>
               <UniqFieldSettings
                 type="entryUnique"
-                title="Unique Entry"
+                title={__('Unique Entry')}
                 tipTitle={tippyHelperMsg.uniqueEntry}
                 className={css(FieldStyle.fieldSection, FieldStyle.hover_tip)}
                 isUnique="show"
@@ -904,18 +889,6 @@ function TextFieldSettings() {
         </div>
       </Modal>
 
-      <Modal
-        md
-        autoHeight
-        show={icnMdl}
-        setModal={setIcnMdl}
-        className="o-v"
-        title={__('Icons')}
-      >
-        <div className="pos-rel" />
-
-        <Icons iconType={icnType} setModal={setIcnMdl} />
-      </Modal>
     </>
   )
 }

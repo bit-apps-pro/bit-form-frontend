@@ -65,6 +65,7 @@ const setUpdateErrorMsgByDefault = (fldKey, fieldData) => {
 export const generateFieldLblForHistory = fldData => {
   if (fldData.typ === 'button') return fldData.txt
   if (fldData.typ === 'decision-box') return 'Decision Box'
+  if (fldData.typ === 'gdpr') return 'GDPR Agreement'
   if (fldData.typ === 'title') return 'Title Field'
   if (fldData.typ === 'html') return 'HTML Field'
   if (fldData.typ === 'recaptcha') return 'Recaptcha Field'
@@ -125,12 +126,15 @@ export function addNewFieldToGridLayout(layouts, fieldData, fieldSize, addPositi
 
     if (globalTheme === 'bitformDefault') {
       const btnType = processedFieldData?.btnTyp
+      const align = processedFieldData?.align
+      const fulW = processedFieldData?.fulW
+      const txtAlign = processedFieldData?.txtAlign
 
       const defaultFieldStyle = bitformDefaultTheme({
         type: processedFieldData.typ,
         fieldKey: newBlk,
         direction: themeVars['--dir'],
-        buttonOptions: { btnTyp: btnType },
+        buttonOptions: { btnTyp: btnType, align, fulW, txtAlign },
       })
       if (draftStyle.fieldsSize !== 'medium') {
         const updateStyle = updateFieldStyleByFieldSizing(defaultFieldStyle, newBlk, processedFieldData.typ, draftStyle.fieldsSize, tempThemeVars)
@@ -191,14 +195,15 @@ export function addNewFieldToGridLayout(layouts, fieldData, fieldSize, addPositi
     }))
   }
 
-  const state = { fldKey: newBlk, layouts: newLayouts, fields: newFields, styles: newStyles }
-  addToBuilderHistory({ event, type, state })
+  // add history
+  const state = { fldKey: newBlk, fields: newFields, styles: newStyles }
+  const historyData = { event, type, state }
 
   setTimeout(() => {
     reCalculateFldHeights(newBlk)
   }, 100)
 
-  return { newBlk, newLayouts }
+  return { newBlk, newLayouts, historyData }
 }
 
 export const generateNewFldName = (oldFldName, oldFLdKey, newFldKey) => {
@@ -300,7 +305,7 @@ export const cloneLayoutItem = (fldKey, layouts) => {
     draftStyle.fields[newBlk] = { ...fldStyle }
     draftStyle.fields[newBlk].classes = {}
     Object.keys(fldClasses).forEach(cls => {
-      const newClassName = cls.replace(fldKey, newBlk)
+      const newClassName = cls.replaceAll(fldKey, newBlk)
       draftStyle.fields[newBlk].classes[newClassName] = fldClasses[cls]
     })
   })
@@ -317,7 +322,7 @@ export const cloneLayoutItem = (fldKey, layouts) => {
   const event = `${generateFieldLblForHistory(fldData)} cloned`
   const type = 'clone_fld'
   const state = {
-    fldKey: newBlk, breakpoint, layout: newLayItem, fldData, layouts: newLayouts, fields: oldFields, styles: getLatestState('styles'),
+    fldKey: newBlk, breakpoint, layout: newLayItem, fldData, allLayouts: getLatestState('allLayouts'), fields: oldFields, styles: getLatestState('styles'),
   }
   addToBuilderHistory({ event, type, state })
 
@@ -373,11 +378,12 @@ export const removeLayoutItem = (fldKey, layouts) => {
   // add to history
   const event = `${generateFieldLblForHistory(fldData)} removed`
   const type = 'remove_fld'
-  const state = { fldKey, breakpoint, layout: removedLay, fldData, layouts: newLayouts, fields: tmpFields }
-  addToBuilderHistory({ event, type, state })
+  const state = { fldKey, breakpoint, fldData, fields: tmpFields }
+  const historyData = { event, type, state }
+  // addToBuilderHistory({ event, type, state })
 
   //  remove if it has any update button errors
   removeFormUpdateError(fldKey)
 
-  return newLayouts
+  return { newLayouts, historyData }
 }

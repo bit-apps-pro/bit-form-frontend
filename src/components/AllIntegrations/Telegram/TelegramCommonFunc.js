@@ -32,3 +32,5 @@ export const handleInput = (e, telegramConf, setTelegramConf) => {
   newConf.name = e.target.value
   setTelegramConf({ ...newConf })
 }
+
+export const allowUploadedFiletype = ['file-up', 'advanced-file-up', 'signature']

@@ -4,6 +4,7 @@ import { __ } from '../../../Utils/i18nwrap'
 import ConfirmModal from '../../Utilities/ConfirmModal'
 import DropDown from '../../Utilities/DropDown'
 import TableCheckBox from '../../Utilities/TableCheckBox'
+import { fileUpOrMappableImageFieldTypes } from '../../../Utils/StaticData/allStaticArrays'
 
 export default function WooCommerceProductActions({ wcConf, setWcConf, formFields }) {
   const [actionMdl, setActionMdl] = useState({ show: false })
@@ -49,7 +50,7 @@ export default function WooCommerceProductActions({ wcConf, setWcConf, formField
           titleClassName="w-10 mt-2"
           placeholder={__('Select Fields')}
           className="w-a"
-          options={formFields.filter(fld => fld.type === 'file-up').map(fl => ({ label: fl.name, value: fl.key }))}
+          options={formFields.filter(fld => fileUpOrMappableImageFieldTypes.includes(fld.type)).map(fl => ({ label: fl.name, value: fl.key }))}
           isMultiple
         />
       </ConfirmModal>

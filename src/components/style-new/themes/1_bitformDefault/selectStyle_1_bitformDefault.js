@@ -23,6 +23,7 @@ export default function selectStyle_1_BitformDefault({ fk, breakpoint, colorSche
         'font-style': 'var(--fld-f-style) !important',
         color: 'var(--fld-inp-c)!important',
         padding: '6px!important',
+        margin: 'var(--fld-m)!important',
         'line-height': '1.4 !important',
         height: '40px',
       },

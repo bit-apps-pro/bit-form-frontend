@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import BitFileUpField from 'bit-file-up-field/src/bit-file-up-field'
-import { useEffect, useRef } from 'react'
 import { useAtomValue } from 'jotai'
-import { $bits, $fields } from '../../GlobalStates/GlobalStates'
+import { useEffect, useRef } from 'react'
+import { $bits, $fields, $flags } from '../../GlobalStates/GlobalStates'
 import { getCustomAttributes, getCustomClsName, getDataDevAttrArr, selectInGrid } from '../../Utils/globalHelpers'
 import InputWrapper from '../InputWrapper'
 import RenderStyle from '../style-new/RenderStyle'
@@ -14,6 +14,8 @@ export default function FileUpload({ fieldKey, formID, styleClasses }) {
   const fields = useAtomValue($fields)
   const fieldData = fields[fieldKey]
   const bits = useAtomValue($bits)
+  const flags = useAtomValue($flags)
+  const { styleMode } = flags
 
   useEffect(() => {
     if (!fileUploadWrapElmRef?.current) {
@@ -159,7 +161,7 @@ export default function FileUpload({ fieldKey, formID, styleClasses }) {
                   data-testid={`${fieldKey}-fil-upld-inp`}
                   type="file"
                   className={`${fieldKey}-file-upload-input ${getCustomClsName(fieldKey, 'file-upload-input')}`}
-                  id={fieldKey}
+                  {...styleMode && { id: fieldKey }}
                   name="file-upload"
                   {...'req' in fieldData.valid && { required: fieldData.valid.req }}
                   {...'disabled' in fieldData.valid && { disabled: fieldData.valid.disabled }}

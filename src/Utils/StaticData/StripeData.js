@@ -18,6 +18,11 @@ export const paymentMethodType = [
     type: 'acss_debit',
     currency: ['usd'],
   },
+  {
+    name: 'MB WAY',
+    type: 'mb_way',
+    currency: ['eur'], // remove [cad, 'gbp',  'aud', 'nzd']
+  },
   // {
   //   name: 'Pre-authorized debit payments',
   //   type: 'affirm',
@@ -61,7 +66,7 @@ export const paymentMethodType = [
   {
     name: 'Card payments',
     type: 'card',
-    currency: ['usd', 'eur', 'cad', 'gbp', 'aud', 'nzd', 'cny', 'hkd', 'jpy', 'sgd', 'myr', 'dkk', 'chf', 'nok', 'sek', 'czk', 'czk', 'pln'],
+    currency: ['usd', 'aed', 'eur', 'cad', 'gbp', 'aud', 'nzd', 'cny', 'hkd', 'jpy', 'sgd', 'myr', 'dkk', 'chf', 'nok', 'sek', 'czk', 'czk', 'pln'],
   },
   // {
   //   name: 'Stripe Terminal',

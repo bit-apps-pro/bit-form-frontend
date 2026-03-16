@@ -2,8 +2,10 @@ import { useAtomValue } from 'jotai'
 import { $bits } from '../../../GlobalStates/GlobalStates'
 import TrashIcn from '../../../Icons/TrashIcn'
 import { __ } from '../../../Utils/i18nwrap'
+import { fileUpOrMappableImageFieldTypes } from '../../../Utils/StaticData/allStaticArrays'
 import { SmartTagField } from '../../../Utils/StaticData/SmartTagField'
 import MtInput from '../../Utilities/MtInput'
+import BitformFieldMapping from '../IntegrationHelpers/BitformFieldMapping'
 import { addFieldMap, delFieldMap, handleFieldMapping } from './AcfHelperFunction'
 
 export default function FieldMap({
@@ -36,6 +38,7 @@ export default function FieldMap({
 
   const isRequired = !!customFields.find(fl => fl.key === field[fldName] && fl.required)
 
+  const uploadField = ['file-up', 'advanced-file-up']
   return (
     <div className="flx mt-2 mr-1">
       <div className="flx integ-fld-wrp">
@@ -46,30 +49,28 @@ export default function FieldMap({
           onChange={(ev) => handleFieldMapping(propName, ev, i, dataConf, setDataConf)}
         >
           <option value="">{__('Select Field')}</option>
-          <optgroup label="Form Fields">
-            {type === 'post' ? (
-              <>
-                {formFields.map(f => f.type !== 'file-up33' && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)}
-                <option value="custom">{__('Custom...')}</option>
-              </>
-            ) : (
-              <>
-                {
-                  fieldType === 'file'
-                    ? formFields.map(f => f.type === 'file-up' && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)
-                    : formFields.map(f => f.type !== 'file-up' && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)
-                }
-                {fieldType !== 'file' && <option value="custom">{__('Custom...')}</option>}
-              </>
+          {type !== 'acfFile' ? (
+            <>
+              {/* {formFields.map(f => f.type !== 'file-up' && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)} */}
+              <BitformFieldMapping formFields={formFields} />
+              <option value="custom">{__('Custom...')}</option>
+            </>
+          ) : (
+            <optgroup label="Form Fields">
+              {formFields.map(f => fileUpOrMappableImageFieldTypes.includes(f.type) && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)}
+            </optgroup>
+          )}
+          {fieldType !== 'file'
+            && (
+              <optgroup label={`General Smart Codes ${isPro ? '' : '(PRO)'}`}>
+                {isPro && SmartTagField?.map(f => (
+                  <option key={`ff-rm-${f.name}`} value={f.name}>
+                    {f.label}
+                  </option>
+                ))}
+              </optgroup>
             )}
-          </optgroup>
-          <optgroup label={`General Smart Codes ${isPro ? '' : '(PRO)'}`}>
-            {isPro && SmartTagField?.map(f => (
-              <option key={`ff-rm-${f.name}`} value={f.name}>
-                {f.label}
-              </option>
-            ))}
-          </optgroup>
+
         </select>
         {field.formField === 'custom' && <MtInput onChange={e => handleCustomValue(e, i)} label={__('Custom Value')} className="mr-2" type="text" value={field.customValue} placeholder={__('Custom Value')} />}
 

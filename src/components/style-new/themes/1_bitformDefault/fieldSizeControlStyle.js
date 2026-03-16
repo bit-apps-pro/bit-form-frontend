@@ -44,7 +44,7 @@ export default function commonStyle({
         [`.${fk}-hlp-txt-pre-i`]: { width: '16px', height: '16px' },
         [`.${fk}-hlp-txt-suf-i`]: { width: '16px', height: '16px' },
 
-        ...(fieldType === 'radio' || fieldType === 'check' || fieldType === 'decision-box') && {
+        ...(['check', 'radio', 'decision-box', 'gdpr'].includes(fieldType)) && {
           [`.${fk}-bx`]: { width: '10px', height: '10px' },
           [`.${fk}-ct`]: { 'font-size': '12px' },
           ...(fieldType === 'check' || fieldType === 'radio') && {
@@ -56,7 +56,7 @@ export default function commonStyle({
             },
           },
         },
-        ...(fieldType === 'check' || fieldType === 'decision-box') && {
+        ...(['check', 'decision-box', 'gdpr'].includes(fieldType)) && {
           [`.${fk}-ck`]: { 'border-radius': '3px' },
         },
 
@@ -173,7 +173,7 @@ export default function commonStyle({
         [`.${fk}-sub-titl`]: { 'font-size': '10px' },
         [`.${fk}-hlp-txt`]: { 'font-size': '10px' },
 
-        ...(fieldType === 'radio' || fieldType === 'check' || fieldType === 'decision-box') && {
+        ...(['check', 'radio', 'decision-box', 'gdpr'].includes(fieldType)) && {
           [`.${fk}-bx`]: { width: '14px', height: '14px' },
           [`.${fk}-ct`]: { 'font-size': '14px' },
           ...(fieldType === 'radio' || fieldType === 'check') && {
@@ -185,7 +185,7 @@ export default function commonStyle({
             },
           },
         },
-        ...(fieldType === 'check' || fieldType === 'decision-box') && {
+        ...(['check', 'decision-box', 'gdpr'].includes(fieldType)) && {
           [`.${fk}-ck`]: { 'border-radius': '4px' },
         },
 
@@ -312,7 +312,7 @@ export default function commonStyle({
         [`.${fk}-sub-titl`]: { 'font-size': '12px' },
         [`.${fk}-hlp-txt`]: { 'font-size': '12px' },
 
-        ...(fieldType === 'radio' || fieldType === 'check' || fieldType === 'decision-box') && {
+        ...(['check', 'radio', 'decision-box', 'gdpr'].includes(fieldType)) && {
           [`.${fk}-bx`]: { width: '18px', height: '18px' },
           [`.${fk}-ct`]: { 'font-size': '14px' },
           ...(fieldType === 'radio' || fieldType === 'check') && {
@@ -451,7 +451,7 @@ export default function commonStyle({
         [`.${fk}-sub-titl`]: { 'font-size': '14px' },
         [`.${fk}-hlp-txt`]: { 'font-size': '14px' },
 
-        ...(fieldType === 'radio' || fieldType === 'check' || fieldType === 'decision-box') && {
+        ...(['check', 'radio', 'decision-box', 'gdpr'].includes(fieldType)) && {
           [`.${fk}-bx`]: { width: '22px', height: '22px' },
           [`.${fk}-ct`]: { 'font-size': '18px' },
           ...(fieldType === 'radio' || fieldType === 'check') && {
@@ -464,7 +464,7 @@ export default function commonStyle({
           },
         },
 
-        ...(fieldType === 'check' || fieldType === 'decision-box') && {
+        ...(['check', 'decision-box', 'gdpr'].includes(fieldType)) && {
           [`.${fk}-ck`]: { 'border-radius': '6px' },
         },
 
@@ -574,7 +574,7 @@ export default function commonStyle({
         [`.${fk}-sub-titl`]: { 'font-size': '16px' },
         [`.${fk}-hlp-txt`]: { 'font-size': '16px' },
 
-        ...(fieldType === 'radio' || fieldType === 'check' || fieldType === 'decision-box') && {
+        ...(['check', 'radio', 'decision-box', 'gdpr'].includes(fieldType)) && {
           [`.${fk}-bx`]: { width: '26px', height: '26px' },
           [`.${fk}-ct`]: { 'font-size': '20px' },
           ...(fieldType === 'radio' || fieldType === 'check') && {
@@ -586,7 +586,7 @@ export default function commonStyle({
             },
           },
         },
-        ...(fieldType === 'check' || fieldType === 'decision-box') && {
+        ...(['check', 'decision-box', 'gdpr'].includes(fieldType)) && {
           [`.${fk}-ck`]: { 'border-radius': '7px' },
         },
 

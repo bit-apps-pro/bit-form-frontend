@@ -1,0 +1,25 @@
+{
+  "private": true,
+  "name": "bit-page-lifecycle",
+  "packageManager": "pnpm@9.4.0",
+  "main": "dist/bit-page-lifecycle.min.js",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "rollup -c",
+    "build-w": "webpack --mode=production"
+  },
+  "dependencies": {
+    "page-lifecycle": "^0.1.2"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.23.6",
+    "@rollup/plugin-babel": "^5.3.1",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "rollup": "^2.79.1",
+    "rollup-plugin-livereload": "^2.0.5",
+    "rollup-plugin-serve": "^1.1.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "terser-webpack-plugin": "^5.3.9",
+    "webpack": "^5.89.0"
+  }
+}

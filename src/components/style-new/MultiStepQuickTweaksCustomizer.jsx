@@ -267,35 +267,6 @@ export default function MultiStepQuickTweaksCustomizer() {
         propertyPath="--fld-fs"
         id="fld-fs"
       />
-
-      {/* <div className={css(ut.flxcb, ut.mt3)}>
-        <span className={css(ut.fw500)}>Label Alignment</span>
-        <LabelControl id="align" />
-      </div>
-
-      <div className={css(ut.flxcb, ut.mt3)}>
-        <span className={css(ut.fw500)}>Direction Right To Left (RTL)</span>
-        <SingleToggle id="rtl" isChecked={direction === 'rtl'} action={handleDir} />
-      </div>
-
-      <div className={css(ut.flxcb, ut.mt3)}>
-        <span className={css(ut.fw500)}>Add !important rule to all styles</span>
-        <div className={css(ut.flxcb)}>
-          <SingleToggle id="important-rule" action={handleImportantStyles} isChecked={addImportantRuleToStyles} />
-          <Cooltip>
-            Add important rule to all styles to override the conflicting styles in frontend.
-          </Cooltip>
-        </div>
-      </div> */}
-
-      {/* <SimpleColorPicker
-        title="Field Wrapper Background Color"
-        subtitle="Theme Quick Tweaks Background Color"
-        value={globalBgColor}
-        stateObjName="themeColors"
-        propertyPath="--global-bg-color"
-        modalId="global-bg-clr"
-      /> */}
     </>
 
   )

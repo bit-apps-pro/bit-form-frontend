@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/jsx-props-no-spreading */
 import { useAtom, useAtomValue } from 'jotai'
-import { forwardRef, memo, useEffect, useRef, useState } from 'react'
+import { forwardRef, memo, useCallback, useEffect, useRef, useState } from 'react'
 import { Scrollbars } from 'react-custom-scrollbars-2'
 import { useFela } from 'react-fela'
 import { ReactSortable } from 'react-sortablejs'
@@ -84,10 +84,53 @@ function ColumnHide({ cols, setCols, tableCol, tableAllCols }) {
 function Table(props) {
   const [confMdl, setconfMdl] = useState({ show: false, btnTxt: '' })
   const {
-    columns, data, fetchData, refreshResp, report, rightHeader, leftHeader, leftHeaderClasses,
+    columns, data, fetchData, refreshResp, report, rightHeader, centerHeader, centerHeaderClasses, leftHeader, leftHeaderClasses, initialState,
   } = props
   const [currentReportData, updateReportData] = useAtom($reportSelector)
   const reportId = useAtomValue($reportId)
+  const defaultInitialState = initialState || {
+    pageIndex: 0,
+    hiddenColumns: [],
+    pageSize: 10,
+    sortBy: [],
+    filters: [],
+    globalFilter: '',
+    columnOrder: [],
+    conditions: [],
+  }
+  // CREATE A REF TO STORE CURRENT PAGE DATA
+  const currentPageRef = useRef([])
+
+  // DEFINE handleSelectAllPageRows BEFORE useTable
+  const handleSelectAllPageRows = useCallback(() => {
+    const currentPage = currentPageRef.current
+
+    if (!currentPage.length) return
+    const allCurrentPageSelected = currentPage.every(row => row.isSelected)
+
+    if (allCurrentPageSelected) {
+      currentPage.forEach(row => row.toggleRowSelected(false))
+    } else {
+      currentPage.forEach(row => row.toggleRowSelected(true))
+    }
+  }, [])
+
+  // Define components with useCallback to make them stable
+  const HeaderComponent = useCallback(() => {
+    const allCurrentPageSelected = currentPageRef.current.length > 0 && currentPageRef.current.every(row => row.isSelected)
+    const someCurrentPageSelected = currentPageRef.current.some(row => row.isSelected)
+    return (
+      <IndeterminateCheckbox
+        checked={allCurrentPageSelected}
+        indeterminate={someCurrentPageSelected && !allCurrentPageSelected}
+        onChange={handleSelectAllPageRows}
+      />
+    )
+  }, [handleSelectAllPageRows])
+
+  const CellComponent = useCallback(({ row }) => (
+    <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+  ), [])
 
   const {
     getTableProps,
@@ -110,7 +153,9 @@ function Table(props) {
     selectedFlatRows, // row select
     allColumns, // col hide
     setGlobalFilter,
-    state: { pageIndex, pageSize, sortBy, filters, globalFilter, hiddenColumns },
+    state: {
+      pageIndex, pageSize, sortBy, filters, globalFilter, hiddenColumns, columnOrder,
+    },
     setColumnOrder,
   } = useTable(
     {
@@ -120,16 +165,7 @@ function Table(props) {
       data,
       manualPagination: typeof props.pageCount !== 'undefined',
       pageCount: props.pageCount || Math.ceil(data.length / (props.pageSize || 10)),
-      initialState: {
-        pageIndex: 0,
-        hiddenColumns: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'hiddenColumns' in currentReportData.details) ? currentReportData.details.hiddenColumns : [],
-        pageSize: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'pageSize' in currentReportData.details) ? currentReportData.details.pageSize : 10,
-        sortBy: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'sortBy' in currentReportData.details) ? currentReportData.details.sortBy : [],
-        filters: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'filters' in currentReportData.details) ? currentReportData.details.filters : [],
-        globalFilter: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'globalFilter' in currentReportData.details) ? currentReportData.details.globalFilter : '',
-        columnOrder: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'order' in currentReportData.details) ? currentReportData.details.order : [],
-        conditions: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'conditions' in currentReportData.details) ? currentReportData.details.conditions : [],
-      },
+      initialState: defaultInitialState,
       autoResetPage: false,
       autoResetHiddenColumns: false,
       autoResetSortBy: false,
@@ -154,13 +190,16 @@ function Table(props) {
           maxWidth: 50,
           minWidth: 67,
           sticky: 'left',
-          Header: ({ getToggleAllRowsSelectedProps }) => <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />,
-          Cell: ({ row }) => <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />,
+          Header: HeaderComponent,
+          Cell: CellComponent,
         },
         ...cols,
       ])
     }) : '',
   )
+  useEffect(() => {
+    currentPageRef.current = page
+  }, [page])
   const [stateSavable, setstateSavable] = useState(false)
 
   const [search, setSearch] = useState(globalFilter)
@@ -182,9 +221,13 @@ function Table(props) {
       let details
 
       if (currentReportData && currentReportData.details && typeof currentReportData.details === 'object') {
-        details = { ...currentReportData.details, hiddenColumns, pageSize, sortBy, filters, globalFilter }
+        details = {
+          ...currentReportData.details, hiddenColumns, pageSize, sortBy, filters, globalFilter, columnOrder,
+        }
       } else {
-        details = { hiddenColumns, pageSize, sortBy, filters, globalFilter }
+        details = {
+          hiddenColumns, pageSize, sortBy, filters, globalFilter, columnOrder,
+        }
       }
       updateReportData({ ...currentReportData, details, type: 'table' })
       setstateSavable(false)
@@ -192,8 +235,7 @@ function Table(props) {
       setstateSavable(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageSize, sortBy, filters, globalFilter, hiddenColumns])
-
+  }, [pageSize, sortBy, filters, globalFilter, hiddenColumns, columnOrder])
   useEffect(() => {
     if (currentReportData && currentReportData.details && typeof currentReportData.details === 'object' && report !== undefined) {
       setHiddenColumns(currentReportData?.details?.hiddenColumns || [])
@@ -355,6 +397,9 @@ function Table(props) {
             />
           </div>
         </div>
+        <div className={`table-center-header ${centerHeaderClasses}`}>
+          {centerHeader}
+        </div>
         <div className="table-right-menu">
           {rightHeader}
         </div>
@@ -432,7 +477,7 @@ function Table(props) {
       <div className="btcd-pagination">
         <small>
           {props.countEntries >= 0 && (
-            `${__('Total Response:')}
+            `${__('Total Entries:')}
             ${props.countEntries}`
           )}
         </small>
@@ -475,10 +520,13 @@ function Table(props) {
           </button>
 
           <small className="mr-2">
-            {__('Page ')}
+            {__('Page')}
+            {' '}
             <strong>
               {pageIndex + 1}
-              {__(' of ')}
+              {' '}
+              {__('of')}
+              {' '}
               {pageOptions.length}
             </strong>
           </small>
@@ -499,6 +547,10 @@ function Table(props) {
               { label: 'Showing 30', value: 30 },
               { label: 'Showing 40', value: 40 },
               { label: 'Showing 50', value: 50 },
+              { label: 'Showing 100', value: 100 },
+              { label: 'Showing 200', value: 200 },
+              { label: 'Showing 500', value: 500 },
+              { label: 'Showing 1000', value: 1000 },
             ]}
           />
         </div>

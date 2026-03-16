@@ -113,9 +113,9 @@ export default function BorderControlMenu({ objectPaths, hslaPaths, id }) {
       const { h, s, l, a } = hslaPaths
       setThemeColors(prvColor => create(prvColor, (draft) => {
         draft[h] = v[0]
-        draft[s] = v[1]
-        draft[l] = v[2]
-        draft[a] = v[3]
+        draft[s] = `${v[1]}%`
+        draft[l] = `${v[2]}%`
+        draft[a] = `${v[3]}%`
       }))
     }
     addToBuilderHistory(generateHistoryData(element, fieldKey, pathName, newVal, { [stateObjName]: getLatestState(stateObjName) }))

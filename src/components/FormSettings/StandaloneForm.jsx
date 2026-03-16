@@ -4,7 +4,6 @@ import { useRef } from 'react'
 import { useFela } from 'react-fela'
 import { $bits, $formId, $formInfo, $updateBtn } from '../../GlobalStates/GlobalStates'
 import { IS_PRO, isObject } from '../../Utils/Helpers'
-import tutorialLinks from '../../Utils/StaticData/tutorialLinks'
 import { copyToClipboard, removeEmptyObjectValues } from '../../Utils/globalHelpers'
 import { __ } from '../../Utils/i18nwrap'
 import ut from '../../styles/2.utilities'
@@ -20,7 +19,7 @@ import SizeControlUtil from '../style-new/util-components/SizeControlUtil'
 export default function StandaloneForm() {
   const textareaRef = useRef(null)
   const [formInfo, setFormInfo] = useAtom($formInfo)
-  const { standaloneSettings = {} } = formInfo
+  const { standaloneSettings = {}, conversationalSettings = {} } = formInfo
   const setUpdateBtn = useSetAtom($updateBtn)
   const bits = useAtomValue($bits)
   const formId = useAtomValue($formId)
@@ -66,7 +65,9 @@ export default function StandaloneForm() {
   }
 
   const standaloneUrl = `${bits.siteURL}/${standaloneSettings.customUrl || `?bit-form=${formId}`}`
+  const conversationalUrl = `${bits.siteURL}/${standaloneSettings.customUrl || `?bit-conversational-form=${formId}`}`
   const iframeCode = `<iframe id="bit-form" width="100%" height="500px" style="min-height: 500px; width: 100%" frameborder="0" src="${standaloneUrl}&embedded=1"></iframe>`
+  const conversationalIframeCode = `<iframe id="bit-form" width="100%" height="500px" style="min-height: 500px; width: 100%" frameborder="0" src="${conversationalUrl}&embedded=1"></iframe>`
 
   const generateStyleObj = (path, styleProps = []) => styleProps.reduce((acc, prop) => ({ ...acc, [prop]: standaloneSettings.styles?.[path]?.[prop] || '' }), {})
 
@@ -114,7 +115,7 @@ export default function StandaloneForm() {
             </label>
           </div> */}
               <div>
-                <h4 className={css({ my: 10 })}>Custom URL</h4>
+                <h4 className={css({ my: 10 })}>{__('Custom URL')}</h4>
                 <input
                   aria-label="Custom URL"
                   type="text"
@@ -125,12 +126,12 @@ export default function StandaloneForm() {
                   value={standaloneSettings.customUrl || ''}
                 />
                 <p className={css(ut.mt1)}>
-                  <strong>Note: </strong>
-                  Please try to avoid any duplicate custom url, as it will conflict between the page and Bit Form.
+                  <strong>{__('Note:')}</strong>
+                  {__('Please try to avoid any duplicate custom url, as it will conflict between the page and Bit Form.')}
                 </p>
               </div>
               <div>
-                <h4 className={css({ my: 10 })}>Page Title</h4>
+                <h4 className={css({ my: 10 })}>{__('Page Title')}</h4>
                 <input
                   aria-label="Page Title"
                   type="text"
@@ -142,17 +143,37 @@ export default function StandaloneForm() {
                 />
               </div>
               <div>
-                <h4 className={css({ my: 10 })}>Share via Direct URL</h4>
+                <h4 className={css({ my: 10 })}>{__('Share via Direct URL')}</h4>
                 <CopyText
                   value={standaloneUrl}
                   className="field-key-cpy w-12 ml-0"
                   readOnly
                 />
               </div>
+              {
+                conversationalSettings.enable && (
+                  <div>
+                    <h4 className={css({ my: 10 })}>{__('Share via Direct URL (Conversational Form)')}</h4>
+                    <CopyText
+                      value={conversationalUrl}
+                      className="field-key-cpy w-12 ml-0"
+                      readOnly
+                    />
+                  </div>
+                )
+              }
               <div>
-                <h4 className={css(ut.mb2)}>Embed via HTML Code</h4>
+                <h4 className={css(ut.mb2)}>{__('Embed via HTML Code')}</h4>
                 <textarea ref={textareaRef} rows={4} readOnly className={css(ut.w10, st.embed)} onClick={() => copyToClipboard({ ref: textareaRef })} value={iframeCode} />
               </div>
+              {
+                conversationalSettings.enable && (
+                  <div>
+                    <h4 className={css(ut.mb2)}>{__('Embed via HTML Code (Conversational Form)')}</h4>
+                    <textarea ref={textareaRef} rows={4} readOnly className={css(ut.w10, st.embed)} onClick={() => copyToClipboard({ ref: textareaRef })} value={conversationalIframeCode} />
+                  </div>
+                )
+              }
             </div>
             <div className={css(ut.w3, ut.pl4)}>
               <h4 className={css({ my: 10 })}>Styling</h4>

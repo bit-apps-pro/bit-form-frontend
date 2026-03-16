@@ -18,6 +18,7 @@ function bitFormSubmitAction(e) {
 
   if (typeof advancedFileHandle !== 'undefined') formData = advancedFileHandle(props, formData)
   if (typeof decisionFldHandle !== 'undefined') formData = decisionFldHandle(props, formData)
+  if (typeof hideChildFldHandle !== 'undefined') formData = hideChildFldHandle(props, formData)
   if (props.GCLID) {
     formData.set('GCLID', props.GCLID)
   }
@@ -56,6 +57,7 @@ function bfSubmitFetch(props, formData) {
     uri.searchParams.append('_ajax_nonce', props.nonce || '')
     uri.searchParams.append('entryID', props.entryId)
     uri.searchParams.append('formID', props.formId)
+    uri.searchParams.append('entryToken', props.entryToken || '')
   }
   return fetch(uri, {
     method: 'POST',
@@ -68,7 +70,7 @@ function submitResponse(resp, contentId, formData) {
       (response) => new Promise((resolve, reject) => {
         if (response.staus > 400) {
           const errorEvent = new CustomEvent('bf-form-submit-error', {
-            detail: { formId: contentId, errors: result.data },
+            detail: { formId: contentId, errors: response.data },
           })
           bfSelect(`#form-${contentId}`).dispatchEvent(errorEvent)
           response.staus === 500
@@ -79,7 +81,7 @@ function submitResponse(resp, contentId, formData) {
     )
     .then((result) => {
       const successEvent = new CustomEvent('bf-form-submit-success', {
-        detail: { formId: contentId, entryId: result.entryId, formData },
+        detail: { formId: contentId, entryId: result.data.entry_id, formData },
       })
       bfSelect(`#form-${contentId}`).dispatchEvent(successEvent)
       let responsedRedirectPage = null
@@ -105,6 +107,7 @@ function submitResponse(resp, contentId, formData) {
           }
           if (result.data.new_nonce) {
             newNonce = result.data.new_nonce
+            props.nonce = newNonce
           }
           setBFMsg({
             contentId,
@@ -189,7 +192,8 @@ function triggerIntegration(hitCron, newNonce, contentId) {
 }
 
 function disabledSubmitButton(contentId, disabled) {
-  bfSelect('button[type="submit"]', bfSelect(`#form-${contentId}`)).disabled = disabled
+  const submitButton = bfSelect('button[type="submit"]', bfSelect(`#form-${contentId}`))
+  if (submitButton) submitButton.disabled = disabled
   const spinner = bfSelect('button[type="submit"] span', bfSelect(`#form-${contentId}`))
   if (spinner) spinner.classList.toggle('d-none')
 }

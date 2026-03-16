@@ -12,6 +12,9 @@ import { getAllGroups } from './MailerLiteCommonFunc'
 export default function MailerLiteActions({ mailerLiteConf, setMailerLiteConf, formFields }) {
   const [actionMdl, setActionMdl] = useState({ show: false, action: () => { } })
   const [isLoading, setIsLoading] = useState(false)
+  console.log({
+    mailerLiteConf,
+  })
 
   const actionHandler = (e, type) => {
     const newConf = { ...mailerLiteConf }
@@ -97,10 +100,41 @@ export default function MailerLiteActions({ mailerLiteConf, setMailerLiteConf, f
   return (
     <>
       <div className="pos-rel d-flx w-8">
-        <TableCheckBox checked={mailerLiteConf?.group_ids.length || false} onChange={(e) => actionHandler(e, 'group')} className="wdt-200 mt-4 mr-2" value="group" title={__('Groups')} subTitle={__('Add Groups')} />
-        <TableCheckBox checked={mailerLiteConf?.mailer_lite_type || false} onChange={(e) => actionHandler(e, 'mailer_lite_type')} className="wdt-200 mt-4 mr-2" value="type" title={__('Type')} subTitle={__('Add Type')} />
-        <TableCheckBox checked={mailerLiteConf.actions?.double_opt_in || false} onChange={(e) => actionHandler(e, 'double_opt_in')} className="wdt-200 mt-4 mr-2" value="double_opt_in" title={__('Double Opt-in')} subTitle={__('Add Double Opt-in')} />
-        <TableCheckBox checked={mailerLiteConf.actions?.update || false} isInfo={mailerLiteConf?.group_ids.length} onChange={(e) => actionHandler(e, 'update')} className="wdt-200 mt-4 mr-2" value="user_share" title={__('Update Subscriber')} subTitle={__('Update Responses with MailerLite exist Subscriber?')} />
+        <TableCheckBox
+          checked={mailerLiteConf?.group_ids.length || false}
+          onChange={(e) => actionHandler(e, 'group')}
+          className="wdt-200 mt-4 mr-2"
+          value="group"
+          title={__('Groups')}
+          subTitle={__('Add Groups')}
+        />
+        <TableCheckBox
+          checked={mailerLiteConf?.mailer_lite_type || false}
+          onChange={(e) => actionHandler(e, 'mailer_lite_type')}
+          className="wdt-200 mt-4 mr-2"
+          value="type"
+          title={__('Status')}
+          subTitle={__('Add Subscriber Status')}
+        />
+        {mailerLiteConf?.version !== 'v2' && (
+          <TableCheckBox
+            checked={mailerLiteConf.actions?.double_opt_in || false}
+            onChange={(e) => actionHandler(e, 'double_opt_in')}
+            className="wdt-200 mt-4 mr-2"
+            value="double_opt_in"
+            title={__('Double Opt-in')}
+            subTitle={__('Add Double Opt-in')}
+          />
+        )}
+        <TableCheckBox
+          checked={mailerLiteConf.actions?.update || false}
+          isInfo={mailerLiteConf?.group_ids.length}
+          onChange={(e) => actionHandler(e, 'update')}
+          className="wdt-200 mt-4 mr-2"
+          value="user_share"
+          title={__('Update Subscriber')}
+          subTitle={__('Update Responses with MailerLite exist Subscriber?')}
+        />
       </div>
       <ConfirmModal
         className="custom-conf-mdl"

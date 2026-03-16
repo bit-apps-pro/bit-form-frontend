@@ -18,8 +18,8 @@ export default function GCLID() {
   const [gclidConf, setGclidConf] = useState({
     name: 'Gclid',
     type: 'Google',
-    clientId: process.env.NODE_ENV === 'development' ? '937096431638-4g5cmja77mlr790bun03l002qnj7n02c.apps.googleusercontent.com' : '',
-    clientSecret: process.env.NODE_ENV === 'development' ? '1S9kl49CQJ9ainPhhLTwZUUU' : '',
+    clientId: process.env.NODE_ENV === 'development' ? '' : '',
+    clientSecret: process.env.NODE_ENV === 'development' ? '' : '',
     clientCustomerId: process.env.NODE_ENV === 'development' ? '' : '',
   })
   const [snack, setSnackbar] = useState({ show: false })
@@ -50,14 +50,16 @@ export default function GCLID() {
       return
     }
     setisLoading(true)
-    const apiEndpoint = `https://accounts.google.com/o/oauth2/v2/auth?scope=${encodeURIComponent('https://www.googleapis.com/auth/adwords')}&access_type=offline&prompt=consent&response_type=code&state=${encodeURIComponent(window.location.href)}/redirect&redirect_uri=${encodeURIComponent(bits.googleRedirectURL)}&client_id=${gclidConf.clientId}`
+    const apiEndpoint = `https://accounts.google.com/o/oauth2/v2/auth?scope=${encodeURIComponent('https://www.googleapis.com/auth/adwords')}&access_type=offline&prompt=consent&response_type=code&state=${encodeURIComponent(window.location.href)}/?&redirect_uri=${encodeURIComponent(bits.googleRedirectURL)}&client_id=${gclidConf.clientId}`
     const authWindow = window.open(apiEndpoint, '', 'width=400,height=609,toolbar=off')
     const popupURLCheckTimer = setInterval(() => {
+      const gclidInfo = localStorage.getItem('__bitforms_gclid')
+
       if (authWindow.closed) {
         clearInterval(popupURLCheckTimer)
         let grantTokenResponse = {}
         let isauthRedirectLocation = false
-        const gclidInfo = localStorage.getItem('__bitforms_gclid')
+
         if (gclidInfo) {
           isauthRedirectLocation = true
           grantTokenResponse = JSON.parse(gclidInfo)
@@ -139,6 +141,16 @@ export default function GCLID() {
         <SnackMsg snack={snack} setSnackbar={setSnackbar} />
 
         <h2>{__('Google Ads')}</h2>
+        <small className="d-blk mt-1">
+          <a
+            className="btcd-link"
+            href="https://bitapps.pro/docs/bit-form/integrations/google-ads-integrations/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {__('Learn more about Google Ads configuration')}
+          </a>
+        </small>
         <br />
         <div className="btcd-hr" />
 

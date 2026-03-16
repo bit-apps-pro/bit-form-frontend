@@ -6,6 +6,9 @@ const style = {
     flxp: 1,
     gap: '10px',
   },
+  availablePayment: {
+    mt: 8,
+  },
   itegCard: {
     w: 240,
     b: '2px solid #e3eff8 ',

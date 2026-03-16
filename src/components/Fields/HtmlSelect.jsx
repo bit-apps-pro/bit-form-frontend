@@ -38,7 +38,7 @@ export default function HtmlSelect({ fieldKey, formID, styleClasses }) {
             </option>
           )}
           {
-            fieldData.opt.map(opt => {
+            fieldData?.opt?.map(opt => {
               if (opt.type) {
                 return (
                   <optgroup
@@ -49,7 +49,7 @@ export default function HtmlSelect({ fieldKey, formID, styleClasses }) {
                     {...opt.disabled && { disabled: opt.disabled }}
                     {... { ...getCustomAttributes(fieldKey, 'slct-opt-grp') }}
                   >
-                    {opt.childs.map(opt2 => (
+                    {opt?.childs?.map(opt2 => (
                       <option
                         data-dev-slct-optn={fieldKey}
                         className={`${fieldKey}-slct-optn ${getCustomClsName(fieldKey, 'slct-optn')}`}

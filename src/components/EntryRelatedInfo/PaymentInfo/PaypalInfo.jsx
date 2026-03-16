@@ -23,6 +23,7 @@ export default function PaypalInfo({ paymentInfo, payInfoFound }) {
   const isSubscription = 'subscriber' in paypalResp
   const userInfo = isSubscription ? paypalResp.subscriber : paypalResp.payer
   const amountInfo = isSubscription ? paypalResp?.billing_info?.last_payment?.amount : paypalResp?.purchase_units?.[0]?.amount
+  const transactionID = paypalResp?.purchase_units?.[0]?.payments?.captures[0]?.id
 
   return (
     <div>
@@ -42,7 +43,7 @@ export default function PaypalInfo({ paymentInfo, payInfoFound }) {
               <br />
               <br />
               <small>
-                <b>{`${__('Transaction ID')}: ${paypalResp.id}`}</b>
+                <b>{`${__('Transaction ID')}: ${transactionID}`}</b>
               </small>
               <h3>{`${userInfo.name.given_name} ${userInfo.name.surname}`}</h3>
               <small>{userInfo.email_address}</small>

@@ -114,7 +114,10 @@ const textFldCssProps = {
   },
   fld: {
     states: ['hover', 'focus', 'disabled', 'read-only'],
-    properties: { ...fieldWrpCssProps },
+    properties: {
+      ...fieldWrpCssProps,
+      'accent-color': '',
+    },
   },
   'lbl-wrp': {
     states: ['hover'],
@@ -262,7 +265,7 @@ const formCommonCssProps = {
     'background-repeat': true,
     'background-size': true,
   },
-  // 'background-color': '',
+  'background-color': '',
   color: '',
   padding: '5px',
   margin: '5px',
@@ -295,19 +298,19 @@ const editorConfig = {
     properties: { ...formCommonCssProps },
   },
   'stp-hdr': {
-    states: ['hover', 'active', 'disabled', 'complete'],
+    states: ['hover', 'active', 'disabled', 'completed'],
     properties: { ...formCommonCssProps },
   },
   'stp-icn-cntn': {
-    states: ['hover', 'active', 'disabled', 'complete'],
+    states: ['hover', 'active', 'disabled', 'completed'],
     properties: { ...formCommonCssProps },
   },
   'stp-hdr-lbl': {
-    states: ['hover', 'active', 'disabled', 'complete'],
+    states: ['hover', 'active', 'disabled', 'completed'],
     properties: { ...formCommonCssProps },
   },
   'stp-hdr-sub-titl': {
-    states: ['hover', 'active', 'disabled', 'complete'],
+    states: ['hover', 'active', 'disabled', 'completed'],
     properties: { ...formCommonCssProps },
   },
   'stp-wrpr': {
@@ -747,6 +750,7 @@ const editorConfig = {
   password: { ...textFldCssProps },
   textarea: { ...textFldCssProps },
   email: { ...textFldCssProps },
+  range: { ...textFldCssProps },
   check: {
     ...textFldCssProps,
     cw: {
@@ -825,6 +829,43 @@ const editorConfig = {
     },
 
   },
+  gdpr: {
+    ...textFldCssProps,
+    cw: {
+      states: ['hover'],
+      properties: { ...chackProps },
+    },
+    cc: {
+      states: ['hover'],
+      properties: { ...chackProps },
+    },
+    cl: {
+      states: ['hover'],
+      properties: {
+        ...chackProps,
+        'font-size': '',
+        'font-weight': '',
+        'font-style': '',
+      },
+    },
+    bx: {
+      states: ['hover', 'focus', 'checked'],
+      properties: { ...chackProps },
+    },
+    ct: {
+      states: ['hover', 'focus'],
+      properties: {
+        ...chackProps,
+        'font-size': '',
+        'font-weight': '',
+        'font-style': '',
+        'line-height': '',
+        'word-spacing': '',
+        'letter-spacing': '',
+      },
+    },
+
+  },
   radio: {
     ...textFldCssProps,
     cw: {
@@ -865,6 +906,7 @@ const editorConfig = {
       properties: { ...fieldWrpCssProps },
     },
   },
+  hidden: { ...textFldCssProps },
   title: {
     'fld-wrp': {
       states: ['hover'],
@@ -904,6 +946,12 @@ const editorConfig = {
     'sub-titl-suf-i': {
       states: ['hover'],
       properties: { ...iconCssProps },
+    },
+  },
+  spacer: {
+    'fld-wrp': {
+      states: ['hover'],
+      properties: { ...fieldWrpCssProps },
     },
   },
   divider: {
@@ -959,6 +1007,18 @@ const editorConfig = {
     'stripe-wrp .stripe-pay-btn': {
       states: ['hover', 'focus', 'active'],
       properties: { ...buttonCssProps },
+    },
+  },
+  mollie: {
+    'mollie-btn': {
+      states: ['hover', 'focus', 'active'],
+      properties: { ...buttonCssProps },
+    },
+    'mollie-icn': {
+      properties: {
+        width: '',
+        height: '',
+      },
     },
   },
   button: {
@@ -1196,6 +1256,12 @@ const editorConfig = {
       properties: { ...fieldWrpCssProps },
     },
   },
+  hcaptcha: {
+    'fld-wrp': {
+      states: ['hover'],
+      properties: { ...fieldWrpCssProps },
+    },
+  },
   'html-select': {
     ...textFldCssProps,
     'slct-optn': {
@@ -1208,6 +1274,12 @@ const editorConfig = {
     },
   },
   html: {
+    'fld-wrp': {
+      states: ['hover'],
+      properties: { ...fieldWrpCssProps },
+    },
+  },
+  shortcode: {
     'fld-wrp': {
       states: ['hover'],
       properties: { ...fieldWrpCssProps },
@@ -2697,9 +2769,11 @@ const editorConfig = {
       states: [],
       properties: {
         ...fieldWrpCssProps,
+        ...iconCssProps,
       },
     },
 
   },
+  'advanced-datetime': { ...textFldCssProps },
 }
 export default editorConfig

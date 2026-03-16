@@ -1,0 +1,10 @@
+
+> bit-page-lifecycle@1.0.0 build /home/maruf/Local Sites/bit-formorg/app/public/wp-content/plugins/bitform/frontend-dev/packages/bit-page-lifecycle
+> rollup -c
+
+[36m
+[1msrc/bit-page-lifecycle.js[22m → [1mdist/bit-page-lifecycle.min.js[22m...[39m
+Browserslist: browsers data (caniuse-lite) is 11 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[32mcreated [1mdist/bit-page-lifecycle.min.js[22m in [1m1.9s[22m[39m

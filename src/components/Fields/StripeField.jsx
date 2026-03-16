@@ -145,7 +145,13 @@ export default function StripeField({ fieldKey, formID, attr, isBuilder, styleCl
             </button>
           </div>
         )}
-        {(!isLoading && (!loaded || !publishableKey)) && <p>Select a config from field settings to render the Stripe.</p>}
+        {(!isLoading && (!loaded || !publishableKey)) && (
+          <p>
+            Please select a Stripe account from
+            <strong> Field Settings </strong>
+            to load Stripe field.
+          </p>
+        )}
         {isLoading && <p>Loading Stripe...</p>}
       </InputWrapper>
     </>

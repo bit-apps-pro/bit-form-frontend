@@ -1,6 +1,5 @@
 /* eslint-disable no-useless-escape */
 import colorMinify from './colorMinify'
-import deepCopy from './deepCopy'
 
 export function isFloat(n) {
   return Number(n) === n && n % 1 !== 0
@@ -227,11 +226,31 @@ export const expressCalcFunc = (calcStr, cssVarDefinations = {}) => {
     const val1 = Number(variableDefinedArr[0].replace(/[^\.\d\s]/g, ''))
     const val2 = Number(variableDefinedArr[2].replace(/[^\.\d\s]/g, ''))
     // eslint-disable-next-line no-eval
-    const resultInNum = eval(`${val1}${oparator}${val2}`)
+    const resultInNum = calculate(val1, oparator, val2)
     return `${resultInNum}${unit}`
   }
 
   return `calc(${variableDefinedArr[0]} ${variableDefinedArr[1]} ${variableDefinedArr[2]})`
+}
+
+const calculate = (val1, operator, val2) => {
+  const num1 = parseFloat(val1)
+  const num2 = parseFloat(val2)
+
+  switch (operator) {
+    case '+':
+      return num1 + num2
+    case '-':
+      return num1 - num2
+    case '*':
+      return num1 * num2
+    case '/':
+      return num2 !== 0 ? num1 / num2 : NaN // Avoid division by zero
+    case '%':
+      return num1 % num2
+    default:
+      throw new Error('Invalid operator')
+  }
 }
 
 export const expressMultipleCalcFuncWithExt = (str, cssVarDefinations = {}) => {
@@ -271,8 +290,9 @@ export const expressCssVar = (cssVarStr, cssVarDefinations = {}) => {
     return { value: cssVarStr, isFallbackValue: false }
   }
 
-  let tmpCssVarStr = cssVarStr; let
-    isFallbackValue = false
+  let tmpCssVarStr = cssVarStr
+  let isFallbackValue = false
+  let skipVarReplace = false
 
   cssVars.forEach(varStr => {
     // eslint-disable-next-line prefer-const
@@ -287,9 +307,17 @@ export const expressCssVar = (cssVarStr, cssVarDefinations = {}) => {
       varName = varName.replace(/var|\(|\)/g, '')
     }
 
+    // --TODO-- handle reserved vars
+    // reserveVars : [/^--bfv/, '', ]
+
     let isTargetVarNameFound = false
     const targetVarName = varName.trim()
     let cssVarValue = cssVarDefinations[targetVarName]
+    if (targetVarName.startsWith('--bfv-')) {
+      cssVarValue = `var(${targetVarName})`
+      isTargetVarNameFound = true
+      skipVarReplace = true
+    }
     if (cssVarValue !== undefined && cssVarValue !== null) {
       isTargetVarNameFound = true
       if (typeof cssVarValue === 'number') {
@@ -342,7 +370,7 @@ export const expressCssVar = (cssVarStr, cssVarDefinations = {}) => {
       console.error('missing css variable', cssVarValue, cssVarStr)
     }
   })
-  if (tmpCssVarStr === cssVarStr) {
+  if (tmpCssVarStr === cssVarStr && !skipVarReplace) {
     console.error('missing css variable', cssVarStr)
     return { value: '', isFallbackValue }
   }
@@ -385,16 +413,16 @@ export const optimizeQuadValue = (str) => {
     return strArr[0] + hasImportant
   }
   if (strArr.length === 2) {
-    return `${strArr[0]} ${strArr[1]}${hasImportant}`
+    return `${strArr[0]} ${strArr[1]}${hasImportant} `
   }
   if (strArr.length === 3 && strArr[0] === strArr[2]) {
-    return `${strArr[0]} ${strArr[1]}${hasImportant}`
+    return `${strArr[0]} ${strArr[1]}${hasImportant} `
   }
   if (strArr.length === 4 && strArr.every((val, i, arr) => val === arr[0])) {
     return strArr[0] + hasImportant
   }
   if (strArr.length === 4 && strArr[0] === strArr[2] && strArr[1] === strArr[3]) {
-    return `${strArr[0]} ${strArr[1]}${hasImportant}`
+    return `${strArr[0]} ${strArr[1]}${hasImportant} `
   }
 
   return trimmedStr + hasImportant

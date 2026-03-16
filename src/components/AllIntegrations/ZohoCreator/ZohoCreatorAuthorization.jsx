@@ -1,34 +1,20 @@
-import { useState } from 'react'
 import { useAtomValue } from 'jotai'
+import { useEffect, useState } from 'react'
 import { $bits } from '../../../GlobalStates/GlobalStates'
 import { __ } from '../../../Utils/i18nwrap'
 import tutorialLinks from '../../../Utils/StaticData/tutorialLinks'
 import CopyText from '../../Utilities/CopyText'
 import TutorialLink from '../../Utilities/TutorialLink'
 import AuthorizeBtn from '../AuthorizeBtn'
-import NextBtn from '../NextBtn'
-import { handleAuthorize, refreshApplications } from './ZohoCreatorCommonFunc'
+import { handleAuthorize } from './ZohoCreatorCommonFunc'
 
 export default function ZohoCreatorAuthorization({
-  formID, creatorConf, setCreatorConf, step, setStep, isLoading, setisLoading, setSnackbar, redirectLocation, isInfo,
+  formID, creatorConf, setCreatorConf, step, setStep, isLoading, setisLoading, setSnackbar, redirectLocation, isInfo, authorizedAction,
 }) {
   const bits = useAtomValue($bits)
   const { siteURL } = bits
   const [isAuthorized, setisAuthorized] = useState(false)
   const [error, setError] = useState({ dataCenter: '', clientId: '', clientSecret: '', ownerEmail: '' })
-  const nextPage = () => {
-    setTimeout(() => {
-      document.getElementById('btcd-settings-wrp').scrollTop = 0
-    }, 300)
-    if (!creatorConf.accountOwner) {
-      setError({ accountOwner: __('Account Owner Name is mandatory!') })
-      return
-    }
-    setStep(2)
-    if (!creatorConf.department) {
-      refreshApplications(formID, creatorConf, setCreatorConf, setisLoading, setSnackbar)
-    }
-  }
 
   const handleInput = e => {
     const newConf = { ...creatorConf }
@@ -39,13 +25,19 @@ export default function ZohoCreatorAuthorization({
     setCreatorConf(newConf)
   }
 
+  useEffect(() => {
+    if (isAuthorized) {
+      authorizedAction()
+    }
+  }, [isAuthorized])
+
   return (
     <>
       <TutorialLink
         title={tutorialLinks.zohoCreator.title}
         youTubeLink={tutorialLinks.zohoCreator.link}
       />
-      <div className="btcd-stp-page" style={{ ...{ width: step === 1 && 900 }, ...{ height: step === 1 && `${100}%` } }}>
+      <div className="btcd-stp-page" style={{ width: 900, height: `${100}%` }}>
         <div className="mt-3"><b>{__('Integration Name:')}</b></div>
         <input
           className="btcd-paper-inp w-6 mt-1"
@@ -77,7 +69,7 @@ export default function ZohoCreatorAuthorization({
         <div className="mt-3"><b>{__('Homepage URL:')}</b></div>
         <CopyText value={siteURL} className="field-key-cpy w-6 ml-0" readOnly={isInfo} />
 
-        <div className="mt-3"><b>{__('Authorized Redirect URIs:', 'bitform')}</b></div>
+        <div className="mt-3"><b>{__('Authorized Redirect URIs:', 'bit-form')}</b></div>
         <CopyText value={redirectLocation || `${bits.zohoRedirectURL}`} className="field-key-cpy w-6 ml-0" readOnly={isInfo} />
 
         <small className="d-blk mt-5">
@@ -128,7 +120,6 @@ export default function ZohoCreatorAuthorization({
           disabled={isInfo}
         />
         <div style={{ color: 'red' }}>{error.accountOwner}</div>
-        zohoCreator
         {!isInfo && (
           <>
             {/* <button onClick={() => handleAuthorize(creatorConf, setCreatorConf, setError, setisAuthorized, setisLoading, setSnackbar)} className={`${css(app.btn)} btcd-btn-lg green sh-sm flx`} type="button" disabled={isAuthorized}>
@@ -151,10 +142,10 @@ export default function ZohoCreatorAuthorization({
               {__('Next')}
               <BackIcn className="ml-1 rev-icn" />
             </button> */}
-            <NextBtn
+            {/* <NextBtn
               nextPageHandler={() => nextPage()}
               disabled={!isAuthorized}
-            />
+            /> */}
           </>
         )}
       </div>

@@ -1,6 +1,6 @@
+import { useAtomValue } from 'jotai'
 import MultiSelect from 'react-multiple-select-dropdown-lite'
 import 'react-multiple-select-dropdown-lite/dist/index.css'
-import { useAtomValue } from 'jotai'
 import { $bits, $fields, $fieldsArr } from '../../GlobalStates/GlobalStates'
 import TrashIcn from '../../Icons/TrashIcn'
 import { __ } from '../../Utils/i18nwrap'
@@ -8,7 +8,7 @@ import Button from '../Utilities/Button'
 import DropDown from '../Utilities/DropDown'
 import MtInput from '../Utilities/MtInput'
 import MtSelect from '../Utilities/MtSelect'
-import { disabledLogicType, getLogicOptionByFieldType, additionalFields } from './helper'
+import { additionalFields, disabledLogicType, getLogicOptionByFieldType } from './helper'
 
 function LogicBlock({
   fieldVal, delLogic, lgcInd, subLgcInd, subSubLgcInd, value, changeLogic, logicValue, changeValue, changeFormField,
@@ -27,7 +27,7 @@ function LogicBlock({
   let fieldKey = ''
   formFields?.find?.(itm => {
     if (itm.key === fieldVal) {
-      if (itm.type.match(/^(check|radio)$/)) {
+      if (itm.type.match(/^(check|radio|select|html-select|image-select)$/)) {
         type = 'text'
       } else {
         type = itm.type
@@ -43,10 +43,22 @@ function LogicBlock({
     let options = []
 
     if (fldType === 'select') {
-      options = fields?.[fieldKey]?.opt
-    } else {
-      options = fields?.[fieldKey]?.opt?.map(opt => ({ label: opt.lbl, value: (opt.val || opt.lbl) }))
+      const { optionsList } = fields?.[fieldKey] || {}
+      return optionsList.reduce((acc, optObj) => {
+        const key = Object.keys(optObj)[0]
+        const val = Object.values(optObj)[0]
+        acc.push({ type: 'group', title: key, childs: val.map(opt => ({ label: opt.lbl, value: (opt.val || opt.lbl) })) })
+        return acc
+      }, [])
     }
+    if (['decision-box', 'gdpr'].includes(fldType)) {
+      const fldData = fields?.[fieldKey]
+      return [
+        { label: fldData?.msg?.checked, value: fldData?.msg?.checked },
+        { label: fldData?.msg?.unchecked, value: fldData?.msg?.unchecked },
+      ]
+    }
+    options = fields?.[fieldKey]?.opt?.map(opt => ({ label: opt.lbl, value: (opt.val || opt.lbl) }))
 
     if (fldType === 'user') {
       options = userMail?.map(opt => ({ label: opt.label, value: opt.id }))
@@ -87,8 +99,8 @@ function LogicBlock({
         action={val => changeLogic(val, lgcInd, subLgcInd, subSubLgcInd)}
         placeholder={__('Logic')}
         value={logicValue || ''}
-        titleClassName="w-7 ml-2 "
-        className="mr-2 report-drpdwn w-10"
+        titleClassName="w-7"
+        className="mr-2 report-drpdwn w-10 mt-0"
         options={getLogicOptionByFieldType(type, fields, fieldKey)}
       />
 

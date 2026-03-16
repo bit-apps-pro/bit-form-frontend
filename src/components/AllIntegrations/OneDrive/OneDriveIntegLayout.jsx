@@ -1,14 +1,43 @@
-import { useEffect } from 'react'
+import PlusIcn from '../../../Icons/PlusIcn'
 import { __ } from '../../../Utils/i18nwrap'
 import Loader from '../../Loaders/Loader'
+import { getConnectedAppList } from '../integrationHelper'
 import OneDriveActions from './OneDriveActions'
 import { getAllOneDriveFolders, getSingleOneDriveFolders, handleInput } from './OneDriveCommonFunc'
 
 export default function OneDriveIntegLayout({
-  formID, formFields, oneDriveConf, setOneDriveConf, isLoading, setIsLoading, setSnackbar,
+  formID, formFields, oneDriveConf, setOneDriveConf, isLoading, setIsLoading, setSnackbar, setShowMdl,
 }) {
   return (
     <>
+      <br />
+      <b className="wdt-150 d-in-b mr-2">{__('Authorize App:')}</b>
+      <select
+        className="btcd-paper-inp w-7"
+        value={oneDriveConf.parentAppId}
+        onChange={(e) => handleInput(e, oneDriveConf, setOneDriveConf, formID, setIsLoading, setSnackbar)}
+        name="parentAppId"
+      >
+        <option value="">{__('Select an App')}</option>
+        {
+          getConnectedAppList([oneDriveConf.type]).map(app => (
+            <option key={app.id} value={app.id}>
+              {app.integration_name}
+            </option>
+          ))
+        }
+      </select>
+      <button
+        aria-label="Add New"
+        onClick={() => setShowMdl(true)}
+        className="icn-btn sh-sm ml-2 mr-2 tooltip"
+        style={{ '--tooltip-txt': '"Add New Authorize App"' }}
+        type="button"
+        disabled={isLoading}
+      >
+        <PlusIcn size={18} />
+      </button>
+      <br />
       <br />
       <b className="wdt-150 d-in-b mr-2">Folder:</b>
       <select

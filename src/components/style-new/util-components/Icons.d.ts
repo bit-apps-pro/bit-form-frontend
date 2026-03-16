@@ -6,4 +6,6 @@ export type IconSettingsProps = {
   iconSrc?: string;
   setIconHandler: (src: string) => void;
   removeIconHandler?: () => void;
+  uploadLbl?: string;
+  selected?: string;
 };

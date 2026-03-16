@@ -4,9 +4,9 @@ const addEventsToValidateFocusAndWorkflows = (formContentId = null) => {
     Object.keys(allContentids).forEach((contentId) => {
       const props = window.bf_globals[contentId]
       const form = document.getElementById(`form-${contentId}`)
-      Object.values(props.fields).forEach(fldData => {
+      Object.values(props?.fields || {}).forEach(fldData => {
         const fldName = fldData.typ === 'check' || (fldData.typ === 'image-select' && fldData.inpType === 'checkbox') ? `${fldData.fieldName}[]` : fldData.fieldName
-        const onaction = ['check', 'radio', 'decision-box', 'rating', 'image-select'].includes(fldData.typ) ? 'input' : 'blur'
+        const onaction = ['check', 'radio', 'decision-box', 'gdpr', 'rating', 'image-select'].includes(fldData.typ) ? 'input' : 'blur'
         form.querySelectorAll(`[name='${fldName}']`).forEach(elm => {
           if (props.validateFocusLost) {
             elm.addEventListener(onaction, e => validateForm({ input: e.target }))
@@ -15,7 +15,7 @@ const addEventsToValidateFocusAndWorkflows = (formContentId = null) => {
             if (fldData.typ === 'button') {
               return elm.addEventListener('click', e => {
                 if (bit_conditionals(e)) {
-                  e.stopImmediatePropagation()
+                  e.stopPropagation()
                 }
               })
             }

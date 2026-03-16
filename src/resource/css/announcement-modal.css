@@ -1,0 +1,81 @@
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.5) rotate(180deg);
+  }
+}
+
+.announcement-modal .announcement-btn {
+  --bg-color: rgb(32 215 97);
+  --glow-color: rgb(255 247 0);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 0px 15px;
+  height: 40px;
+  background-color: var(--bg-color);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 700;
+  margin-right: 10px;
+  animation: heartbeat 1.3s infinite;
+
+  box-shadow: 0 0 10px var(--glow-color);
+}
+
+.star {
+  position: absolute;
+  background-color: var(--glow-color);
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+  animation: twinkle 2s infinite;
+}
+
+.star:nth-child(1) {
+  top: -5px;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  animation-delay: 0s;
+}
+
+.star:nth-child(2) {
+  bottom: -8px;
+  left: 12%;
+  width: 20px;
+  height: 20px;
+  animation-delay: 0.5s;
+}
+
+.star:nth-child(3) {
+  top: 60%;
+  left: 80%;
+  width: 16px;
+  height: 16px;
+  animation-delay: 1s;
+}

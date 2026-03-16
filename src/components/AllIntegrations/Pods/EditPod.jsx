@@ -1,23 +1,20 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { __ } from '@wordpress/i18n'
 import { useEffect, useState } from 'react'
-import { useFela } from 'react-fela'
 import { useNavigate, useParams } from 'react-router-dom'
-import app from '../../../styles/app.style'
-import bitsFetch from '../../../Utils/bitsFetch'
 import { postFields } from '../../../Utils/StaticData/postField'
+import bitsFetch from '../../../Utils/bitsFetch'
 import SnackMsg from '../../Utilities/SnackMsg'
 import { saveIntegConfig } from '../IntegrationHelpers/IntegrationHelpers'
-import SaveIntergrationBrn from '../SaveIntergrationBrn'
-import PodsFieldMap from './FieldMap'
+import SaveIntegrationBtn from '../SaveIntegrationBtn'
 import { addFieldMap, checkMappedPodFields, checkMappedPostFields } from './PodHelperFunction'
+import PodsFieldMap from './PodsFieldMap'
 
 function EditPod({ formFields, setIntegration, integrations, allIntegURL }) {
   const [types, setTypes] = useState([])
   const [users, setUsers] = useState([])
   const { id } = useParams()
   const history = useNavigate()
-  const { css } = useFela()
   const [data, setData] = useState({ ...integrations[id] })
   const [pods, setPods] = useState([])
   const [snack, setSnackbar] = useState({ show: false })
@@ -81,7 +78,7 @@ function EditPod({ formFields, setIntegration, integrations, allIntegURL }) {
     <div style={{ width: 900 }}>
       <SnackMsg snack={snack} setSnackbar={setSnackbar} />
 
-      <div className="mt-3"><b>{__('Integration Name ')}</b></div>
+      <div className="mt-3"><b>{__('Integration Name')}</b></div>
       <input
         className="btcd-paper-inp w-5 mt-1"
         onChange={(e) => handleInput(e.target.name, e.target.value)}
@@ -139,7 +136,8 @@ function EditPod({ formFields, setIntegration, integrations, allIntegURL }) {
         value={data?.post_author}
         className="btcd-paper-inp w-5 mt-1"
       >
-        <option disabled selected>Logged In User</option>
+        <option disabled selected>{__('Select Author')}</option>
+        <option value="logged_in_user">Logged In User</option>
         {users.map((user, key) => (
           <option key={`pod-${key * 2}`} value={user.ID}>{user.display_name}</option>
         ))}
@@ -226,7 +224,7 @@ function EditPod({ formFields, setIntegration, integrations, allIntegURL }) {
         {__('Save')}
         {' '}
       </button> */}
-      <SaveIntergrationBrn onClick={() => saveConfig()} />
+      <SaveIntegrationBtn onClick={() => saveConfig()} />
     </div>
   )
 }

@@ -1,0 +1,106 @@
+
+> bit-helpers@1.0.0 build /home/maruf/Local Sites/bit-formorg/app/public/wp-content/plugins/bitform/frontend-dev/packages/bit-helpers
+> rollup -c
+
+[36m
+[1msrc/observeElm.js[22m → [1mdist/observeElm.min.js[22m...[39m
+Browserslist: browsers data (caniuse-lite) is 11 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[32mcreated [1mdist/observeElm.min.js[22m in [1m1.4s[22m[39m
+[36m
+[1msrc/bfSelect.js[22m → [1mdist/bfSelect.min.js[22m...[39m
+[32mcreated [1mdist/bfSelect.min.js[22m in [1m260ms[22m[39m
+[36m
+[1msrc/bfReset.js[22m → [1mdist/bfReset.min.js[22m...[39m
+[32mcreated [1mdist/bfReset.min.js[22m in [1m327ms[22m[39m
+[36m
+[1msrc/bfSplit.js[22m → [1mdist/bfSplit.min.js[22m...[39m
+[32mcreated [1mdist/bfSplit.min.js[22m in [1m260ms[22m[39m
+[36m
+[1msrc/setBFMsg.js[22m → [1mdist/setBFMsg.min.js[22m...[39m
+[32mcreated [1mdist/setBFMsg.min.js[22m in [1m398ms[22m[39m
+[36m
+[1msrc/bfValidationErrMsg.js[22m → [1mdist/bfValidationErrMsg.min.js[22m...[39m
+[32mcreated [1mdist/bfValidationErrMsg.min.js[22m in [1m573ms[22m[39m
+[36m
+[1msrc/setHiddenFld.js[22m → [1mdist/setHiddenFld.min.js[22m...[39m
+[32mcreated [1mdist/setHiddenFld.min.js[22m in [1m286ms[22m[39m
+[36m
+[1msrc/paymentSubmitResponse.js[22m → [1mdist/paymentSubmitResponse.min.js[22m...[39m
+[32mcreated [1mdist/paymentSubmitResponse.min.js[22m in [1m323ms[22m[39m
+[36m
+[1msrc/isFormValidatedWithoutError.js[22m → [1mdist/isFormValidatedWithoutError.min.js[22m...[39m
+[32mcreated [1mdist/isFormValidatedWithoutError.min.js[22m in [1m347ms[22m[39m
+[36m
+[1msrc/setStyleProperty.js[22m → [1mdist/setStyleProperty.min.js[22m...[39m
+[32mcreated [1mdist/setStyleProperty.min.js[22m in [1m203ms[22m[39m
+[36m
+[1msrc/scrollToElm.js[22m → [1mdist/scrollToElm.min.js[22m...[39m
+[32mcreated [1mdist/scrollToElm.min.js[22m in [1m299ms[22m[39m
+[36m
+[1msrc/moveToFirstErrFld.js[22m → [1mdist/moveToFirstErrFld.min.js[22m...[39m
+[32mcreated [1mdist/moveToFirstErrFld.min.js[22m in [1m351ms[22m[39m
+[36m
+[1msrc/getFldKeyAndRowIndx.js[22m → [1mdist/getFldKeyAndRowIndx.min.js[22m...[39m
+[32mcreated [1mdist/getFldKeyAndRowIndx.min.js[22m in [1m235ms[22m[39m
+[36m
+[1msrc/replaceFieldAndSmartValues.js[22m → [1mdist/replaceFieldAndSmartValues.min.js[22m...[39m
+[32mcreated [1mdist/replaceFieldAndSmartValues.min.js[22m in [1m385ms[22m[39m
+[36m
+[1msrc/bfDateFieldsLogicCheck.js[22m → [1mdist/bfDateFieldsLogicCheck.min.js[22m...[39m
+[32mcreated [1mdist/bfDateFieldsLogicCheck.min.js[22m in [1m622ms[22m[39m
+[36m
+[1msrc/bfParseDateTime.js[22m → [1mdist/bfParseDateTime.min.js[22m...[39m
+[32mcreated [1mdist/bfParseDateTime.min.js[22m in [1m302ms[22m[39m
+[36m
+[1msrc/bfParseSpecialDateFormat.js[22m → [1mdist/bfParseSpecialDateFormat.min.js[22m...[39m
+[32mcreated [1mdist/bfParseSpecialDateFormat.min.js[22m in [1m484ms[22m[39m
+[36m
+[1msrc/bfCalculateDateTimeDifference.js[22m → [1mdist/bfCalculateDateTimeDifference.min.js[22m...[39m
+[32mcreated [1mdist/bfCalculateDateTimeDifference.min.js[22m in [1m434ms[22m[39m
+[36m
+[1msrc/bfFormatDateTime.js[22m → [1mdist/bfFormatDateTime.min.js[22m...[39m
+[32mcreated [1mdist/bfFormatDateTime.min.js[22m in [1m439ms[22m[39m
+[36m
+[1msrc/bfSetDateTimeConfigOption.js[22m → [1mdist/bfSetDateTimeConfigOption.min.js[22m...[39m
+[32mcreated [1mdist/bfSetDateTimeConfigOption.min.js[22m in [1m210ms[22m[39m
+[36m
+[1msrc/bfAddOrSubtractDateTime.js[22m → [1mdist/bfAddOrSubtractDateTime.min.js[22m...[39m
+[32mcreated [1mdist/bfAddOrSubtractDateTime.min.js[22m in [1m278ms[22m[39m
+[36m
+[1msrc/initCheckDisableOnMax.js[22m → [1mdist/initCheckDisableOnMax.min.js[22m...[39m
+[32mcreated [1mdist/initCheckDisableOnMax.min.js[22m in [1m190ms[22m[39m
+[36m
+[1msrc/initAddOtherOpt.js[22m → [1mdist/initAddOtherOpt.min.js[22m...[39m
+[32mcreated [1mdist/initAddOtherOpt.min.js[22m in [1m137ms[22m[39m
+[36m
+[1msrc/resetOtherOpt.js[22m → [1mdist/resetOtherOpt.min.js[22m...[39m
+[32mcreated [1mdist/resetOtherOpt.min.js[22m in [1m122ms[22m[39m
+[36m
+[1msrc/setSliderFieldValue.js[22m → [1mdist/setSliderFieldValue.min.js[22m...[39m
+[32mcreated [1mdist/setSliderFieldValue.min.js[22m in [1m130ms[22m[39m
+[36m
+[1msrc/scriptLoader.js[22m → [1mdist/scriptLoader.min.js[22m...[39m
+[32mcreated [1mdist/scriptLoader.min.js[22m in [1m126ms[22m[39m
+[36m
+[1msrc/initPaypalFld.js[22m → [1mdist/initPaypalFld.min.js[22m...[39m
+[32mcreated [1mdist/initPaypalFld.min.js[22m in [1m141ms[22m[39m
+[36m
+[1msrc/initRazorpayFld.js[22m → [1mdist/initRazorpayFld.min.js[22m...[39m
+[32mcreated [1mdist/initRazorpayFld.min.js[22m in [1m118ms[22m[39m
+[36m
+[1msrc/initStripeFld.js[22m → [1mdist/initStripeFld.min.js[22m...[39m
+[32mcreated [1mdist/initStripeFld.min.js[22m in [1m120ms[22m[39m
+[36m
+[1msrc/initRecaptchaFld.js[22m → [1mdist/initRecaptchaFld.min.js[22m...[39m
+[32mcreated [1mdist/initRecaptchaFld.min.js[22m in [1m119ms[22m[39m
+[36m
+[1msrc/initHCaptchaFld.js[22m → [1mdist/initHCaptchaFld.min.js[22m...[39m
+[32mcreated [1mdist/initHCaptchaFld.min.js[22m in [1m120ms[22m[39m
+[36m
+[1msrc/initTurnstileFld.js[22m → [1mdist/initTurnstileFld.min.js[22m...[39m
+[32mcreated [1mdist/initTurnstileFld.min.js[22m in [1m114ms[22m[39m
+[36m
+[1msrc/initRecaptchaV3Fld.js[22m → [1mdist/initRecaptchaV3Fld.min.js[22m...[39m
+[32mcreated [1mdist/initRecaptchaV3Fld.min.js[22m in [1m112ms[22m[39m

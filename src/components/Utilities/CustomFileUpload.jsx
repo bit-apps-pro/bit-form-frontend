@@ -3,9 +3,10 @@
 import { useRef, useState } from 'react'
 import { useFela } from 'react-fela'
 import FileUploadIcn from '../../Icons/FileUploadIcn'
+import { __ } from '../../Utils/i18nwrap'
 
 function CustomFileUpload({
-  accept, onChange, name, multiple = false, iconShow, title = 'Choose/Drop your file', fileUploadStyle = { w: '100%', H: '50' },
+  accept, onChange, name, multiple = false, iconShow, title = __('Choose/Drop your file (.json)'), fileUploadStyle = { w: '100%', H: '50' },
 }) {
   const { css } = useFela()
 

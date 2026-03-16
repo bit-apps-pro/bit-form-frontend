@@ -190,7 +190,7 @@ export default function RadioBox({ attr, onBlurHandler, resetFieldValue, formID,
                   className={`${fieldKey}-ct ${getCustomClsName(fieldKey, 'ct')}`}
                   {...getCustomAttributes(fieldKey, 'ct')}
                 >
-                  Other..
+                  {attr.otherOptLbl || 'Other...'}
                 </span>
               </label>
               <div data-oinp-wrp className={`${fieldKey}-other-inp-wrp`}>

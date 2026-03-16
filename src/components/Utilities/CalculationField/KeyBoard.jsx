@@ -149,6 +149,7 @@ const style = {
     p: 5,
     mr: 5,
     ow: 'overlay',
+    wb: 'break-word',
   },
   keyContainer: {
     w: '60%',

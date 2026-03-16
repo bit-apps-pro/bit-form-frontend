@@ -5,6 +5,7 @@ import { useFela } from 'react-fela'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useReactToPrint } from 'react-to-print'
 import { $fields, $reportSelector } from '../GlobalStates/GlobalStates'
+import BackIcn from '../Icons/BackIcn'
 import PrintIcon from '../Icons/PrintIcon'
 import { IS_PRO, dateTimeFormatter, generateReportData, getLastNthDate, isObjectEmpty, makeFieldsArrByLabel } from '../Utils/Helpers'
 import filterFieldTypesForReport from '../Utils/StaticData/filterFieldTypesForReport'
@@ -123,8 +124,17 @@ export default function ReportView() {
   return (
     <div className={css(style.mainWrapper)}>
       <div className={css(style.headerWrapper)}>
+        <Btn
+          className={`${css({ mr: 10 })}`}
+          onClick={() => navigate(`/form/responses/${formType}/${formID}`)}
+          size="sm"
+          variant="secondary-outline"
+        >
+          <BackIcn className="mr-1" />
+          {__('Responses', 'biform')}
+        </Btn>
+        <h3 className={css(style.title, { m: 0 })}> Analytics Report</h3>
         <div className={css(ut.flxc)}>
-          <span className={css(style.title)}>Analytics Report: </span>
           <FldEntriesByCondition
             fetchData={fetchData}
             setRefreshResp={setRefreshResp}
@@ -136,9 +146,6 @@ export default function ReportView() {
             </div>
           )}
         </div>
-        <Btn className={css(ut.mr1)} size="sm" onClick={() => navigate(`/form/responses/${formType}/${formID}`)}>
-          {__('View Entries')}
-        </Btn>
       </div>
       <div className={css(ut.divider)} />
       <div className={css(style.centerWrapper)}>

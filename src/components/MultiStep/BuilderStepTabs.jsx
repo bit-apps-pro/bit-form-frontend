@@ -1,6 +1,7 @@
 import { arrayMoveImmutable } from 'array-move'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { create } from 'mutative'
+import { startTransition } from 'react'
 import { useFela } from 'react-fela'
 import { useNavigate, useParams } from 'react-router-dom'
 import { hideAll } from 'tippy.js'
@@ -8,15 +9,17 @@ import useSmoothHorizontalScroll from 'use-smooth-horizontal-scroll'
 import { $activeBuilderStep } from '../../GlobalStates/FormBuilderStates'
 import {
   $alertModal, $allLayouts,
+  $breakpoint,
   $builderHookStates, $contextMenu, $fields, $flags, $formInfo, $nestedLayouts, $newFormId, $selectedFieldId, $updateBtn,
 } from '../../GlobalStates/GlobalStates'
+import { $staticStylesState } from '../../GlobalStates/StaticStylesState'
 import { $styles } from '../../GlobalStates/StylesState'
 import CloseIcn from '../../Icons/CloseIcn'
 import CopyIcn from '../../Icons/CopyIcn'
 import EllipsisIcon from '../../Icons/EllipsisIcon'
 import SettingsIcn from '../../Icons/SettingsIcn'
 import TrashIcn from '../../Icons/TrashIcn'
-import { builderBreakpoints, handleFieldExtraAttr } from '../../Utils/FormBuilderHelper'
+import { addToBuilderHistory, builderBreakpoints, getLatestState, handleFieldExtraAttr } from '../../Utils/FormBuilderHelper'
 import { deepCopy } from '../../Utils/Helpers'
 import defaultMultstepSettings from '../../Utils/StaticData/form-templates/defaultMultstepSettings'
 import defaultStepSettings from '../../Utils/StaticData/form-templates/defaultStepSettings'
@@ -26,10 +29,9 @@ import { cloneLayoutItem, removeLayoutItem } from '../../Utils/gridLayoutHelpers
 import { __ } from '../../Utils/i18nwrap'
 import Downmenu from '../Utilities/Downmenu'
 import { DragHandle, SortableItem, SortableList } from '../Utilities/Sortable'
-import multiStepStyle_0_noStyle from '../style-new/themes/0_noStyle/multiStepStyle_0_noStyle'
-import multiStepStyle_1_bitformDefault from '../style-new/themes/1_bitformDefault/multiStepStyle_1_bitformDefaullt'
-import multiStepeStyle_2_atlassian from '../style-new/themes/2_atlassian/multiStepStyle_2_atlassian'
 import Tip from '../Utilities/Tip'
+import multiStepStyle_1_bitformDefault from '../style-new/themes/1_bitformDefault/multiStepStyle_1_bitformDefaullt'
+import { getMultiStepStyle, multiStepResponsiveStaticStyles } from './BuilderStepHelper'
 
 export default function BuilderStepTabs() {
   const [allLayouts, setAllLayouts] = useAtom($allLayouts)
@@ -38,6 +40,7 @@ export default function BuilderStepTabs() {
   const setBuilderHookStates = useSetAtom($builderHookStates)
   const setContextMenu = useSetAtom($contextMenu)
   const flags = useAtomValue($flags)
+  const breakpoint = useAtomValue($breakpoint)
   const navigate = useNavigate()
   const { formType, formID: pramsFormId } = useParams()
   const newFormId = useAtomValue($newFormId)
@@ -55,25 +58,29 @@ export default function BuilderStepTabs() {
   const setSelectedFieldId = useSetAtom($selectedFieldId)
   const { styleMode } = flags
   const { css } = useFela()
+  const [staticStylesState, setStaticStyles] = useAtom($staticStylesState)
 
-  const getMultiStepStyle = () => {
-    if (styles.theme === 'noStyle') return multiStepStyle_0_noStyle({ formId: formID })
-    if (styles.theme === 'bitformDefault') return multiStepStyle_1_bitformDefault({ formId: formID })
-    if (styles.theme === 'atlassian') return multiStepeStyle_2_atlassian({ formId: formID })
-    return multiStepStyle_1_bitformDefault({ formId: formID })
+  const addMultiStepMediaQueryStyle = () => {
+    // check if the form has multi step style
+    if (staticStylesState.staticStyles?.['@media (max-width: 576px)']?.[`._frm-b${formID}-stp-hdr-lbl`]) return
+    setStaticStyles(prevStyles => create(prevStyles, draftStyles => {
+      draftStyles.staticStyles = mergeNestedObj(draftStyles.staticStyles, multiStepResponsiveStaticStyles(formID))
+    }))
   }
 
   const addFormStep = () => {
+    addMultiStepMediaQueryStyle()
     setAllLayouts(prevLayouts => create(prevLayouts, draftLayouts => {
       const nextStep = !Array.isArray(draftLayouts) ? 1 : draftLayouts.length
       const stepData = { layout: { lg: [], md: [], sm: [] }, settings: defaultStepSettings(nextStep) }
       if (!Array.isArray(draftLayouts)) {
         setActiveBuilderStep(1)
-        const newSteps = [
+        // eslint-disable-next-line no-param-reassign
+        draftLayouts = [
           { layout: draftLayouts, settings: defaultStepSettings(0) },
           stepData,
         ]
-        return newSteps
+        return draftLayouts
       }
       draftLayouts.push(stepData)
       setActiveBuilderStep(draftLayouts.length - 1)
@@ -86,22 +93,39 @@ export default function BuilderStepTabs() {
     }))
     setStyles(prevStyles => create(prevStyles, draftStyles => {
       if (!draftStyles.form[`._frm-b${formID}-stp-cntnr`]) {
-        draftStyles.form = mergeNestedObj(draftStyles.form, getMultiStepStyle())
+        draftStyles.form = mergeNestedObj(draftStyles.form, getMultiStepStyle(formID, styles.theme))
       }
-      Object.keys(fields || {}).forEach(fldKey => {
-        draftStyles.fields[fldKey].classes[`.${fldKey}-err-wrp`] = {
-          transition: 'all .3s',
-          display: 'grid',
-          'grid-template-rows': '0fr',
-        }
-        draftStyles.fields[fldKey].classes[`.${fldKey}-err-inner`] = {
-          overflow: 'hidden',
-        }
-      })
+      // TODO: Maybe this peace of code is not needed, if need? please must be discuss with Maruf Vai.
+      // Object.keys(fields || {}).forEach(fldKey => {
+      //   draftStyles.fields[fldKey].classes[`.${fldKey}-err-wrp`] = {
+      //     transition: 'all .3s',
+      //     display: 'grid',
+      //     'grid-template-rows': '0fr',
+      //   }
+      //   draftStyles.fields[fldKey].classes[`.${fldKey}-err-inner`] = {
+      //     overflow: 'hidden',
+      //   }
+      // })
     }))
     setBuilderHookStates(prv => ({ ...prv, reRenderGridLayoutByRootLay: prv.reRenderGridLayoutByRootLay + 1 }))
     setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
     navigate(`${path}/step-settings`, { replace: true })
+
+    // add to history
+    startTransition(() => {
+      const event = 'New Step added'
+      const type = 'step_added'
+      const activeStep = getLatestState('activeBuilderStep')
+      const key = `step-${activeStep + 1}`
+      const state = {
+        fldKey: key,
+        activeBuilderStep: activeStep,
+        allLayouts: getLatestState('allLayouts'),
+        styles: getLatestState('styles'),
+        formInfo: getLatestState('formInfo'),
+      }
+      addToBuilderHistory({ event, type, state })
+    })
   }
 
   const removeFormStep = stepIndex => {
@@ -157,6 +181,25 @@ export default function BuilderStepTabs() {
     setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
     if (newLayouts.length > 1) navigate(`${path}/step-settings/`, { replace: true })
     else navigate(`${path}/fields-list`, { replace: true })
+
+    // add to history
+    startTransition(() => {
+      const event = 'Step removed'
+      const type = 'step_removed'
+      const activeStep = getLatestState('activeBuilderStep')
+      const key = `step-${activeStep}`
+      const state = {
+        fldKey: key,
+        breakpoint,
+        activeBuilderStep: activeStep,
+        allLayouts: getLatestState('allLayouts'),
+        fields: getLatestState('fields'),
+        styles: getLatestState('styles'),
+        nestedLayouts: getLatestState('nestedLayouts'),
+        formInfo: getLatestState('formInfo'),
+      }
+      addToBuilderHistory({ event, type, state })
+    })
   }
 
   const cloneFormStep = stepIndex => {
@@ -211,6 +254,21 @@ export default function BuilderStepTabs() {
     setBuilderHookStates(prv => ({ ...prv, reRenderGridLayoutByRootLay: prv.reRenderGridLayoutByRootLay + 1 }))
     setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
     navigate(`${path}/step-settings`, { replace: true })
+
+    // add to history
+    startTransition(() => {
+      const event = 'Step cloned'
+      const type = 'clone_step'
+      const key = `step-${newStepIndex}`
+      const state = {
+        fldKey: key,
+        allLayouts: draftAllLayouts,
+        nestedLayouts: draftNestedLayouts,
+        fields: getLatestState('fields'),
+        styles: getLatestState('styles'),
+      }
+      addToBuilderHistory({ event, type, state })
+    })
   }
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
@@ -225,6 +283,16 @@ export default function BuilderStepTabs() {
     setContextMenu({})
     setBuilderHookStates(prv => ({ ...prv, reRenderGridLayoutByRootLay: prv.reRenderGridLayoutByRootLay + 1 }))
     if (formLayouts.length !== 1) navigate(`${path}/step-settings`, { replace: true })
+    startTransition(() => {
+      const event = `Active step shifts to Step-${stepIndex + 1}`
+      const type = 'step_changed'
+      const key = `step-${stepIndex + 1}`
+      const state = {
+        fldKey: key,
+        activeBuilderStep: stepIndex,
+      }
+      addToBuilderHistory({ event, type, state })
+    })
   }
 
   const goToStepSettings = stepIndex => () => {
@@ -250,8 +318,15 @@ export default function BuilderStepTabs() {
             {formLayouts.map((_, indx) => (
               <SortableItem key={`grid-${indx * 2}`} index={indx} itemId={`grid-${indx * 2}`}>
                 <div className={`btcd-s-tab-link ${css(s.stepTab)} ${activeBuilderStep === indx && 'active'}`}>
-                  <DragHandle />
-                  <span type="button" className={css(s.stepTitle)} onClick={onStepChange(indx)} onKeyDown={onStepChange(indx)} role="button" tabIndex={0}>
+                  {isMultiStep && <DragHandle />}
+                  <span
+                    type="button"
+                    className={css(s.stepTitle)}
+                    onClick={onStepChange(indx)}
+                    onKeyDown={onStepChange(indx)}
+                    role="button"
+                    tabIndex={0}
+                  >
                     {__('Step-')}
                     {indx + 1}
                   </span>
@@ -272,7 +347,7 @@ export default function BuilderStepTabs() {
                             onClick={goToStepSettings(indx)}
                           >
                             <SettingsIcn size={18} />
-                            <span>Settings</span>
+                            <span>{__('Settings')}</span>
                           </button>
                         </li>
                         <li className={css(s.option)}>
@@ -282,14 +357,14 @@ export default function BuilderStepTabs() {
                             onClick={() => cloneFormStep(indx)}
                           >
                             <CopyIcn size={18} />
-                            <span>Clone Step</span>
+                            <span>{__('Clone Step')}</span>
                           </button>
                         </li>
                         <li className={css(s.option)}>
                           <Downmenu width={250}>
                             <button type="button" className={css(s.optionBtn)}>
                               <TrashIcn size={18} />
-                              <span>Delete Step</span>
+                              <span>{__('Delete Step')}</span>
                             </button>
                             <div className={css(s.confirmModal)}>
                               <div className="mb-2 mt-1"><b>Are you sure to delete the step?</b></div>
@@ -318,6 +393,7 @@ export default function BuilderStepTabs() {
             type="button"
           >
             <CloseIcn size="12" className={css({ tm: 'rotate(45deg)' })} />
+            {!isMultiStep && <span>{__('Add Steps')}</span>}
           </button>
         </Tip>
         {isMultiStep && (
@@ -340,7 +416,8 @@ const s = {
   wrp: {
     dy: 'flex',
     ai: 'center',
-    bb: '1px solid #edf3fd',
+    p: '0px 3px',
+    bb: '1px solid lightblue',
   },
   sortableWrp: {
     w: '100%',
@@ -354,16 +431,22 @@ const s = {
     gp: 5,
   },
   addBtn: {
-    se: 25,
     b: 'none',
-    brs: '20%',
-    p: 0,
+    brs: 8,
+    p: 5,
     flxi: 'center',
     bd: 'var(--white-0-95)',
     curp: 1,
     tn: 'transform 0.2s',
-    ':hover': { tm: 'scale(1.1)', cr: 'var(--b-50)' },
+    gp: 5,
+    ':hover': { tm: 'scale(1.01)', bd: 'var(--b-79-96)', cr: 'var(--b-50)' },
     ':active': { tm: 'scale(0.95)' },
+    ff: '"Outfit", sans-serif !important',
+    fs: 12,
+    fw: 600,
+    mt: 5,
+    mnw: 30,
+    mnh: 30,
   },
   ellipsBtn: {
     bd: 'transparent',
@@ -402,7 +485,7 @@ const s = {
     b: 'none',
     p: '0 5px',
     '&.active': {
-      bd: 'var(--b-79-96)',
+      bs: '0px -1px 3px 1px lightblue !important',
     },
   },
   stepTitle: {

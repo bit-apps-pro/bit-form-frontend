@@ -7,6 +7,7 @@ import { msgDefaultConfig } from '../../../../Utils/StaticData/form-templates/de
 import { cleanObj, mergeNestedObj } from '../../../../Utils/globalHelpers'
 import confirmMsgCssStyles from '../../../ConfirmMessage/confirmMsgCssStyles'
 import { defaultLgLightThemeVars } from '../1_bitformDefault/1_bitformDefault'
+import advancedDatetimeStyle_0_noStyle from './advancedDatetimeStyle_0_noStyle'
 import advancedFileUp_0_noStyle from './advancedFileUp_0_noStyle'
 import buttonStyle_0_noStyle from './buttonStyle_0_noStyle'
 import checkboxNradioStyle_0_noStyle from './checkboxNradioStyle_0_noStyle'
@@ -16,9 +17,13 @@ import decisionBoxStyle_0_noStyle from './decisionBoxStyle_0_noStyle'
 import dividerStyle_0_noStyle from './dividerStyle_0_noStyle'
 import dropdownStyle_0_noStyle from './dropdownStyle_0_noStyle'
 import fileUploadStyle_0_noStyle from './fileUpload_0_noStyle'
+import gdprStyle_0_noStyle from './gdprStyle_0_noStyle'
+import hcaptchaStyle_0_noStyle from './hcaptchaStyle_0_noStyle'
+import hiddenStyle_0_noStyle from './hiddenStyle_0_noStyle'
 import htmlStyle_0_noStyle from './htmlStyle_0_noStyle'
 import imageSelectStyle_0_noStyle from './imageSelectStyle_0_noStyle'
 import imageStyle_0_noStyle from './imageStyle_0_noStyle'
+import mollieStyle_0_noStyle from './mollieStyle_0_noStyle'
 import multiStepStyle_0_noStyle from './multiStepStyle_0_noStyle'
 import paypalStyle_0_noStyle from './paypalStyle_0_noStyle'
 import phoneNumberStyle_0_noStyle from './phoneNumberStyle_0_noStyle'
@@ -29,6 +34,8 @@ import repeaterStyle_0_noStyle from './repeaterStyle_0_noStyle'
 import sectionStyle_0_noStyle from './sectionStyle_0_noStyle'
 import selectStyle_0_noStyle from './selectStyle_0_noStyle'
 import signature_0_noStyle from './signature_0_noStyle'
+import sliderStyle_0_noStyle from './sliderStyle_0_noStyle'
+import spacerStyle_0_noStyle from './spacerStyle_0_noStyle'
 import stripeStyle_0_noStyle from './stripeStyle_0_noStyle'
 import textStyle_0_noStyle from './textStyle_0_noStyle'
 import titleStyle_0_noStyle from './titleStyle_0_noStyle'
@@ -73,8 +80,12 @@ export default function noStyleTheme({
     case 'color':
     case 'textarea':
       return text({ type, fk, breakpoint, colorScheme })
+    case 'range':
+      return slider({ type, fk, breakpoint, colorScheme })
     case 'decision-box':
       return decisionBox({ type, fk, direction, breakpoint, colorScheme })
+    case 'gdpr':
+      return gdprAgreement({ type, fk, direction, breakpoint, colorScheme })
     case 'check':
     case 'radio':
       return checkNradioBox({ type, fk, direction, breakpoint, colorScheme })
@@ -84,12 +95,18 @@ export default function noStyleTheme({
       return image({ type, fk, breakpoint, colorScheme })
     case 'divider':
       return divider({ type, fk, breakpoint, colorScheme })
+    case 'spacer':
+      return spacer({ type, fk, breakpoint, colorScheme })
     case 'button':
       return button({ type, fk, direction, breakpoint, colorScheme })
     case 'advanced-file-up':
       return advancedFileUP({ type, fk, breakpoint, colorScheme })
+    case 'advanced-datetime':
+      return advancedDatetime({ type, fk, breakpoint, colorScheme })
     case 'html':
       return html({ type, fk, breakpoint, colorScheme })
+    case 'shortcode':
+      return shortcode({ type, fk, breakpoint, colorScheme })
     case 'currency':
       return currency({ type, fk, direction, breakpoint, colorScheme })
     case 'country':
@@ -98,6 +115,8 @@ export default function noStyleTheme({
       return recaptcha({ type, fk, breakpoint, colorScheme })
     case 'turnstile':
       return turnstile({ type, fk, breakpoint, colorScheme })
+    case 'hcaptcha':
+      return hcaptcha({ type, fk, breakpoint, colorScheme })
     case 'file-up':
       return fileUp({ type, fk, breakpoint, colorScheme })
     case 'html-select':
@@ -106,6 +125,8 @@ export default function noStyleTheme({
       return select({ type, fk, direction, breakpoint, colorScheme })
     case 'phone-number':
       return phoneNumber({ type, fk, direction, breakpoint, colorScheme })
+    case 'hidden':
+      return hidden({ type, fk, breakpoint, colorScheme })
     case 'paypal':
       return paypal({ type, fk, breakpoint, colorScheme })
     case 'razorpay':
@@ -116,6 +137,8 @@ export default function noStyleTheme({
       return repeater({ type, fk, breakpoint, colorScheme })
     case 'stripe':
       return stripe({ type, fk, breakpoint, colorScheme })
+    case 'mollie':
+      return mollie({ type, fk, breakpoint, colorScheme })
     case 'signature':
       return signature({ type, fk, breakpoint, colorScheme })
     case 'rating':
@@ -390,6 +413,32 @@ const text = ({ type, fk, breakpoint, colorScheme }) => {
   return {}
 }
 
+const hidden = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'noStyle',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: hiddenStyle_0_noStyle({ fk, type, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
+const slider = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'noStyle',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: sliderStyle_0_noStyle({ fk, type, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
 const section = ({ type, fk, breakpoint, colorScheme }) => {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return {
@@ -424,6 +473,19 @@ const decisionBox = ({ type, fk, direction, breakpoint, colorScheme }) => {
       overrideGlobalTheme: [],
       fieldSize: 'medium',
       classes: decisionBoxStyle_0_noStyle({ fk, direction, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
+const gdprAgreement = ({ type, fk, direction, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'noStyle',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: gdprStyle_0_noStyle({ fk, direction, breakpoint, colorScheme }),
     }
   }
   return {}
@@ -476,6 +538,19 @@ const divider = ({ type, fk, breakpoint, colorScheme }) => {
       overrideGlobalTheme: [],
       fieldSize: 'medium',
       classes: dividerStyle_0_noStyle({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
+const spacer = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'noStyle',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: spacerStyle_0_noStyle({ fk, breakpoint, colorScheme }),
     }
   }
   return {}
@@ -543,6 +618,19 @@ const advancedFileUP = ({ type, fk, breakpoint, colorScheme }) => {
   return {}
 }
 
+const advancedDatetime = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'noStyle',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: advancedDatetimeStyle_0_noStyle({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
 const html = ({ type, fk, breakpoint, colorScheme }) => {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return {
@@ -554,6 +642,18 @@ const html = ({ type, fk, breakpoint, colorScheme }) => {
     }
   }
   return {}
+}
+
+const shortcode = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'noStyle',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: shortcodeStyle_0_noStyle({ fk, breakpoint, colorScheme }),
+    }
+  }
 }
 
 const currency = ({ type, fk, direction, breakpoint, colorScheme }) => {
@@ -602,6 +702,19 @@ const turnstile = ({ type, fk, breakpoint, colorScheme }) => {
       overrideGlobalTheme: [],
       fieldSize: 'medium',
       classes: turnstileStyle_0_noStyle({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
+const hcaptcha = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'noStyle',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: hcaptchaStyle_0_noStyle({ fk, breakpoint, colorScheme }),
     }
   }
   return {}
@@ -692,6 +805,18 @@ const stripe = ({ type, fk, breakpoint, colorScheme }) => {
       overrideGlobalTheme: [],
       fieldSize: 'medium',
       classes: stripeStyle_0_noStyle({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+const mollie = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'noStyle',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: mollieStyle_0_noStyle({ fk, breakpoint, colorScheme }),
     }
   }
   return {}

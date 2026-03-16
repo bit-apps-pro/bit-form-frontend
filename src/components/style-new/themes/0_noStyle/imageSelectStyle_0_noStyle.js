@@ -42,7 +42,7 @@ export default function imageSelectStyle_0_noStyle({ fk, type, direction, breakp
 
       [`.${fk}-select-img`]: {
         width: '100%',
-        height: '100%',
+        height: 'auto',
         'object-fit': 'cover',
         // transition: '0.3s',
         'max-width': '100%',

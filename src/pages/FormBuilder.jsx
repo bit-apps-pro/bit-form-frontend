@@ -16,7 +16,7 @@ import { useParams } from 'react-router-dom'
 import { Bar, Container, Section } from 'react-simple-resizer'
 import {
   $alertModal,
-  $bits, $breakpoint, $breakpointSize,
+  $breakpoint, $breakpointSize,
   $builderHookStates, $builderSettings,
   $flags, $isNewThemeStyleLoaded,
   $newFormId, $proModal,
@@ -29,12 +29,12 @@ import { $allThemeVars } from '../GlobalStates/ThemeVarsState'
 import { RenderPortal } from '../RenderPortal'
 import { addToBuilderHistory } from '../Utils/FormBuilderHelper'
 import { bitCipher, isObjectEmpty, multiAssign } from '../Utils/Helpers'
-import css2json from '../Utils/css2json'
 import { JCOF, select } from '../Utils/globalHelpers'
 import j2c from '../Utils/j2c.es6'
 import BuilderRightPanel from '../components/CompSettings/BuilderRightPanel'
 import DraggableModal from '../components/CompSettings/StyleCustomize/ChildComp/DraggableModal'
 import { defaultTheme } from '../components/CompSettings/StyleCustomize/ThemeProvider_Old'
+import ErrorBoundary from '../components/ErrorBoundary'
 import GridLayoutLoader from '../components/Loaders/GridLayoutLoader'
 import StyleLayerLoader from '../components/Loaders/StyleLayerLoader'
 import ToolbarLoader from '../components/Loaders/ToolbarLoader'
@@ -96,7 +96,6 @@ const FormBuilder = ({ isLoading }) => {
   const { styleMode } = useAtomValue($flags)
   const [v1Style, styleDispatch] = useReducer(styleReducer, defaultTheme(formID))
   const [styleLoading, setStyleLoading] = useState(!isNewForm)
-  const bits = useAtomValue($bits)
   const [builderPointerEventNone, setBuilderPointerEventNone] = useState(false)
   const conRef = createRef(null)
   const setBreakpointSize = useSetAtom($breakpointSize)
@@ -141,13 +140,13 @@ const FormBuilder = ({ isLoading }) => {
     setIsNewThemeStyleLoaded(true)
   }
 
-  useEffect(() => {
-    if (isNewForm) {
-      setTimeout(() => {
-        select('#update-btn').click()
-      }, 100)
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (isNewForm) {
+  //     setTimeout(() => {
+  //       select('#update-btn').click()
+  //     }, 100)
+  //   }
+  // }, [])
 
   // useEffect(() => {
   //   if (!isNewThemeStyleLoaded) {
@@ -218,55 +217,6 @@ const FormBuilder = ({ isLoading }) => {
     }
     return v1Style
   }, [brkPoint, isNewThemeStyleLoaded, v1Style])
-
-  function setOldExistingStyle() {
-    const headers = new Headers()
-    headers.append('pragma', 'no-cache')
-    headers.append('cache-control', 'no-cache')
-    const styleUrl = new URL(bits.styleURL)
-    if (styleUrl.protocol !== window.location.protocol) {
-      styleUrl.protocol = window.location.protocol
-    }
-
-    const latestTimefetch = new Date().getTime()
-    fetch(`${styleUrl}/bitform-${formID}.css?ver=${latestTimefetch}`, { cache: 'no-store', headers })
-      .then(response => {
-        if (response.ok) {
-          return response.text()
-        }
-        setStyleLoading(false)
-        return Promise.reject(response.statusText)
-      })
-      .then(oldStyleText => {
-        const oldStyle = css2json(oldStyleText)
-        styleDispatch({ type: 'init', v1Style: oldStyle })
-        setStyleLoading(false)
-        recheckStyleById(oldStyleText)
-      })
-      .catch(() => {
-        const dfThm = defaultTheme(formID)
-        styleDispatch({ type: 'init', v1Style: dfThm })
-        sessionStorage.setItem('btcd-fs', bitCipher(j2c.sheet(dfThm)))
-      })
-  }
-
-  function recheckStyleById(oldStyleText) {
-    if (!new RegExp(`._frm-bg-b${formID}|._frm-b${formID}`, 'g').test(oldStyleText)
-      || oldStyleText.match(/._frm-bg-b\d+/g)?.[0] !== `._frm-bg-b${formID}`) {
-      let replaceId
-      if (/._frm-bg-Blank/gi.test(oldStyleText)) {
-        replaceId = 'Blank'
-      } else {
-        replaceId = oldStyleText.match(/._frm-bg-b\d+/g)?.[0].replace(/._frm-bg-b/g, '')
-      }
-      if (replaceId !== undefined) {
-        oldStyleText = oldStyleText.replace(new RegExp(`-${replaceId}`, 'g'), `-${formID}`)
-      }
-    }
-    const modifiedStyle = css2json(oldStyleText)
-    styleDispatch({ type: 'init', v1Style: modifiedStyle })
-    sessionStorage.setItem('btcd-fs', bitCipher(oldStyleText))
-  }
 
   const addNewData = useCallback(ndata => setNewData(ndata), [])
 
@@ -352,15 +302,17 @@ const FormBuilder = ({ isLoading }) => {
               >
                 <RenderThemeVarsAndFormCSS />
                 <RenderCssInPortal />
-                <GridLayout
-                  style={styleProvider()}
-                  gridWidth={deferedGridWidth}
-                  newData={newData}
-                  setNewData={setNewData}
-                  formType={formType}
-                  formID={formID}
-                  setAlertMdl={setAlertMdl}
-                />
+                <ErrorBoundary>
+                  <GridLayout
+                    style={styleProvider()}
+                    gridWidth={deferedGridWidth}
+                    newData={newData}
+                    setNewData={setNewData}
+                    formType={formType}
+                    formID={formID}
+                    setAlertMdl={setAlertMdl}
+                  />
+                </ErrorBoundary>
               </RenderPortal>
             ) : <GridLayoutLoader />}
 
@@ -388,7 +340,7 @@ const FormBuilder = ({ isLoading }) => {
         cancelBtn={alertMdl.cancelBtn}
         close={clsAlertMdl}
         action={clsAlertMdl}
-        title="Sorry"
+      // title="Sorry"
       >
         <div className="txt-center">{alertMdl.msg}</div>
       </ConfirmModal>

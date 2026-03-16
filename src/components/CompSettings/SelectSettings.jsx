@@ -1,14 +1,13 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable no-param-reassign */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useEffect, useState } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom, useAtomValue } from 'jotai'
 import { $bits, $fields } from '../../GlobalStates/GlobalStates'
 import CloseIcn from '../../Icons/CloseIcn'
 import ut from '../../styles/2.utilities'
-import app from '../../styles/app.style'
 import FieldStyle from '../../styles/FieldStyle.style'
 import { addToBuilderHistory } from '../../Utils/FormBuilderHelper'
 import { deepCopy } from '../../Utils/Helpers'
@@ -71,7 +70,7 @@ export default function SelectSettings() {
       fieldData.valid = tmp
       if (!fieldData.err) fieldData.err = {}
       if (!fieldData.err.req) fieldData.err.req = {}
-      fieldData.err.req.dflt = '<p style="margin:0">This field is required</p>'
+      fieldData.err.req.dflt = `<p style="margin:0">${__('This field is required')}</p>`
       fieldData.err.req.show = true
     } else {
       delete fieldData.valid.req
@@ -404,8 +403,8 @@ export default function SelectSettings() {
         <UniqFieldSettings
           type="entryUnique"
           isUnique="isEntryUnique"
-          title="Validate as Entry Unique"
-          tipTitle="Enabling this option will check from the entry database whether its value is duplicate."
+          title={__('Validate as Entry Unique')}
+          tipTitle={__('Enabling this option will check from the entry database whether its value is duplicate.')}
           className={css(FieldStyle.fieldSection)}
           isPro
         />

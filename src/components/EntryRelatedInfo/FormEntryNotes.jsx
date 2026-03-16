@@ -39,6 +39,7 @@ export default function FormEntryNotes({ formID, entryID, allLabels, rowDtl }) {
   }, [])
 
   useEffect(() => {
+    isPro && setIsLoading('allNotes')
     if (fetchData) {
       setFetchData(false)
       return
@@ -51,7 +52,7 @@ export default function FormEntryNotes({ formID, entryID, allLabels, rowDtl }) {
       setIsLoading(false)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchData])
+  }, [fetchData, entryID])
 
   useEffect(() => {
     if (data.content) setShowForm(true)

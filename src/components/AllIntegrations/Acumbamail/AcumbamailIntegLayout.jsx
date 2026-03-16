@@ -1,14 +1,44 @@
+import PlusIcn from '../../../Icons/PlusIcn'
 import { __ } from '../../../Utils/i18nwrap'
 import Loader from '../../Loaders/Loader'
+import { getConnectedAppList } from '../integrationHelper'
 import { addFieldMap } from '../IntegrationHelpers/IntegrationHelpers'
 import { fetchAllList, refreshFields } from './AcumbamailCommonFunc'
 import AcumbamailFieldMap from './AcumbamailFieldMap'
 
 export default function AcumbamailIntegLayout({
-  formFields, handleInput, acumbamailConf, setAcumbamailConf, isLoading, setIsLoading, setSnackbar,
+  formFields, handleInput, acumbamailConf, setAcumbamailConf, isLoading, setIsLoading, setSnackbar, setShowMdl
 }) {
   return (
     <>
+      <br />
+      <b className="wdt-200 d-in-b">{__('Connected API List:')}</b>
+      <select
+        onChange={handleInput}
+        name="parentAppId"
+        value={acumbamailConf.parentAppId}
+        className="btcd-paper-inp w-5"
+      >
+        <option value="">{__('Select API')}</option>
+        {
+          getConnectedAppList([acumbamailConf.type]).map(app => (
+            <option key={app.id} value={app.id}>
+              {app.integration_name}
+            </option>
+          ))
+        }
+      </select>
+      <button
+        aria-label="Add New"
+        onClick={() => setShowMdl(true)}
+        className="icn-btn sh-sm ml-2 mr-2 tooltip"
+        style={{ '--tooltip-txt': '"Add New API"' }}
+        type="button"
+        disabled={isLoading}
+      >
+        <PlusIcn size={18} />
+      </button>
+      <br />
       <br />
       <b className="wdt-200 d-in-b">{__('Actions:')}</b>
       <select

@@ -14,9 +14,9 @@ export default async function isFormValidatedWithoutError(formContentId, { step 
     const token = await grecaptcha.execute(props?.gRecaptchaSiteKey, { action: 'submit' })
     formData.append('g-recaptcha-response', token)
   }
-  if (typeof advancedFileHandle !== 'undefined') {
-    formData = advancedFileHandle(props, formData)
-  }
+  if (typeof advancedFileHandle !== 'undefined') formData = advancedFileHandle(props, formData)
+  if (typeof decisionFldHandle !== 'undefined') formData = decisionFldHandle(props, formData)
+  if (typeof hideChildFldHandle !== 'undefined') formData = hideChildFldHandle(props, formData)
   if (props.GCLID) {
     formData.set('GCLID', props.GCLID)
   }

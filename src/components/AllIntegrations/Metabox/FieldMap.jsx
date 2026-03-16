@@ -5,6 +5,8 @@ import { SmartTagField } from '../../../Utils/StaticData/SmartTagField'
 import { __ } from '../../../Utils/i18nwrap'
 import MtInput from '../../Utilities/MtInput'
 import { addFieldMap, delFieldMap, handleFieldMapping } from './MetaboxHelperFunction'
+import BitformFieldMapping from '../IntegrationHelpers/BitformFieldMapping'
+import { fileUpOrMappableImageFieldTypes } from '../../../Utils/StaticData/allStaticArrays'
 
 export default function FieldMap({
   i, type, formFields, field, dataConf, setDataConf, customFields, fieldType,
@@ -37,31 +39,25 @@ export default function FieldMap({
 
   const isRequired = !!customFields.find(fl => fl.key === field[fldName] && fl.required)
 
+  const uploadField = ['file-up', 'advanced-file-up']
+
   return (
     <div className="flx mt-2 mr-1">
       <div className="flx integ-fld-wrp">
         <select className="btcd-paper-inp mr-2" name="formField" value={field.formField || ''} onChange={(ev) => handleFieldMapping(propName, ev, i, dataConf, setDataConf)}>
           <option value="">{__('Select Field')}</option>
-          <optgroup label="Form Fields">
+          {type !== 'metaboxFile' ? (
+            <>
+              {/* {formFields.map(f => f.type !== 'file-up' && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)} */}
+              <BitformFieldMapping formFields={formFields} notAllowFieldType={['file-up']} />
+              <option value="custom">{__('Custom...')}</option>
+            </>
+          ) : (
+            <optgroup label="Form Fields">
+              {formFields.map(f => fileUpOrMappableImageFieldTypes.includes(f.type) && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)}
+            </optgroup>
+          )}
 
-            {type === 'post' ? (
-              <>
-
-                {formFields.map(f => f.type !== 'file-up' && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)}
-
-                <option value="custom">{__('Custom...')}</option>
-              </>
-            ) : (
-              <>
-                {
-                  fieldType === 'file'
-                    ? formFields.map(f => f.type === 'file-up' && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)
-                    : formFields.map(f => f.type !== 'file-up' && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)
-                }
-                {fieldType !== 'file' && <option value="custom">{__('Custom...')}</option>}
-              </>
-            )}
-          </optgroup>
           {fieldType !== 'file'
             && (
               <optgroup label={`General Smart Codes ${isPro ? '' : '(PRO)'}`}>

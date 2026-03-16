@@ -2,6 +2,7 @@ import { getAtom } from '../../../GlobalStates/BitStore'
 import { $bits } from '../../../GlobalStates/GlobalStates'
 import bitsFetch from '../../../Utils/bitsFetch'
 import { __ } from '../../../Utils/i18nwrap'
+import { saveConnectedIntegrationApp } from '../integrationHelper'
 
 export const handleInput = (e, formID, marketingHubConf, setMarketingHubConf, setisLoading, setSnackbar, isNew, error, setError) => {
   let newConf = { ...marketingHubConf }
@@ -166,6 +167,7 @@ const tokenHelper = (grantToken, confTmp, setConf, setisAuthorized, setisLoading
         const newConf = { ...confTmp }
         newConf.tokenDetails = result.data
         setConf(newConf)
+        saveConnectedIntegrationApp(newConf)
         setisAuthorized(true)
         setSnackbar({ show: true, msg: __('Authorized Successfully') })
       } else if ((result && result.data && result.data.data) || (!result.success && typeof result.data === 'string')) {

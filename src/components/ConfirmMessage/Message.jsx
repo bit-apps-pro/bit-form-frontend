@@ -370,8 +370,26 @@ function Message({ id, msgItem }) {
                     type="button"
                   >
                     <svg className={`${css(msgStyles.closeIcon)}`} viewBox="0 0 30 30">
-                      <line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" x1="4" y1="3.88" x2="26" y2="26.12" />
-                      <line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" x1="26" y1="3.88" x2="4" y2="26.12" />
+                      <line
+                        fill="none"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        x1="4"
+                        y1="3.88"
+                        x2="26"
+                        y2="26.12"
+                      />
+                      <line
+                        fill="none"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        x1="26"
+                        y1="3.88"
+                        x2="4"
+                        y2="26.12"
+                      />
                     </svg>
                   </button>
                   <div><RenderHtml html={msgItem?.msg} /></div>
@@ -428,7 +446,11 @@ function Message({ id, msgItem }) {
                   <ProOverlay />
                   <div className={css({ dy: 'flex', fd: 'column', p: '0px 20px', rg: 5 })}>
                     <div className={css({ flx: 'align-center', cg: 5 })}>
-                      <span className={css(uiStyles.label, uiStyles.backgrounLabel)}>Message Background Color</span>
+                      <span
+                        className={css(uiStyles.label, uiStyles.backgrounLabel)}
+                      >
+                        Message Background Color
+                      </span>
                       <input
                         type="color"
                         name="background"
@@ -445,7 +467,11 @@ function Message({ id, msgItem }) {
                       />
                     </div>
                     <div className={css({ flx: 'align-center', cg: 5 })}>
-                      <span className={css(uiStyles.label, uiStyles.backgrounLabel)}>Message Text Color</span>
+                      <span
+                        className={css(uiStyles.label, uiStyles.backgrounLabel)}
+                      >
+                        Message Text Color
+                      </span>
                       <input
                         type="color"
                         name="color"
@@ -462,7 +488,11 @@ function Message({ id, msgItem }) {
                       />
                     </div>
                     <div className={css({ flx: 'align-center', cg: 5 })}>
-                      <span className={css(uiStyles.label, uiStyles.backgrounLabel)}>Close Button Background Color</span>
+                      <span
+                        className={css(uiStyles.label, uiStyles.backgrounLabel)}
+                      >
+                        Close Button Background Color
+                      </span>
                       <select
                         name="closeColorType"
                         className={css({ w: 80 }, uiStyles.selectInput)}
@@ -488,7 +518,11 @@ function Message({ id, msgItem }) {
                       />
                     </div>
                     <div className={css({ flx: 'align-center', cg: 5 })}>
-                      <span className={css(uiStyles.label, uiStyles.backgrounLabel)}>Close icon color</span>
+                      <span
+                        className={css(uiStyles.label, uiStyles.backgrounLabel)}
+                      >
+                        {__('Close Icon Color')}
+                      </span>
                       <select
                         name="closeIconColorType"
                         className={css({ w: 80 }, uiStyles.selectInput)}

@@ -16,6 +16,8 @@ import HiddenField from './Fields/HiddenField'
 import Html from './Fields/Html'
 import HtmlSelect from './Fields/HtmlSelect'
 import Image from './Fields/Image'
+import ImageSelectField from './Fields/ImageSelectField'
+import MollieField from './Fields/MollieField'
 import PaypalField from './Fields/PaypalField'
 import PhoneNumberField from './Fields/PhoneNumberField'
 import RadioBox from './Fields/RadioBox'
@@ -24,14 +26,19 @@ import RazorpayField from './Fields/RazorpayField'
 import ReCaptchaV2 from './Fields/ReCaptchaV2'
 import RepeaterField from './Fields/RepeaterField'
 import SectionField from './Fields/SectionField'
+import ShortcodeField from './Fields/Shortcode'
 import SignatureField from './Fields/SignatureField'
+import SliderField from './Fields/SliderField'
 import StripeField from './Fields/StripeField'
 import SubmitBtn from './Fields/SubmitBtn'
 import TextArea from './Fields/TextArea'
 import TextField from './Fields/TextField'
 import TitleField from './Fields/TitleField'
-import ImageSelectField from './Fields/ImageSelectField'
 import TurnstileField from './Fields/TurnstileField'
+import GDPRAgreement from './Fields/GDPRAgreement'
+import HCaptchaField from './Fields/HCaptchaField'
+import AdvancedDateTimeField from './Fields/AdvancedDateTimeField'
+import Spacer from './Fields/SpacerField'
 
 // import NewDropDown from './Fields/NewDropDown'
 /*
@@ -92,14 +99,20 @@ function MapComponents({
       return <ReCaptchaV2 fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} />
     case 'decision-box':
       return <DecisionBox fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} fieldData={fieldData} onBlurHandler={onBlurHandler} resetFieldValue={resetFieldValue} />
+    case 'gdpr':
+      return <GDPRAgreement fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} fieldData={fieldData} onBlurHandler={onBlurHandler} resetFieldValue={resetFieldValue} />
     case 'html':
       return <Html fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} fieldData={fieldData} resetFieldValue={resetFieldValue} />
+    case 'shortcode':
+      return <ShortcodeField fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} fieldData={fieldData} resetFieldValue={resetFieldValue} />
     case 'button':
       return <Button fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} fieldData={fieldData} buttonDisabled={buttonDisabled} handleReset={handleReset} />
     case 'paypal':
       return <PaypalField isBuilder={isBuilder} styleClasses={styles.fields[fieldKey]?.classes} fieldKey={fieldKey} formID={formID} attr={atts} contentID={contentID} fieldData={fieldData} resetFieldValue={resetFieldValue} handleFormValidationErrorMessages={handleFormValidationErrorMessages} />
     case 'stripe':
       return <StripeField isBuilder={isBuilder} styleClasses={styles.fields[fieldKey]?.classes} fieldKey={fieldKey} formID={formID} attr={atts} contentID={contentID} fieldData={fieldData} resetFieldValue={resetFieldValue} handleFormValidationErrorMessages={handleFormValidationErrorMessages} />
+    case 'mollie':
+      return <MollieField isBuilder={isBuilder} styleClasses={styles.fields[fieldKey]?.classes} fieldKey={fieldKey} formID={formID} attr={atts} contentID={contentID} fieldData={fieldData} resetFieldValue={resetFieldValue} handleFormValidationErrorMessages={handleFormValidationErrorMessages} />
     case 'razorpay':
       // return <RazorPay fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} contentID={contentID} formID={formID} attr={atts} buttonDisabled={buttonDisabled} resetFieldValue={resetFieldValue} handleFormValidationErrorMessages={handleFormValidationErrorMessages} />
       return <RazorpayField fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} contentID={contentID} formID={formID} attr={atts} buttonDisabled={buttonDisabled} resetFieldValue={resetFieldValue} handleFormValidationErrorMessages={handleFormValidationErrorMessages} />
@@ -109,6 +122,8 @@ function MapComponents({
       return <Image fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} />
     case 'divider':
       return <Divider fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} />
+    case 'spacer':
+      return <Spacer fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} />
     case 'currency':
       return <CurrencyField fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} contentID={contentID} />
     case 'country':
@@ -127,6 +142,12 @@ function MapComponents({
       return <ImageSelectField fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} onBlurHandler={onBlurHandler} resetFieldValue={resetFieldValue} />
     case 'turnstile':
       return <TurnstileField fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} onBlurHandler={onBlurHandler} resetFieldValue={resetFieldValue} />
+    case 'hcaptcha':
+      return <HCaptchaField fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} onBlurHandler={onBlurHandler} resetFieldValue={resetFieldValue} />
+    case 'range':
+      return <SliderField fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} onBlurHandler={onBlurHandler} resetFieldValue={resetFieldValue} />
+    case 'advanced-datetime':
+      return <AdvancedDateTimeField fieldKey={fieldKey} styleClasses={styles.fields[fieldKey]?.classes} formID={formID} attr={atts} onBlurHandler={onBlurHandler} resetFieldValue={resetFieldValue} />
     case 'blank':
       return <div className="blnk-blk drag" />
     default:

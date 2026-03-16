@@ -1,11 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { __ } from '../../../Utils/i18nwrap'
 import AuthorizeBtn from '../AuthorizeBtn'
-import NextBtn from '../NextBtn'
 import { fetchAllTags, handleAuthorize } from './GroundhoggCommonFunc'
 
 export default function GroundhoggAuthorization({
-  formID, groundhoggConf, setGroundhoggConf, step, setstep, isLoading, setIsLoading, setSnackbar, isInfo,
+  formID, groundhoggConf, setGroundhoggConf, step, setstep, isLoading, setIsLoading, setSnackbar, isInfo, authorizedAction,
 }) {
   const [isAuthorized, setisAuthorized] = useState(false)
   const [error, setError] = useState({ token: '', public_key: '', domainName: '' })
@@ -27,10 +26,16 @@ export default function GroundhoggAuthorization({
     setGroundhoggConf(newConf)
   }
 
+  useEffect(() => {
+    if (isAuthorized) {
+      authorizedAction()
+    }
+  }, [isAuthorized])
+
   return (
     <div
       className="btcd-stp-page"
-      style={{ ...{ width: step === 1 && 900 }, ...{ height: step === 1 && 'auto' } }}
+      style={{ width: 900, height: 'auto' }}
     >
       <div className="mt-3">
         <b>{__('Integration Name:')}</b>
@@ -99,10 +104,10 @@ export default function GroundhoggAuthorization({
             )}
           />
           <br />
-          <NextBtn
+          {/* <NextBtn
             nextPageHandler={() => nextPage()}
             disabled={!isAuthorized}
-          />
+          /> */}
         </>
       )}
     </div>

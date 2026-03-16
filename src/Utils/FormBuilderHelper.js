@@ -2,17 +2,22 @@
 /* eslint-disable no-param-reassign */
 import parse from 'html-react-parser'
 import { create } from 'mutative'
-import { $payments, $reCaptchaV2, $turnstile } from '../GlobalStates/AppSettingsStates'
+import { $globalMessages, $hCaptcha, $payments, $reCaptchaV2, $turnstile } from '../GlobalStates/AppSettingsStates'
 import { getAtom, setAtom } from '../GlobalStates/BitStore'
+import { $activeBuilderStep } from '../GlobalStates/FormBuilderStates'
 import {
   $additionalSettings,
   $alertModal,
+  $allLayouts,
   $bits,
-  $breakpoint, $builderHistory, $builderHookStates, $colorScheme, $fields, $formId, $layouts, $nestedLayouts, $proModal, $selectedFieldId, $updateBtn,
+  $breakpoint, $builderHistory,
+  $builderHookStates,
+  $colorScheme, $fields, $formId, $formInfo, $layouts, $nestedLayouts, $proModal, $selectedFieldId, $updateBtn,
 } from '../GlobalStates/GlobalStates'
 import { $styles } from '../GlobalStates/StylesState'
 import { $themeColors } from '../GlobalStates/ThemeColorsState'
 import { $themeVars } from '../GlobalStates/ThemeVarsState'
+import conversationalStyles from '../components/style-new/conversational-themes/conversationalStyles'
 import { addDefaultStyleClasses, sortArrOfObjByMultipleProps } from '../components/style-new/styleHelpers'
 import { IS_PRO, deepCopy } from './Helpers'
 import { filterFieldTypesForRepeater, filterFieldTypesForSectionField } from './StaticData/allStaticArrays'
@@ -143,8 +148,9 @@ export function convertLayout(lay, tc, fieldMinW = 1) {
 
   // insert first item
   const [firstLayoutItem] = layout
+  if (!firstLayoutItem) return []
   // if item w is grater than tc then make it to max tc
-  if (firstLayoutItem.w > tc) {
+  if (firstLayoutItem?.w > tc) {
     firstLayoutItem.w = tc
   }
   newLayout.push({ ...firstLayoutItem, x: 0, y: 0 })
@@ -229,9 +235,13 @@ const FIELDS_EXTRA_ATTR = {
   paypal: { pro: true, onlyOne: true, setDefaultPayConfig: true },
   razorpay: { pro: true, onlyOne: true, setDefaultPayConfig: true },
   stripe: { pro: true, onlyOne: true, setDefaultPayConfig: true },
+  mollie: { pro: true, onlyOne: true, setDefaultPayConfig: true },
+  shortcode: { pro: true },
   'advanced-file-up': { pro: true },
+  'advanced-datetime': { pro: true },
   recaptcha: { onlyOne: true },
   turnstile: { onlyOne: true },
+  hcaptcha: { onlyOne: true },
   submit: { onlyOne: true },
   reset: { onlyOne: true },
   signature: { pro: true },
@@ -246,27 +256,32 @@ export const checkFieldsExtraAttr = (field, parentField) => {
   const paymentsIntegs = getAtom($payments)
   const reCaptchaV2 = getAtom($reCaptchaV2)
   const turnstile = getAtom($turnstile)
+  const hCaptcha = getAtom($hCaptcha)
   // eslint-disable-next-line no-undef
   const allFields = getAtom($fields)
   const additionalSettings = getAtom($additionalSettings)
   const bits = getAtom($bits)
   const bitformBaseUrl = `${bits.siteURL}${bits.baseURL}`
+
   if (field.lbl === 'Select Country' && !IS_PRO) {
     return {
       validType: 'pro', msg: __('Country Field available in Pro version of Bit Form.'),
     }
   }
-
   if (field.typ === 'recaptcha' && additionalSettings?.enabled?.recaptchav3) {
     return { validType: 'onlyOne', msg: __('You can use either ReCaptcha-V2 or ReCaptcha-V3 in a form. to use ReCaptcha-V2 disable the ReCaptcha-V3 from the Form Settings.') }
   }
 
   if (field.typ === 'recaptcha' && (!reCaptchaV2?.secretKey || !reCaptchaV2?.siteKey)) {
-    return { validType: 'keyEmpty', msg: parse(__(`<p>To use reCaptchav2, you must set site key and secret from <a href="${bitformBaseUrl}/app-settings/recaptcha/reCaptchaV2" target="_blank">app settings</a>. After completing the setup, please refresh this page to use the reCaptchav2.</p>`)) }
+    return { validType: 'keyEmpty', msg: parse(__(`<p style="font-size: 16px">To use reCaptchav2, you must set Site Key and Secret Key from <a href="${bitformBaseUrl}/app-settings/recaptcha/reCaptchaV2" target="_blank"><strong>App Settings</strong></a>. After completing the setup, please refresh this page to use the reCaptchav2.  <br /> <br /><strong style="color:red;">Remember:</strong> Please save your form before going to <a href="${bitformBaseUrl}/app-settings/recaptcha/reCaptchaV2" target="_blank"><strong>App Settings</strong></a></p>`)) }
   }
 
   if (field.typ === 'turnstile' && (!turnstile?.secretKey || !turnstile?.siteKey)) {
-    return { validType: 'keyEmpty', msg: parse(__(`<p>To use Turnstile, you must set site key and secret from <a href="${bitformBaseUrl}/app-settings/recaptcha/turnstile">app settings</a>. After completing the setup, please refresh this page to use the turnstile.</p>`)) }
+    return { validType: 'keyEmpty', msg: parse(__(`<p style="font-size: 16px">To use Turnstile, you must set Site Key and Secret Key from <a href="${bitformBaseUrl}/app-settings/recaptcha/turnstile" target="_blank"><strong>App Settings</strong></a>. After completing the setup, please refresh this page to use the Turnstile.  <br /> <br /><strong style="color:red;">Remember:</strong> Please save your form before going to <a href="${bitformBaseUrl}/app-settings/recaptcha/turnstile" target="_blank"><strong>App Settings</strong></a></p>`)) }
+  }
+
+  if (field.typ === 'hcaptcha' && (!hCaptcha?.secretKey || !hCaptcha?.siteKey)) {
+    return { validType: 'keyEmpty', msg: parse(__(`<p style="font-size: 16px">To use hCaptcha, you must set Site Key and Secret Key from <a href="${bitformBaseUrl}/app-settings/recaptcha/hcaptcha" target="_blank"><strong>App Settings</strong></a>. After completing the setup, please refresh this page to use the reCaptchav2.  <br /> <br /><strong style="color:red;">Remember:</strong> Please save your form before going to <a href="${bitformBaseUrl}/app-settings/recaptcha/hcaptcha" target="_blank"><strong>App Settings</strong></a></p>`)) }
   }
 
   // eslint-disable-next-line no-undef
@@ -297,6 +312,22 @@ export const checkFieldsExtraAttr = (field, parentField) => {
     }
   }
 
+  const paymentTypes = ['paypal', 'stripe', 'razorpay', 'mollie']
+
+  if (paymentsIntegs && paymentTypes.includes(field.typ)) {
+    const payConf = paymentsIntegs.filter(pay => pay.type.toLowerCase() === field.typ)
+    if (!payConf.length) {
+      const fieldType = field.typ
+      const typ = {
+        stripe: 'Stripe',
+        paypal: 'PayPal',
+        razorpay: 'Razorpay',
+        mollie: 'Mollie',
+      }
+      return { validType: 'notConfigured', msg: parse(__(`<p style="font-size: 16px">To use ${typ[fieldType]}, you must configure ${typ[fieldType]} from <a href="${bitformBaseUrl}/app-settings/payments/${typ[fieldType]}" target="_blank"><strong>App Settings</strong></a>. After completing the setup, please refresh this page to use the ${typ[fieldType]}. <br /> <br /><strong style="color:red;">Remember:</strong> Please save your form before going to <a href="${bitformBaseUrl}/app-settings/payments/${typ[fieldType]}" target="_blank"><strong>App Settings</strong></a></p>`)) }
+    }
+  }
+
   return {}
 }
 
@@ -308,6 +339,11 @@ export const handleFieldExtraAttr = (fieldData, parentField = 'root') => {
   }
 
   if (extraAttr.validType === 'onlyOne' || extraAttr.validType === 'keyEmpty') {
+    setAtom($alertModal, { show: true, msg: extraAttr.msg, cancelBtn: false })
+    return 0
+  }
+
+  if (extraAttr.validType === 'notConfigured') {
     setAtom($alertModal, { show: true, msg: extraAttr.msg, cancelBtn: false })
     return 0
   }
@@ -383,9 +419,12 @@ export function layoutOrderSortedByLg(lay, gridCols) {
 
   newLay.lg = sortLayoutItemsByRowCol(tmpLay.lg)
   newLay.md = sortLayoutByLg(tmpLay.md, newLay.lg)
+
   newLay.sm = sortLayoutByLg(tmpLay.sm, newLay.lg)
+
   const minFieldWidthSm = tmpLay.sm.reduce((prv, cur) => (prv < cur ? prv : cur))
   const minFieldWidthMd = tmpLay.md.reduce((prv, cur) => (prv < cur ? prv : cur))
+
   newLay.md = convertLayout(newLay.md, gridCols.md, minFieldWidthMd)
   newLay.sm = convertLayout(newLay.sm, gridCols.sm, minFieldWidthSm)
 
@@ -565,7 +604,7 @@ const getElementTotalHeight = (elm) => {
 
 export const fitAllLayoutItems = (lays) => {
   const newLays = deepCopy(lays)
-  for (let i = 0; i < newLays.lg.length; i += 1) {
+  for (let i = 0; i < newLays?.lg?.length; i += 1) {
     newLays.lg[i].h = Math.ceil(getElementTotalHeight(selectInGrid(`.${newLays.lg[i].i}-fld-wrp`))) || newLays.lg[i].h
     newLays.md[i].h = Math.ceil(getElementTotalHeight(selectInGrid(`.${newLays.md[i].i}-fld-wrp`))) || newLays.md[i].h
     newLays.sm[i].h = Math.ceil(getElementTotalHeight(selectInGrid(`.${newLays.sm[i].i}-fld-wrp`))) || newLays.sm[i].h
@@ -650,7 +689,7 @@ export const reCalculateFldHeights = (fieldKey) => {
       }
     })
     setAtom($builderHookStates, newBuilderHookState)
-  } else if (isExistInLayout) {
+  } else if (!fieldKey) {
     const newBuilderHookState = create(builderHookState, draft => {
       draft.reCalculateFieldHeights += 1
     })
@@ -669,16 +708,36 @@ export const reCalculateFldHeights = (fieldKey) => {
   }
 }
 
-export const getParentFieldKey = (fieldKey) => {
+export const getParentFieldKey = (childFieldKey) => {
   const nestedLayout = getAtom($nestedLayouts)
   let parentFieldKey = ''
-  Object.entries(nestedLayout).forEach(([key, layout]) => {
-    if (layout.lg.find(itm => itm.i === fieldKey)) {
+  Object.entries(nestedLayout || {}).forEach(([key, layout]) => {
+    if (layout.lg.find(itm => itm.i === childFieldKey)) {
+      parentFieldKey = key
+      return parentFieldKey
+    }
+    if (layout.md.find(itm => itm.i === childFieldKey)) {
+      parentFieldKey = key
+      return parentFieldKey
+    }
+    if (layout.sm.find(itm => itm.i === childFieldKey)) {
       parentFieldKey = key
       return parentFieldKey
     }
   })
   return parentFieldKey
+}
+
+export const isFieldInNestedLayouts = (fieldKey, breakpoint = 'lg') => {
+  const nestedLayout = getAtom($nestedLayouts)
+  let isInNestedLayout = false
+  Object.entries(nestedLayout).forEach(([key, layout]) => {
+    if (layout[breakpoint]?.some(itm => itm.i === fieldKey)) {
+      isInNestedLayout = true
+      return isInNestedLayout
+    }
+  })
+  return isInNestedLayout
 }
 
 export const generateHistoryData = (element, fieldKey, path, changedValue, state) => {
@@ -699,12 +758,21 @@ export const generateHistoryData = (element, fieldKey, path, changedValue, state
 }
 
 export const getLatestState = (stateName) => {
-  if (stateName === 'fields') return getAtom($fields)
-  if (stateName === 'styles') return getAtom($styles)
-  if (stateName === 'themeVars') return getAtom($themeVars)
-  if (stateName === 'themeColors') return getAtom($themeColors)
-  if (stateName === 'breakpoint') return getAtom($breakpoint)
-  if (stateName === 'colorScheme') return getAtom($colorScheme)
+  // conver if statement to switch
+  switch (stateName) {
+    case 'fields': return getAtom($fields)
+    case 'styles': return getAtom($styles)
+    case 'themeVars': return getAtom($themeVars)
+    case 'themeColors': return getAtom($themeColors)
+    case 'breakpoint': return getAtom($breakpoint)
+    case 'colorScheme': return getAtom($colorScheme)
+    case 'allLayouts': return getAtom($allLayouts)
+    case 'formInfo': return getAtom($formInfo)
+    case 'layouts': return getAtom($layouts)
+    case 'nestedLayouts': return getAtom($nestedLayouts)
+    case 'activeBuilderStep': return getAtom($activeBuilderStep)
+    default: return undefined
+  }
 }
 
 const elementLabel = (element) => {
@@ -784,6 +852,7 @@ export const getResizableHandles = fieldType => {
   switch (fieldType) {
     // case 'divider':
     case 'textarea':
+    case 'spacer':
     case 'image':
     case 'signature':
       return ['se', 'e']
@@ -794,6 +863,7 @@ export const getResizableHandles = fieldType => {
 export const setRequired = (e, callBack) => {
   const fields = getAtom($fields)
   const fldKey = getAtom($selectedFieldId)
+  const globalMessages = getAtom($globalMessages)
   const fieldData = deepCopy(fields[fldKey])
   if (e.target.checked) {
     const tmp = { ...fieldData.valid }
@@ -803,7 +873,7 @@ export const setRequired = (e, callBack) => {
     fieldData.valid = tmp
     if (!fieldData.err) fieldData.err = {}
     if (!fieldData.err.req) fieldData.err.req = {}
-    fieldData.err.req.dflt = '<p style="margin:0">This field is required</p>'
+    fieldData.err.req.dflt = globalMessages?.err?.[fieldData.typ]?.req || globalMessages?.err?.req || `<p style="margin:0">${__('This field is required')}</p>`
     fieldData.err.req.show = true
     addDefaultStyleClasses(fldKey, 'reqSmbl')
   } else {
@@ -1005,6 +1075,11 @@ export const getNestedLayoutHeight = (fieldKey) => {
   }, { maxHeightsByY: {}, totalHeight: 0 }).totalHeight
 }
 
+export const getNestedFieldKeysFromNestedLayouts = () => {
+  const nestedLayouts = getAtom($nestedLayouts)
+  return Object.keys(nestedLayouts || {})
+}
+
 export const isValidJsonString = (str) => {
   try {
     if (!JSON.parse(str)) return false
@@ -1048,3 +1123,16 @@ export const splitFileLink = (fileId) => {
   }
   return fileId
 }
+
+export const getGeneratedConversationalStyleObject = (formId) => {
+  const formInfo = getAtom($formInfo)
+  const fields = getAtom($fields)
+  return conversationalStyles(formId, formInfo?.conversationalSettings, fields)
+}
+
+export const setLocalItem = (itemName, itemValue) => localStorage.setItem(itemName, itemValue)
+
+export const getLocalItem = (itemName) => localStorage.getItem(itemName)
+
+export const generateBackslashPattern = str => str.replace(/\$_bf_\$/g, '\\')
+export const escapeBackslashPattern = str => str.replace(/\\/g, '$_bf_$')

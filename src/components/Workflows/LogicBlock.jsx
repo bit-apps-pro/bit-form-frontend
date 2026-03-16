@@ -4,6 +4,7 @@ import MultiSelect from 'react-multiple-select-dropdown-lite'
 import 'react-multiple-select-dropdown-lite/dist/index.css'
 import { $fields } from '../../GlobalStates/GlobalStates'
 import CloseIcn from '../../Icons/CloseIcn'
+import CopyIcn from '../../Icons/CopyIcn'
 import TrashIcn from '../../Icons/TrashIcn'
 import { IS_PRO } from '../../Utils/Helpers'
 import conditionalLogicsList from '../../Utils/StaticData/ConditionalLogicsList'
@@ -23,6 +24,7 @@ function LogicBlock({
   subSubLgcInd,
   value,
   addInlineLogic,
+  cloneInLineLogic,
   changeLogic,
   logicValue,
   changeValue,
@@ -39,7 +41,7 @@ function LogicBlock({
   let fieldKey = ''
   formFields?.find?.(itm => {
     if (itm.key === fieldVal) {
-      if (itm.type.match(/^(check|radio|select|html-select|image-select)$/)) {
+      if (itm.type.match(/^(check|radio|select|html-select|image-select|hidden)$/)) {
         type = 'text'
       } else {
         type = itm.type
@@ -72,7 +74,7 @@ function LogicBlock({
         return acc
       }, [])
     }
-    if (type === 'decision-box') {
+    if (['decision-box', 'gdpr'].includes(type)) {
       const fldData = fields?.[fieldKey]
       return [
         { label: fldData?.msg?.checked, value: fldData?.msg?.checked },
@@ -133,7 +135,22 @@ function LogicBlock({
     return 'Smart Key'
   }
 
-  const notNeededValField = ['null', 'not_null', 'on_click']
+  // this filter function is remove "'" from contentValue like "'2020-12-12'" to set valid date value
+  const filterDateValue = contentValue => {
+    if (type.match(/date|advanced-datetime/g)) {
+      return contentValue?.replace(/^'|'$/g, '')
+    }
+    return contentValue
+  }
+  // this alter function is add "'" from contentValue like "'2020-12-12'" for Avoid math execution in conditional logic
+  const alterDateValue = rawValue => {
+    if (type.match(/date|advanced-datetime/g) && rawValue?.includes('-')) {
+      return `'${rawValue}'`
+    }
+    return rawValue
+  }
+
+  const notNeededValField = ['change', 'null', 'not_null', 'on_click']
   return (
     <div className={`${css(lgcStyle.lgcBlk)} btcd-logic-blk`}>
       <div className={css(lgcStyle.processDgrm)}>
@@ -231,10 +248,10 @@ function LogicBlock({
                 ) : (
                   <CalculatorField
                     label="Value"
-                    type={type.match(/select|check|radio|number/g) ? 'text' : type}
+                    type={type.match(/select|check|radio|number|range/g) ? 'text' : type}
                     disabled={logicValue === 'null' || logicValue === 'not_null'}
-                    onChange={val => changeValue(val, lgcInd, subLgcInd, subSubLgcInd)}
-                    value={value || ''}
+                    onChange={val => changeValue(alterDateValue(val), lgcInd, subLgcInd, subSubLgcInd)}
+                    value={filterDateValue(value) || ''}
                     options={getOptions()}
                     formFields={formFields}
                   />
@@ -263,8 +280,8 @@ function LogicBlock({
                         label="Min Value"
                         type={type}
                         disabled={logicValue === 'null' || logicValue === 'not_null'}
-                        onChange={e => changeValue(e.target.value, lgcInd, subLgcInd, subSubLgcInd, 'min')}
-                        value={value.min || ''}
+                        onChange={e => changeValue(alterDateValue(e.target.value), lgcInd, subLgcInd, subSubLgcInd, 'min')}
+                        value={filterDateValue(value.min) || ''}
                       />
                     )}
                 </div>
@@ -286,8 +303,8 @@ function LogicBlock({
                         label="Max Value"
                         type={type}
                         disabled={logicValue === 'null' || logicValue === 'not_null'}
-                        onChange={e => changeValue(e.target.value, lgcInd, subLgcInd, subSubLgcInd, 'max')}
-                        value={value.max || ''}
+                        onChange={e => changeValue(alterDateValue(e.target.value), lgcInd, subLgcInd, subSubLgcInd, 'max')}
+                        value={filterDateValue(value.max) || ''}
                       />
                     )}
                 </div>
@@ -298,6 +315,13 @@ function LogicBlock({
       </div>
 
       <div className="btcd-li-side-btn">
+        <Button
+          onClick={() => cloneInLineLogic(lgcInd, subLgcInd, subSubLgcInd)}
+          icn
+          className="ml-2 white sh-sm"
+        >
+          <CopyIcn size="16" />
+        </Button>
         <Button
           onClick={() => delLogic(lgcInd, subLgcInd, subSubLgcInd)}
           icn

@@ -33,6 +33,7 @@ export default function MultiStepCommonStyle({ element, componentTitle, isMultis
   const [isLoading, setIsLoading] = useState(true)
   const [stateController, setStateController] = useState('')
   const actualElement = getActualElement(formID, element, stateController)
+  console.log('actualElement', actualElement)
   const formWrpStylesObj = styles.form?.[actualElement]
   const formWrpStylesPropertiesArr = Object.keys(formWrpStylesObj || {})
 
@@ -61,6 +62,7 @@ export default function MultiStepCommonStyle({ element, componentTitle, isMultis
 
   const getPropertyPath = (cssProperty) => `form->${actualElement}->${cssProperty}`
 
+  console.log('styles', styles)
   const delPropertyHandler = (property) => {
     setStyles(prvStyles => create(prvStyles, drft => {
       if (Array.isArray(property)) {
@@ -123,22 +125,22 @@ export default function MultiStepCommonStyle({ element, componentTitle, isMultis
     ]
 
     switch (prop) {
-      // case 'background-color':
-      //   return (
-      //     <SimpleColorPicker
-      //       title="Background Color"
-      //       subtitle={`${componentTitle} Background Color`}
-      //       value={getValueFromStateVar(themeColors, formWrpStylesObj?.['background-color'])}
-      //       modalId={`${element}-cnr-bdc`}
-      //       stateObjName="styles"
-      //       propertyPath={objPaths.paths?.['background-color']}
-      //       deleteable
-      //       delPropertyHandler={() => delPropertyHandler('background-color')}
-      //       clearHandler={() => clearHandler('background-color')}
-      //       allowImportant
-      //       canSetVariable
-      //     />
-      //   )
+      case 'background-color':
+        return (
+          <SimpleColorPicker
+            title="Background Color"
+            subtitle={`${componentTitle} Background Color`}
+            value={getValueFromStateVar(themeColors, formWrpStylesObj?.['background-color'])}
+            modalId={`${element}-cnr-bdc`}
+            stateObjName="styles"
+            propertyPath={objPaths.paths?.['background-color']}
+            deleteable
+            delPropertyHandler={() => delPropertyHandler('background-color')}
+            clearHandler={() => clearHandler('background-color')}
+            allowImportant
+            canSetVariable
+          />
+        )
 
       case 'background':
         return (
@@ -321,6 +323,7 @@ export default function MultiStepCommonStyle({ element, componentTitle, isMultis
 }
 
 const getActualElement = (formID, element, state) => {
+  state = state?.toLowerCase()
   let pseudo = state ? `:${state}` : ''
   if (state === 'active' || state === 'disabled' || state === 'completed') pseudo = `.${state}`
   switch (element) {

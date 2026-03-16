@@ -2,14 +2,16 @@
 import { __ } from '@wordpress/i18n'
 import { useEffect } from 'react'
 import MultiSelect from 'react-multiple-select-dropdown-lite'
+import PlusIcn from '../../../Icons/PlusIcn'
 import Loader from '../../Loaders/Loader'
+import { getConnectedAppList } from '../integrationHelper'
 import { addFieldMap } from '../IntegrationHelpers/IntegrationHelpers'
 import ActiveCampaignActions from './ActiveCampaignActions'
 import { refreshActiveCampaingHeader, refreshActiveCampaingList, refreshActiveCampaingTags } from './ActiveCampaignCommonFunc'
 import ActiveCampaignFieldMap from './ActiveCampaignFieldMap'
 
 export default function ActiveCampaignIntegLayout({
-  formID, formFields, activeCampaingConf, setActiveCampaingConf, isLoading, setIsLoading, setSnackbar,
+  formID, formFields, activeCampaingConf, setActiveCampaingConf, isLoading, setIsLoading, setSnackbar, setShowMdl,
 }) {
   const setTags = (val) => {
     const newConf = { ...activeCampaingConf }
@@ -22,10 +24,10 @@ export default function ActiveCampaignIntegLayout({
   }
 
   const handleInput = (e) => {
-    const listid = e.target.value
+    // const listid = e.target.value
     const newConf = { ...activeCampaingConf }
-    if (listid) {
-      newConf.listId = listid
+    if (e.target.value) {
+      newConf[e.target.name] = e.target.value
     } else {
       delete newConf.listId
     }
@@ -41,6 +43,34 @@ export default function ActiveCampaignIntegLayout({
 
   return (
     <>
+      <br />
+      <b className="wdt-200 d-in-b">{__('Connected API:')}</b>
+      <select
+        className="btcd-paper-inp w-5"
+        value={activeCampaingConf.parentAppId}
+        onChange={handleInput}
+        name="parentAppId"
+      >
+        <option value="">{__('Select an App')}</option>
+        {
+          getConnectedAppList([activeCampaingConf.type]).map(app => (
+            <option key={app.id} value={app.id}>
+              {app.integration_name}
+            </option>
+          ))
+        }
+      </select>
+      <button
+        aria-label="Add New"
+        onClick={() => setShowMdl(true)}
+        className="icn-btn sh-sm ml-2 mr-2 tooltip"
+        style={{ '--tooltip-txt': '"Add New API"' }}
+        type="button"
+        disabled={isLoading}
+      >
+        <PlusIcn size={18} />
+      </button>
+      <br />
       <br />
       <b className="wdt-200 d-in-b">{__('List:')}</b>
       <select

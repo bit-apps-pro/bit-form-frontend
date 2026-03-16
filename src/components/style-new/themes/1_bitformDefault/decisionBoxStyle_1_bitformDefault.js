@@ -68,6 +68,7 @@ export default function decisionBoxStyle_1_bitformDefault({ fk, direction, break
         'justify-content': 'center',
         'align-items': 'center',
         'border-radius': '5px',
+        'flex-shrink': 0,
       },
       [`.${fk}-svgwrp`]: {
         height: '12px',

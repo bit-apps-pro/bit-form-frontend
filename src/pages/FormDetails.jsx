@@ -1,12 +1,14 @@
 import loadable from '@loadable/component'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useResetAtom } from 'jotai/utils'
+import { create } from 'mutative'
 import { memo, useEffect, useState } from 'react'
 import { useFela } from 'react-fela'
 import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'
 import bitIcn from '../../logo.svg'
+import { $activeBuilderStep } from '../GlobalStates/FormBuilderStates'
 import {
-  $additionalSettings, $allLayouts, $breakpoint, $breakpointSize, $builderHelperStates, $builderSettings, $colorScheme, $confirmations, $customCodes, $deletedFldKey, $fieldLabels, $fields, $formId, $formInfo, $integrations, $isNewThemeStyleLoaded,
+  $additionalSettings, $allLayouts, $bits, $breakpoint, $breakpointSize, $builderHelperStates, $builderSettings, $colorScheme, $confirmations, $customCodes, $deletedFldKey, $fieldLabels, $fields, $formId, $formInfo, $formPermissions, $integrations, $isNewThemeStyleLoaded,
   $mailTemplates,
   $nestedLayouts, $newFormId,
   $pdfTemplates,
@@ -23,6 +25,7 @@ import { addToBuilderHistory, getSessionStorageStates } from '../Utils/FormBuild
 import { clearAllSWRCache, getStatesToReset, hideWpMenu, showWpMenu } from '../Utils/Helpers'
 import templateProvider from '../Utils/StaticData/form-templates/templateProvider'
 import bitsFetch from '../Utils/bitsFetch'
+import { mergeNestedObj, select } from '../Utils/globalHelpers'
 import FormPreviewBtn from '../components/FormPreviewBtn'
 import BuilderLoader from '../components/Loaders/BuilderLoader'
 import Loader from '../components/Loaders/Loader'
@@ -32,9 +35,9 @@ import UpdateButton from '../components/UpdateButton'
 import ConfirmModal from '../components/Utilities/ConfirmModal'
 import SegmentControl from '../components/Utilities/SegmentControl'
 import navbar from '../styles/navbar.style'
+import Responses from './Responses'
 
 const FormBuilder = loadable(() => import('./FormBuilder'), { fallback: <BuilderLoader /> })
-const FormEntries = loadable(() => import('./FormEntries'), { fallback: <Loader style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh' }} /> })
 const FormSettings = loadable(() => import('./FormSettings'), { fallback: <Loader style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh' }} /> })
 const ReportView = loadable(() => import('./ReportView'), { fallback: <Loader style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh' }} /> })
 
@@ -47,7 +50,7 @@ function FormDetails() {
   const setFields = useSetAtom($fields)
   const setFieldLabels = useSetAtom($fieldLabels)
   const [appFullScreen, setAppFullScreen] = useState(true)
-  const [allResponse, setAllResponse] = useState([])
+  // const [allResponse, setAllResponse] = useState([])
   const [isLoading, setisLoading] = useState(true)
   const updateBtn = useAtomValue($updateBtn)
   const [formInfo, setFormInfo] = useAtom($formInfo)
@@ -57,8 +60,9 @@ function FormDetails() {
   const setPdfTem = useSetAtom($pdfTemplates)
   const setworkFlows = useSetAtom($workflows)
   const setAdditional = useSetAtom($additionalSettings)
-  const [integrations, setIntegration] = useAtom($integrations)
+  const setIntegration = useSetAtom($integrations)
   const setConfirmations = useSetAtom($confirmations)
+  const setFormPermissions = useSetAtom($formPermissions)
   const setReportId = useSetAtom($reportId)
   const setAllLayouts = useSetAtom($allLayouts)
   const setNestedLayouts = useSetAtom($nestedLayouts)
@@ -68,6 +72,7 @@ function FormDetails() {
   const setSavedStylesAndVars = useSetAtom($savedStylesAndVars)
   const setIsNewThemeStyleLoaded = useSetAtom($isNewThemeStyleLoaded)
   const setUpdateBtn = useSetAtom($updateBtn)
+  const setActiveBuilderStep = useSetAtom($activeBuilderStep)
   const newFormId = useAtomValue($newFormId)
   const { css } = useFela()
   const [staticStylesState, setStaticStylesState] = useAtom($staticStylesState)
@@ -79,41 +84,65 @@ function FormDetails() {
   const [deletedFldKey, setDeletedFldKey] = useAtom($deletedFldKey)
   const [breakpointSize, setBreakpointSize] = useAtom($breakpointSize)
   const atomResetters = getStatesToReset().map(stateAtom => useResetAtom(stateAtom))
+  const bits = useAtomValue($bits)
 
   const activePath = () => {
-    const loaciton = useLocation()
-    const pathArray = loaciton.pathname.split('/')
-    return pathArray[2].charAt(0).toUpperCase() + pathArray[2].slice(1)
+    const location = useLocation()
+    const pathArray = location.pathname.split('/')
+    const path = pathArray[2].charAt(0).toUpperCase() + pathArray[2].slice(1)
+    return path === 'Responses' ? 'Entries' : path
   }
 
   const setNewFormInitialStates = () => {
-    const {
-      name,
-      fields,
-      layouts,
-      confirmations,
-      conditions,
-      allThemeColors,
-      allThemeVars,
-      allStyles,
-      additionalSettings,
-    } = templateProvider(formType, newFormId)
-
-    setFormInfo({ formName: name })
-    setFields(fields)
-    setAllLayouts(layouts)
-    setConfirmations(confirmations)
-    setworkFlows(conditions)
-    setAllThemeColors(allThemeColors)
-    setAllThemeVars(allThemeVars)
-    setAllStyles(allStyles)
-    setSavedStylesAndVars({ allThemeColors, allThemeVars, allStyles })
-    setIsNewThemeStyleLoaded(true)
-    addToBuilderHistory({ state: { fields, layouts, allThemeColors, allThemeVars, allStyles } }, false, 0)
-    setisLoading(false)
-    if (additionalSettings) {
-      setAdditional(additionalSettings)
-    }
+    templateProvider(formType, newFormId, bits)
+      .then((themeData) => {
+        const {
+          fields,
+          layouts,
+          confirmations,
+          conditions,
+          allThemeColors,
+          allThemeVars,
+          allStyles,
+          additionalSettings,
+          nestedLayouts,
+          formInfo: templateFormInfo,
+          staticStyles,
+        } = themeData
+        setStaticStylesState(preStyle => create(preStyle, draft => {
+          draft.staticStyles = mergeNestedObj(staticStyles, staticStylesState.staticStyles)
+        }))
+        setFormInfo(templateFormInfo)
+        setFields(fields)
+        setAllLayouts(layouts)
+        setNestedLayouts(nestedLayouts)
+        setConfirmations(confirmations)
+        setworkFlows(conditions)
+        setAllThemeColors(allThemeColors)
+        setAllThemeVars(allThemeVars)
+        setAllStyles(allStyles)
+        setSavedStylesAndVars({ allThemeColors, allThemeVars, allStyles })
+        setIsNewThemeStyleLoaded(true)
+        setActiveBuilderStep(0)
+        addToBuilderHistory({
+          state: {
+            fields, allLayouts: layouts, nestedLayouts, allThemeColors, allThemeVars, allStyles, activeBuilderStep: 0,
+          },
+        }, false, 0)
+        setisLoading(false)
+        if (additionalSettings) {
+          setAdditional(additionalSettings)
+        }
+        setTimeout(() => {
+          select('#update-btn').click()
+        }, 100)
+      })
+      .catch((e) => {
+        console.log('Error in fetching template data:', e)
+        console.warn('Error in fetching template data. file: FormDetails.jsx', 'background: #f00; color: #fff; padding: 5px; border-radius: 5px;')
+        setisLoading(false)
+        navigate('/', { replace: true })
+      })
   }
 
   const onMount = () => {
@@ -184,7 +213,7 @@ function FormDetails() {
       setAllLayouts(sessionLayouts)
       setNestedLayouts(sessionNestedLayouts)
       setFields(sessionFields)
-      addToBuilderHistory({ state: { layouts: sessionLayouts, fields: sessionFields } }, false, 0)
+      addToBuilderHistory({ state: { allLayouts: sessionLayouts, fields: sessionFields, nestedLayouts: sessionNestedLayouts, formInfo: sessionFormInfo, activeBuilderStep: 0 } }, false, 0)
       setBreakpoint(sessionStorageBreakpoint)
       setAllThemeVars(sessionStorageAllThemeVars)
       setAllThemeColors(sessionStorageAllThemeColors)
@@ -216,23 +245,23 @@ function FormDetails() {
             const formsSessionDataFound = handleSessionStorageStates()
             if (!formsSessionDataFound) {
               setAllLayouts(responseData.form_content.layout)
-              addToBuilderHistory({ state: { layouts: responseData.form_content.layout } }, false, 0)
-            }
-            if (!formsSessionDataFound) {
               setNestedLayouts(responseData.form_content.nestedLayout || {})
-              addToBuilderHistory({ state: { nestedLayouts: responseData.form_content.nestedLayout || {} } }, false, 0)
-            }
-            if (!formsSessionDataFound) {
               setFields(responseData.form_content.fields)
-              addToBuilderHistory({ state: { fields: responseData.form_content.fields } }, false, 0)
-            }
-            if (!formsSessionDataFound) {
               setFormInfo(oldInfo => ({ ...oldInfo, ...responseData.form_content.formInfo }))
+              addToBuilderHistory({
+                state: {
+                  allLayouts: responseData.form_content.layout,
+                  nestedLayouts: responseData.form_content.nestedLayout || {},
+                  fields: responseData.form_content.fields,
+                  formInfo: responseData.form_content.formInfo,
+                },
+              }, false, 0)
             }
             setworkFlows(responseData.workFlows)
             setAdditional(responseData.additional)
             setIntegration(responseData.formSettings.integrations)
             setConfirmations(responseData.formSettings.confirmation)
+            setFormPermissions(responseData.formSettings.formPermissions)
             setMailTem(responseData.formSettings.mailTem)
             setPdfTem(responseData.formSettings.pdfTem)
             if (!formsSessionDataFound && responseData.builderSettings) setBuilderSettings(responseData.builderSettings)
@@ -272,7 +301,7 @@ function FormDetails() {
 
   const options = [
     { label: 'Builder' },
-    { label: 'Responses' },
+    { label: 'Entries' },
     { label: 'Settings' },
   ]
 
@@ -280,7 +309,7 @@ function FormDetails() {
     if (value === 'Builder') {
       navigate(`/form/builder/${formType}/${formID}/fields-list`)
     }
-    if (value === 'Responses') {
+    if (value === 'Entries') {
       navigate(`/form/responses/${formType}/${formID}/`)
     }
     if (value === 'Settings') {
@@ -338,18 +367,22 @@ function FormDetails() {
         </div>
       </nav>
       <div className={css(navbar.builder_routes)}>
-
-        <RouteByParams
-          page="responses"
-          formType
-          formID
-          render={(
-            <FormEntries
+        {
+          /**
+           * <FormEntries
               isLoading={isLoading}
               allResp={allResponse}
               setAllResp={setAllResponse}
               integrations={integrations}
             />
+           */
+        }
+        <RouteByParams
+          page="responses"
+          formType
+          formID
+          render={(
+            <Responses />
           )}
         />
         <RouteByParams page="builder" formType formID render={<FormBuilder isLoading={isLoading} />} />

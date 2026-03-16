@@ -106,10 +106,11 @@ export default function BoxSizingUtil({
           show={['icn']}
           width={60}
           noShadow
+          className="mb-2"
         />
         <div className={css(ut.mt2)}>
           <Grow open={controller === 'All'}>
-            <div className={css({ flx: 1, jc: align === 'right' ? 'flex-end' : 'flex-start' })}>
+            <div className={css({ flx: 1, jc: align === 'right' ? 'flex-end' : 'flex-start' , m:5})}>
               <SizeControl
                 min={0}
                 inputHandler={handleValues}
@@ -124,7 +125,7 @@ export default function BoxSizingUtil({
             </div>
           </Grow>
           <Grow open={controller === 'Individual'}>
-            <div className={css({ display: 'grid', 'grid-template-columns': '1fr 1fr', 'grid-gap': '5px' })}>
+            <div className={css({ display: 'grid', 'grid-template-columns': '1fr 1fr', 'grid-gap': '5px', m:5 })}>
               <SizeControl
                 min={0}
                 inputHandler={handleValues}

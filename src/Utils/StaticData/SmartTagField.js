@@ -1,6 +1,19 @@
 /* eslint-disable import/prefer-default-export */
 export const SmartTagField = [
   {
+    id: 50,
+    name: 'bf_all_data',
+    label: 'All Data',
+    type: 'text',
+  },
+  {
+    id: 54,
+    name: 'bf_all_data.onlyValues',
+    label: 'All Data (Only Values)',
+    type: 'text',
+    description: 'Returns only values not hidden and empty fields.',
+  },
+  {
     id: 43,
     name: '_bf_separator',
     label: 'Separator',
@@ -123,7 +136,7 @@ export const SmartTagField = [
   {
     id: 18,
     name: '_bf_user_nice_name',
-    label: 'User Nice Name',
+    label: 'User Nick Name',
     type: 'text',
   },
   {
@@ -253,9 +266,49 @@ export const SmartTagField = [
     custom: true,
   },
   {
+    id: 48,
+    name: '_bf_number()',
+    label: 'Number',
+    type: 'text',
+    functionParam: true,
+    custom: true,
+  },
+  {
     id: 45,
     name: '_bf_math()',
     label: 'Math(Repeater)',
+    type: 'number',
+    functionParam: true,
+    custom: true,
+  },
+  {
+    id: 47,
+    name: '_bf_concat()',
+    label: 'Concat(Repeater)',
+    type: 'text',
+    functionParam: true,
+    custom: true,
+  },
+  {
+    id: 53,
+    name: '_bf_format_datetime()',
+    label: 'Format_DateTime',
+    type: 'number',
+    functionParam: true,
+    custom: true,
+  },
+  {
+    id: 51,
+    name: '_bf_datetime_difference()',
+    label: 'DateTime_Difference',
+    type: 'number',
+    functionParam: true,
+    custom: true,
+  },
+  {
+    id: 52,
+    name: '_bf_add_subtract_datetime()',
+    label: 'AddOrSubtract_DateTime',
     type: 'number',
     functionParam: true,
     custom: true,
@@ -287,5 +340,11 @@ export const SmartTagField = [
     label: 'User',
     type: 'user',
     singleSelect: true,
+  },
+  {
+    id: 49,
+    name: '_bf_entry_id',
+    label: 'Entry ID',
+    type: 'number',
   },
 ]

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAtomValue } from 'jotai'
+import { useFela } from 'react-fela'
 import { $bits, $fieldLabels } from '../../GlobalStates/GlobalStates'
 import paymentFields from '../../Utils/StaticData/paymentFields'
 import bitsFetch from '../../Utils/bitsFetch'
@@ -8,6 +9,7 @@ import Loader from '../Loaders/Loader'
 import PaypalInfo from './PaymentInfo/PaypalInfo'
 import RazorpayInfo from './PaymentInfo/RazorpayInfo'
 import StripeInfo from './PaymentInfo/StripeInfo'
+import MollieInfo from './PaymentInfo/MollieInfo'
 
 export default function FormEntryPayments({ formID, rowDtl }) {
   const allLabels = useAtomValue($fieldLabels)
@@ -18,6 +20,7 @@ export default function FormEntryPayments({ formID, rowDtl }) {
   const payFields = allLabels.filter(label => paymentFields.includes(label.type))
   const payFld = payFields.find(field => rowDtl[field.key]) || {}
   const payInfoFound = useRef(0) // 1 - found, 2 - not found
+  const { css } = useFela()
 
   useEffect(() => {
     if (isPro) {
@@ -40,7 +43,7 @@ export default function FormEntryPayments({ formID, rowDtl }) {
     }
     return () => setPaymentInfo({})
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [rowDtl])
 
   const showPaymentInfo = () => {
     switch (payFld?.type) {
@@ -50,8 +53,10 @@ export default function FormEntryPayments({ formID, rowDtl }) {
         return <RazorpayInfo paymentInfo={paymentInfo} payInfoFound={payInfoFound} fldKey={payFld?.key} transactionID={rowDtl?.[payFld?.key]} />
       case 'stripe':
         return <StripeInfo paymentInfo={paymentInfo} payInfoFound={payInfoFound} fldKey={payFld?.key} transactionID={rowDtl?.[payFld?.key]} />
+      case 'mollie':
+        return <MollieInfo paymentInfo={paymentInfo} payInfoFound={payInfoFound} />
       default:
-        return <h1>{__('No Payment Info Found!')}</h1>
+        return <h2 className={css({ fs: 14, cr: 'red', mt: 20, ml: 10, fw: 'normal' })}>{__('No Payment Info Found!')}</h2>
     }
   }
 

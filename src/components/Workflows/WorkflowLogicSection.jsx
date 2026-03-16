@@ -158,16 +158,8 @@ export default function WorkflowLogicSection({ lgcGrp, lgcGrpInd, condGrp, condG
     const tmpWorkflows = create(workflows, draftWorkflows => {
       const tmpLogics = draftWorkflows[lgcGrpInd].conditions[condGrpInd].logics
       const logicPath = getLogicPath(tmpLogics, lgcInd, subLgcInd, subSubLgcInd)
-      if (subSubLgcInd !== undefined) {
-        logicPath.field = val
-        logicPath.val = ''
-      } else if (subLgcInd !== undefined) {
-        logicPath.field = val
-        logicPath.val = ''
-      } else {
-        logicPath.field = val
-        logicPath.val = ''
-      }
+      logicPath.field = val
+      if (typeof logicPath.val === 'undefined') logicPath.val = ''
       if (!isSmartTag?.custom) delete logicPath.smartKey
     })
 
@@ -184,6 +176,27 @@ export default function WorkflowLogicSection({ lgcGrp, lgcGrpInd, condGrp, condG
         tmpLogics[lgcInd].splice(subLgcInd + 1, 0, typ, { field: '', logic: '', val: '' })
       } else {
         tmpLogics.splice(lgcInd + 1, 0, typ, { field: '', logic: '', val: '' })
+      }
+    })
+
+    setWorkflows(tmpWorkflows)
+    setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
+  }
+
+  const cloneInLineLogic = (lgcInd, subLgcInd, subSubLgcInd) => {
+    let typ = subSubLgcInd !== undefined ? workflows[lgcGrpInd].conditions[condGrpInd].logics[lgcInd][subLgcInd][subSubLgcInd - 1] : subLgcInd !== undefined ? workflows[lgcGrpInd].conditions[condGrpInd].logics[lgcInd][subLgcInd - 1] : workflows[lgcGrpInd].conditions[condGrpInd].logics[lgcInd - 1]
+    if (!(typ === 'and' || typ === 'or')) typ = 'and'
+    const tmpWorkflows = create(workflows, draftWorkflows => {
+      const tmpLogics = draftWorkflows[lgcGrpInd].conditions[condGrpInd].logics
+      if (subSubLgcInd !== undefined) {
+        const clonedLogic = { ...tmpLogics[lgcInd][subLgcInd][subSubLgcInd] }
+        tmpLogics[lgcInd][subLgcInd].splice(subSubLgcInd + 1, 0, typ, clonedLogic)
+      } else if (subLgcInd !== undefined) {
+        const clonedLogic = { ...tmpLogics[lgcInd][subLgcInd] }
+        tmpLogics[lgcInd].splice(subLgcInd + 1, 0, typ, clonedLogic)
+      } else {
+        const clonedLogic = { ...tmpLogics[lgcInd] }
+        tmpLogics.splice(lgcInd + 1, 0, typ, clonedLogic)
       }
     })
 
@@ -233,6 +246,7 @@ export default function WorkflowLogicSection({ lgcGrp, lgcGrpInd, condGrp, condG
             logicValue={logic.logic}
             changeLogic={changeLogic}
             addInlineLogic={addInlineLogic}
+            cloneInLineLogic={cloneInLineLogic}
             delLogic={delLogic}
             lgcGrpInd={lgcGrpInd}
             lgcInd={ind}
@@ -259,6 +273,7 @@ export default function WorkflowLogicSection({ lgcGrp, lgcGrpInd, condGrp, condG
                     logicValue={subLogic.logic}
                     changeLogic={changeLogic}
                     addInlineLogic={addInlineLogic}
+                    cloneInLineLogic={cloneInLineLogic}
                     delLogic={delLogic}
                     lgcGrpInd={lgcGrpInd}
                     lgcInd={ind}
@@ -290,6 +305,7 @@ export default function WorkflowLogicSection({ lgcGrp, lgcGrpInd, condGrp, condG
                             logicValue={subSubLogic.logic}
                             changeLogic={changeLogic}
                             addInlineLogic={addInlineLogic}
+                            cloneInLineLogic={cloneInLineLogic}
                             delLogic={delLogic}
                             lgcGrpInd={lgcGrpInd}
                             lgcInd={ind}

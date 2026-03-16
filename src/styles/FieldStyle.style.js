@@ -192,6 +192,31 @@ const FieldStyle = {
     py: 0,
     px: 5,
   },
+  fieldSectionTitle: {
+    fs: 16,
+    fw: 500,
+    mb: '10px !important',
+    // bc: 'red',
+  },
+
+  optionList: {
+    mxh: 200,
+    owy: 'scroll',
+  },
+  option: {
+    flx: 'center-between',
+    fw: 'normal',
+    p: 2,
+    b: '1px solid #e6e6e6',
+    brs: 8,
+    mb: 5,
+  },
+  optionLabelInput: {
+    flx: 'align-center',
+    w: '100%',
+    py: 5,
+    px: 5,
+  },
 }
 
 export default FieldStyle

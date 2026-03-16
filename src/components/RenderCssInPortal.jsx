@@ -32,6 +32,7 @@ export default function RenderCssInPortal() {
     --white-base: 0;
     --white-100: hsla(var(--white-base), 0%, 100%, 100%);
     --white-0-0-12: hsla(var(--white-base), 0%, 0%, 12%);
+    --white-0-0-8: hsla(var(--white-base), 0%, 0%, 8%);
     --white-0-93: hsla(var(--white-base), 0%, 93%, 100%);
     --black-0: hsla(var(--white-base), 0%, 0%, 100%);
     --red-83-54: hsla(var(--white-base), 83%, 54%, 100%);
@@ -344,6 +345,9 @@ export default function RenderCssInPortal() {
     background-color: var(--white-100);
     cursor: pointer;
   }
+  .context-btn span {
+      text-align: left;
+  }
   .context-btn:hover, .context-btn.active {
     background-color: var(--white-0-93);
   }
@@ -369,6 +373,14 @@ export default function RenderCssInPortal() {
   .context-btn-color { 
     color: var(--b-50)
   }
+   .context-btn .tag-label{
+      font-size: 10px;
+      align-self: baseline;
+      background-color: var(--white-0-0-8) !important;
+      border-radius: 5px;
+      margin-left: 3px;
+      padding: 2px 4px;
+   }
   .pro-badge{
     background-color: #999999;
     color: #ffffff;
@@ -391,20 +403,47 @@ export default function RenderCssInPortal() {
     border:1px solid #d0d0d0;
     padding: 5px;
     box-shadow: 0px 47px 58px rgba(0, 0, 0, 0.07), 0px 19.6355px 25.6741px rgba(0, 0, 0, 0.0503198), 0px 10.4981px 17.9875px rgba(0, 0, 0, 0.0417275), 0px 5.88513px 13.1341px rgba(0, 0, 0, 0.035), 0px 3.12555px 8.79534px rgba(0, 0, 0, 0.0282725), 0px 1.30061px 4.46737px rgba(0, 0, 0, 0.0196802);
-}
-.fld-hide::after {
-  position: absolute;
-  top: 0;
-  left: 0;
-  text-align: center;  vertical-align: -50%;
-  content: "";
-  background-repeat: no-repeat;
-  background-position: center;
-  background-image: url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='currentColor' strokeLinecap='round' strokeLinejoin='round' strokeWidth='5'%3E%3Cpath d='m3 3l18 18M10.584 10.587a2 2 0 0 0 2.828 2.83' /%3E%3Cpath d='M9.363 5.365A9.466 9.466 0 0 1 12 5c4 0 7.333 2.333 10 7c-.778 1.361-1.612 2.524-2.503 3.488m-2.14 1.861C15.726 18.449 13.942 19 12 19c-4 0-7.333-2.333-10-7c1.369-2.395 2.913-4.175 4.632-5.341' /%3E%3C/g%3E%3C/svg%3E");
-  width: 100%;
-  height: 100%;
-  background-color: hsla(0, 0%, 0%, 20%);
-}
+   }
+   .fld-hide::after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      text-align: center;  vertical-align: -50%;
+      content: "";
+      background-repeat: no-repeat;
+      background-position: center;
+      background-image: url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='currentColor' strokeLinecap='round' strokeLinejoin='round' strokeWidth='5'%3E%3Cpath d='m3 3l18 18M10.584 10.587a2 2 0 0 0 2.828 2.83' /%3E%3Cpath d='M9.363 5.365A9.466 9.466 0 0 1 12 5c4 0 7.333 2.333 10 7c-.778 1.361-1.612 2.524-2.503 3.488m-2.14 1.861C15.726 18.449 13.942 19 12 19c-4 0-7.333-2.333-10-7c1.369-2.395 2.913-4.175 4.632-5.341' /%3E%3C/g%3E%3C/svg%3E");
+      width: 100%;
+      height: 100%;
+      background-color: hsla(0, 0%, 0%, 20%);
+   }
+
+
+   .spacer-field-bg {
+      position: relative;
+      background-image: repeating-linear-gradient(
+         45deg,                                         /* angle of the stripes */
+         hsla(var(--gah),var(--gas),var(--gal),20%),    /* stripe color */
+         hsla(var(--gah),var(--gas),var(--gal),5%) 5px, /* end of stripe */
+         transparent 5px,                               /* start of space between stripes */
+         transparent 20px                               /* end of space */
+      );
+      overflow: hidden;
+   }
+  .spacer-field-bg::before {
+      content: attr(data-admin-label);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--fld-lbl-c, var(--fld-inp-c));;
+      font-size: 16px;
+      text-align: center;
+      padding: var(--fld-p);
+      border-radius: var(--g-bdr-rad);
+      background-color: var(--global-fld-bg-color, var(--bg-0));
+      pointer-events: none; /* Prevent interaction with the text */
+   }
   `
 
    const utils = styled.div`

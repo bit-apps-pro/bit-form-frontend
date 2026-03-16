@@ -39,7 +39,7 @@ export default function RazorpayInfo({ paymentInfo, payInfoFound, fldKey, transa
   useEffect(() => {
     if (payInfoFound.current === 2) {
       setLoading(true)
-      bitsFetch({ formID, transactionID, razorpaySettings }, 'bitforms_razorpay_transaction_info')
+      bitsFetch({ formID, transactionID, razorpaySettings }, 'bitforms_payment_details')
         .then(resp => {
           if (resp.success) {
             setRazorpayInfo(resp.data)

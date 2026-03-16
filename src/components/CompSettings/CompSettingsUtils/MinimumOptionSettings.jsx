@@ -1,8 +1,9 @@
 /* eslint-disable no-param-reassign */
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
+import { $globalMessages } from '../../../GlobalStates/AppSettingsStates'
 import { $fields } from '../../../GlobalStates/GlobalStates'
 import { addToBuilderHistory, setRequired } from '../../../Utils/FormBuilderHelper'
 import { IS_PRO, deepCopy } from '../../../Utils/Helpers'
@@ -14,6 +15,7 @@ import ErrorMessageSettings from './ErrorMessageSettings'
 export default function MinimumOptionSettings({ cls, tip, checkIsPro }) {
   const { fieldKey: fldKey } = useParams()
   const [fields, setFields] = useAtom($fields)
+  const globalMessages = useAtomValue($globalMessages)
   const fieldData = deepCopy(fields[fldKey])
   const min = fieldData.mn || ''
   const adminLabel = fieldData.adminLbl || ''
@@ -27,7 +29,7 @@ export default function MinimumOptionSettings({ cls, tip, checkIsPro }) {
       fieldData.mn = e.target.value
       if (!fieldData.err) fieldData.err = {}
       if (!fieldData.err.mn) fieldData.err.mn = {}
-      fieldData.err.mn.dflt = `<p style="margin:0">Minimum ${e.target.value} option${Number(e.target.value) > 1 ? 's' : ''}<p>`
+      fieldData.err.mn.dflt = globalMessages?.err?.[fieldData.typ]?.mn || globalMessages?.err?.mn || `<p style="margin:0">Minimum ${e.target.value} option${Number(e.target.value) > 1 ? 's' : ''}<p>`
       fieldData.err.mn.show = true
     }
 

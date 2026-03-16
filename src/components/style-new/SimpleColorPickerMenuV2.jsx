@@ -19,7 +19,7 @@ import { hsva2hsla } from './colorHelpers'
 function SimpleColorPickerMenuV2({ action, value, objectPaths, canSetVariable }) {
   const { css } = useFela()
   const [themeVars, setThemeVars] = useAtom($themeVars)
-  const [color, setColor] = useState(() => str2Color(value.replace('!important', '').trim()))
+  const [color, setColor] = useState(() => str2Color(value?.replace('!important', '').trim()) || 'hsla(0, 0%, 100%, 100%)')
   const isColorVar = typeof color === 'string'
   const [controller, setController] = useState(isColorVar ? 'Var' : 'Custom')
   const [themeColors, setThemeColors] = useAtom($themeColors)

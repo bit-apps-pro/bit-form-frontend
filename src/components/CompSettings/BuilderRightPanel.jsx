@@ -4,15 +4,13 @@ import { useEffect } from 'react'
 import { Scrollbars } from 'react-custom-scrollbars-2'
 import { useFela } from 'react-fela'
 import { Route, Routes, useLocation, useParams } from 'react-router-dom'
-import { $breakpoint, $builderRightPanelScroll, $unsplashMdl } from '../../GlobalStates/GlobalStates'
+import { $breakpoint, $builderRightPanelScroll } from '../../GlobalStates/GlobalStates'
 import { select } from '../../Utils/globalHelpers'
 import { __ } from '../../Utils/i18nwrap'
 import ErrorBoundary from '../ErrorBoundary'
 import FieldSettingsLoader from '../Loaders/FieldSettingsLoader'
 import StyleCustomizeLoader from '../Loaders/StyleCustomizeLoader'
-import Modal from '../Utilities/Modal'
 import styleEditorConfig from './StyleCustomize/StyleEditorConfig'
-import UnsplashImageViewer from './StyleCustomize/UnsplashImageViewer'
 
 const DropdownStyleEditors = loadable(() => import('./StyleCustomize/DropdownStyleEditors'), { fallback: <StyleCustomizeLoader /> })
 const PaypalStyleEditor = loadable(() => import('./StyleCustomize/PaypalStyleEditor'), { fallback: <StyleCustomizeLoader /> })
@@ -53,7 +51,7 @@ function BuilderRightPanel({ style, styleDispatch }) {
         <Scrollbars onScroll={onSettingScroll} autoHide>
           {/* <TransitionGroup> */}
           {/* <CSSTransition key={location.key} classNames="slide" timeout={5000}> */}
-          <ErrorBoundary>
+          <ErrorBoundary resetKey={pathname}>
             <Routes>
               <Route path="fields-list" element={<FieldsList />} />
               <Route path="field-settings/:fieldKey" element={<FieldSettings />} />

@@ -7,22 +7,26 @@ const fields = getAtom($fields)
 const generateFldName = fld => (fld.lbl || fld.adminLbl || fld.txt)
 const generateFieldsOpts = () => Object.entries(fields).map(([fldKey, fldData]) => ({ lbl: generateFldName(fldData) || fldKey, val: `${fldKey}` }))
 const generateSmartTagOpts = () => SmartTagField.map(({ name, label }) => ({ lbl: label, val: `bfVars["${name}"]` }))
-const generateEventCodeForFld = eventTyp => `// On Field ${firstCharCap(eventTyp)}
-document.querySelector(\`#form-\${bfContentId}\`).querySelector('#fieldKey').addEventListener('${eventTyp}', event => {
-  // Write your code here
+const generateEventCodeForFld = eventTyp => `/* On Field ${firstCharCap(eventTyp)}*/
+document.querySelector(\`#form-\${bfContentId}\`).querySelector(\`#fieldKey-\${bfSlNo}\`).addEventListener('${eventTyp}', event => {
+  /* Write your code here*/
 })`
 const generateEventChild = eventTyp => ({ lbl: `On ${firstCharCap(eventTyp)}`, val: generateEventCodeForFld(eventTyp) })
 
 export const jsPredefinedCodeList = [
   {
     type: 'group-opts',
-    name: 'Global Variables',
+    name: 'Global Variables/Property',
     childs: [
       {
         lbl: 'Form ID',
         val: 'bf_globals[bfContentId].formId',
       },
       ...generateSmartTagOpts(),
+      {
+        lbl: 'Dummy Data',
+        val: 'window.bf_dummy_data = { /* Overwrite Dummy Data */};',
+      },
     ],
   },
   {
@@ -52,9 +56,9 @@ document.querySelector(\`#form-\${bfContentId}\`).addEventListener('bf-form-subm
       },
       {
         lbl: 'On Form Reset',
-        val: `// On Form Reset
+        val: `/* On Form Reset */
 document.querySelector(\`#form-\${bfContentId}\`).addEventListener('bf-form-reset', ({detail:{formId}}) => {
-\t// Write your code here...
+\t/* Write your code here... */
 })`,
       },
       {
@@ -119,6 +123,20 @@ document.querySelector(\`#form-\${bfContentId}\`).addEventListener('bf-form-vali
     name: 'Button',
     childs: [
       generateEventChild('click'),
+    ],
+  },
+  {
+    type: 'group-opts',
+    name: 'Filter Functions',
+    childs: [
+      {
+        lbl: 'Filter Logic status',
+        val: 'function bf_modify_workflow_logic_status(logicStatus, logics, fieldValues, rowIndex, condIndx, props) {\n\t/* write your code here */ \n\treturn logicStatus\n}',
+      },
+      {
+        lbl: 'Filter Razorpay Notes',
+        val: 'function bf_modify_razorpay_notes(notes) {\n\t /* write your code here */ \n\treturn notes\n}',
+      },
     ],
   },
 ]

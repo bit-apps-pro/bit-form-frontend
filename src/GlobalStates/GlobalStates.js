@@ -1,7 +1,7 @@
 import { atom } from 'jotai'
 import { atomWithReset } from 'jotai/utils'
-import { create } from 'mutative'
-import { getFormsFromPhpVariable, getNewFormId, getNewId, makeFieldsArrByLabel } from '../Utils/Helpers'
+import { create, rawReturn } from 'mutative'
+import { getFormsFromPhpVariable, getNewFormId, getNewId, getNewTableId, makeFieldsArrByLabel } from '../Utils/Helpers'
 import blankTemplate from '../Utils/StaticData/form-templates/blankTemplate'
 
 import defaultStepSettings from '../Utils/StaticData/form-templates/defaultStepSettings'
@@ -23,7 +23,7 @@ export const $builderHookStates = atomWithReset({
   recalculateNestedField: { fieldKey: '', parentFieldKey: '', counter: 0 },
 })
 export const $builderRightPanelScroll = atomWithReset(false)
-export const $builderSettings = atomWithReset({ atomicClassPrefix: '', darkModeConfig: { darkModeSelector: '', preferSystemColorScheme: false }, addImportantRuleToStyles: false })
+export const $builderSettings = atomWithReset({ atomicClassPrefix: 'b', darkModeConfig: { darkModeSelector: '', preferSystemColorScheme: false }, addImportantRuleToStyles: false })
 export const $confirmations = atomWithReset({})
 export const $colorScheme = atomWithReset('light')
 export const $customCodes = atomWithReset({ JavaScript: '', CSS: '', isFetched: false })
@@ -31,6 +31,9 @@ export const $draggingField = atomWithReset(null)
 export const $deletedFldKey = atomWithReset([])
 export const $draggableModal = atomWithReset({ show: false, component: null, position: { x: 0, y: 0 }, width: 250 })
 export const $formId = atomWithReset(0)
+export const $viewId = atomWithReset(0)
+export const $previewWindow = atomWithReset(null)
+
 export const $formInfo = atomWithReset({ formName: 'Untitled Form' })
 export const $forms = atom(getFormsFromPhpVariable())
 export const $fieldLabels = atomWithReset([])
@@ -41,10 +44,13 @@ export const $isNewThemeStyleLoaded = atomWithReset(false)
 export const $allLayouts = atomWithReset({ lg: [], md: [], sm: [] })
 export const $mailTemplates = atomWithReset([])
 export const $pdfTemplates = atomWithReset([])
+export const $frontendTables = atomWithReset([])
+export const $frontendTable = atomWithReset({})
 export const $reports = atomWithReset([])
 export const $reportId = atomWithReset({})
 export const $selectedFieldId = atomWithReset(null)
 export const $updateBtn = atomWithReset({ unsaved: false })
+export const $updateTblBtn = atomWithReset({ unsaved: false })
 export const $unsplashMdl = atomWithReset(false)
 export const $unsplashImgUrl = atomWithReset('')
 export const $workflows = atomWithReset([])
@@ -55,11 +61,13 @@ export const $proModal = atomWithReset({ show: false })
 export const $alertModal = atomWithReset({ show: false, msg: '' })
 export const $nestedLayouts = atomWithReset({})
 export const $formAbandonment = atomWithReset({})
+export const $formPermissions = atomWithReset({ entryViewAccess: { preventPublicAccess: false, ownEntries: 'all_logged_in_users', othersEntries: '' }, entryEditAccess: { allowEntriesEdit: false, ownEntries: 'all_logged_in_users', othersEntries: '' } })
 export const $formSteps = atomWithReset({})
 
 // selectors
 export const $fieldsArr = atom((get) => makeFieldsArrByLabel(get($fields), get($fieldLabels), []))
 export const $newFormId = atom((get) => getNewFormId(get($forms)))
+export const $newTableId = atom((get) => getNewTableId(get($bits), get($viewId)))
 export const $uniqueFieldId = atom((get) => getNewId(get($fields)))
 export const $reportSelector = atom(
   (get) => get($reports)?.find(r => r.id === get($reportId)?.id?.toString()) || {},
@@ -80,7 +88,7 @@ export const $layouts = atom(
     const activeBuilderStep = get($activeBuilderStep)
     const allLayouts = get($allLayouts)
     const newLayouts = typeof newVal === 'function' ? newVal(get($layouts)) : newVal
-    if (!Array.isArray(allLayouts)) return newLayouts
+    if (!Array.isArray(allLayouts)) return rawReturn(newLayouts)
     draftLayouts[activeBuilderStep].layout = newLayouts
   })),
 )
@@ -94,7 +102,7 @@ export const $activeStepSettings = atom(
   (get, set, newSettings) => set($allLayouts, create(get($allLayouts), draftLayouts => {
     const activeBuilderStep = get($activeBuilderStep)
     const allLayouts = get($allLayouts)
-    if (!Array.isArray(allLayouts)) return newSettings
+    if (!Array.isArray(allLayouts)) return rawReturn(newSettings)
     draftLayouts[activeBuilderStep].settings = newSettings
   })),
 )

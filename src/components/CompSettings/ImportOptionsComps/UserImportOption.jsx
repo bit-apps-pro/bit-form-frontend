@@ -98,7 +98,7 @@ export default function UserImportOption({ importOpts, setImportOpts }) {
             <div className="w-10 mr-2">
               <b>Filter by Role</b>
               <select data-testid="imprt-optns-rol-slct" name="role" onChange={handleImportInput} value={importOpts?.fieldObject?.filter?.role || ''} className="btcd-paper-inp mt-1">
-                <option selected disabled>select role</option>
+                <option selected>select role</option>
                 <option value="all">all</option>
                 <option value="administrator">Administrator</option>
                 <option value="author">Author</option>

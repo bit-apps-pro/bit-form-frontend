@@ -1,10 +1,10 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/button-has-type */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useState } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom, useAtomValue } from 'jotai'
 import { $fields, $selectedFieldId } from '../../../GlobalStates/GlobalStates'
 import { $styles } from '../../../GlobalStates/StylesState'
 import EditIcn from '../../../Icons/EditIcn'
@@ -158,7 +158,7 @@ export default function ErrorMessageSettings({
             onClick={openErrorModal}
             onKeyDown={openErrorModal}
           >
-            <RenderHtml html={truncatedString(errMsg)} />
+            <RenderHtml html={truncatedString(errMsg, 200)} />
           </div>
 
           {allowIcons && (

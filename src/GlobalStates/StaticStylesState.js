@@ -8,8 +8,8 @@ export const $staticStylesState = atomWithReset({
     smLightStyles: { form: {} },
   },
   staticStyles: {
-    '.d-none': { display: 'none !important' },
-    '.v-hide': { visibility: 'hidden !important' },
+    '.bit-form .d-none': { display: 'none !important' },
+    '.bit-form .v-hide': { visibility: 'hidden !important' },
     '.bf-form-msg': {
       background: '#ffe8c3',
       'border-radius': '6px',

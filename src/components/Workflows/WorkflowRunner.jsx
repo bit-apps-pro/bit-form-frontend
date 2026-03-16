@@ -1,5 +1,6 @@
-import { create } from 'mutative'
 import { useAtom, useSetAtom } from 'jotai'
+import { create } from 'mutative'
+import { useFela } from 'react-fela'
 import { $updateBtn, $workflows } from '../../GlobalStates/GlobalStates'
 import { __ } from '../../Utils/i18nwrap'
 import { defaultConds } from '../../Utils/StaticData/form-templates/templateProvider'
@@ -8,6 +9,7 @@ import CheckBox from '../Utilities/CheckBox'
 export default function WorkflowRunner({ lgcGrpInd, lgcGrp }) {
   const [workflows, setWorkflows] = useAtom($workflows)
   const setUpdateBtn = useSetAtom($updateBtn)
+  const { css } = useFela()
 
   const changeActionRun = typ => {
     const tmpWorkflows = create(workflows, draft => {
@@ -33,16 +35,17 @@ export default function WorkflowRunner({ lgcGrpInd, lgcGrp }) {
           }
         })
       }
-
-      draft[lgcGrpInd].action_behaviour = 'cond'
+      if (typ?.match(/^(onvalidate|oninput)$/)) {
+        draft[lgcGrpInd].action_behaviour = 'cond'
+      }
       draft[lgcGrpInd].conditions.forEach(draftCond => {
         if (typ === 'onvalidate') {
-          draftCond.actions.failure = ''
+          if (!draftCond.actions.failure) draftCond.actions.failure = ''
           delete draftCond.actions.fields
           delete draftCond.actions.success
         } else {
-          draftCond.actions.fields = [{ field: '', action: 'value' }]
-          draftCond.actions.success = []
+          if (!draftCond.actions.fields) draftCond.actions.fields = [{ field: '', action: 'value' }]
+          if (!draftCond.actions.success) draftCond.actions.success = []
           delete draftCond.actions.failure
         }
       })
@@ -75,7 +78,7 @@ export default function WorkflowRunner({ lgcGrpInd, lgcGrp }) {
     <>
       {/* action run when */}
       <div>
-        <b className="txt-dp"><small>Action Run When:</small></b>
+        <b className="txt-dp"><small>{__('Action Run When:')}</small></b>
         <br />
         <div className="ml-2">
           <CheckBox
@@ -111,30 +114,32 @@ export default function WorkflowRunner({ lgcGrpInd, lgcGrp }) {
       {/* action effect */}
       {lgcGrp.action_run !== 'delete' && (
         <div>
-          <b className="txt-dp"><small>Action Effect:</small></b>
+          <b className="txt-dp"><small>{__('Action Effect:')}</small></b>
           <br />
           <div className="ml-2">
-            <CheckBox
-              radio
-              onChange={e => changeActionEffect(e.target.value)}
-              title={<small className="txt-dp">{__('Always')}</small>}
-              checked={lgcGrp.action_type === 'always'}
-              value="always"
-            />
-            <CheckBox
-              radio
-              onChange={e => changeActionEffect(e.target.value)}
-              title={<small className="txt-dp">{__('Only on Form Load')}</small>}
-              checked={lgcGrp.action_type === 'onload'}
-              value="onload"
-            />
-            <CheckBox
-              radio
-              onChange={e => changeActionEffect(e.target.value)}
-              title={<small className="txt-dp">{__('Only on Field Input')}</small>}
-              checked={lgcGrp.action_type === 'oninput'}
-              value="oninput"
-            />
+            <div className={css(styles.actionEffectGroup)}>
+              <CheckBox
+                radio
+                onChange={e => changeActionEffect(e.target.value)}
+                title={<small className="txt-dp">{__('Always')}</small>}
+                checked={lgcGrp.action_type === 'always'}
+                value="always"
+              />
+              <CheckBox
+                radio
+                onChange={e => changeActionEffect(e.target.value)}
+                title={<small className="txt-dp">{__('Only on Form Load')}</small>}
+                checked={lgcGrp.action_type === 'onload'}
+                value="onload"
+              />
+              <CheckBox
+                radio
+                onChange={e => changeActionEffect(e.target.value)}
+                title={<small className="txt-dp">{__('Only on Field Input')}</small>}
+                checked={lgcGrp.action_type === 'oninput'}
+                value="oninput"
+              />
+            </div>
             <CheckBox
               radio
               onChange={e => changeActionEffect(e.target.value)}
@@ -154,7 +159,7 @@ export default function WorkflowRunner({ lgcGrpInd, lgcGrp }) {
       )}
       {/* action behaviour */}
       <div>
-        <b className="txt-dp"><small>Action Behaviour:</small></b>
+        <b className="txt-dp"><small>{__('Action Behaviour:')}</small></b>
         <br />
         <div className="ml-2">
           {!lgcGrp?.action_type?.match(/^(onvalidate|oninput)$/) && (
@@ -178,4 +183,12 @@ export default function WorkflowRunner({ lgcGrpInd, lgcGrp }) {
       </div>
     </>
   )
+}
+
+const styles = {
+  actionEffectGroup: {
+    dy: 'inline-block',
+    b: '1px solid var(--gray-3)',
+    brs: 8,
+  },
 }

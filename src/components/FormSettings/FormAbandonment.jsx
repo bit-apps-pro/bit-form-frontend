@@ -43,6 +43,10 @@ const FormAbandonment = () => {
         if (!val) delete draftConf.saveMode
         else draftConf.saveMode = 'always'
       }
+      if (path === 'saveEmptyFromDraft') {
+        if (!val) delete draftConf.saveEmptyFromDraft
+        else draftConf.saveEmptyFromDraft = true
+      }
       if (path === 'repopulateForm' && val && additionalSettings.enabled.submission) {
         const msg = __('In order to repopulate form fields, it is necessary to store the submitted data in the database. Please make sure to turn off the "disable storing form submission data" option in the form settings.')
         setAlertMdl({ show: true, msg })
@@ -77,26 +81,28 @@ const FormAbandonment = () => {
         )}
       </div>
       <h5 className="mt-3">
-        How to setup Form Abandonment & save partial form progress:
+        {__('How to setup Form Abandonment & save partial form progress:')}
         <a href={tutorialLinks.formAbandonment.link} target="_blank" rel="noreferrer" className="yt-txt ml-1 mr-1">
-          YouTube
+          {__('YouTube')}
         </a>
         <a href={tutorialLinks.formAbandonmentDoc.link} target="_blank" rel="noreferrer" className="doc-txt">
-          Documentation
+          {__('Documentation')}
         </a>
       </h5>
-      {!IS_PRO && (
-        <div className="pro-blur flx" style={{ height: '111%', left: -53, width: '104%' }}>
-          <div className="pro">
-            {__('Available On')}
-            <a href="https://www.bitapps.pro/bit-form" target="_blank" rel="noreferrer">
-              <span className="txt-pro">
-                {__('Premium')}
-              </span>
-            </a>
+      {
+        !IS_PRO && (
+          <div className="pro-blur flx" style={{ height: '111%', left: -53, width: '104%' }}>
+            <div className="pro">
+              {__('Available On')}
+              <a href="https://www.bitapps.pro/bit-form" target="_blank" rel="noreferrer">
+                <span className="txt-pro">
+                  {__('Premium')}
+                </span>
+              </a>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {
         isLoading
@@ -190,6 +196,26 @@ const FormAbandonment = () => {
                   >
                     {__(`
                     If turned off, the form will save draft when clicks on the save button or using conditional logic.
+                    `)}
+                  </Cooltip>
+                </div>
+                <div className="mt-3 flx">
+                  <SingleToggle2
+                    name="saveEmptyFromDraft"
+                    action={(e) => handleChanges('saveEmptyFromDraft', e.target.checked)}
+                    checked={abandonmentConf.saveEmptyFromDraft || false}
+                    className="flx"
+                  />
+                  <label htmlFor="saveEmptyFromDraft">
+                    {__('Allow empty form as Save draft')}
+                  </label>
+                  <Cooltip
+                    className="ml-1"
+                    icnSize={14}
+                    width={600}
+                  >
+                    {__(`
+                    If turned on, the empty form save as draft when leave page.
                     `)}
                   </Cooltip>
                 </div>

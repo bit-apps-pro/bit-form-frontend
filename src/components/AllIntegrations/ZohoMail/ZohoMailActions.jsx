@@ -5,6 +5,7 @@ import MultiSelect from 'react-multiple-select-dropdown-lite'
 import { __ } from '../../../Utils/i18nwrap'
 import ConfirmModal from '../../Utilities/ConfirmModal'
 import TableCheckBox from '../../Utilities/TableCheckBox'
+import { fileUpOrMappableImageFieldTypes } from '../../../Utils/StaticData/allStaticArrays'
 
 export default function ZohoMailActions({ formFields, mailConf, setMailConf }) {
   const [actionMdl, setActionMdl] = useState({ show: false })
@@ -50,7 +51,7 @@ export default function ZohoMailActions({ formFields, mailConf, setMailConf }) {
           defaultValue={mailConf.actions.attachments}
           className="mt-2 w-9"
           onChange={(val) => actionHandler(val, 'attachments')}
-          options={formFields.filter(itm => (itm.type === 'file-up')).map(itm => ({ label: itm.name, value: itm.key }))}
+          options={formFields.filter(itm => (fileUpOrMappableImageFieldTypes.includes(itm.type))).map(itm => ({ label: itm.name, value: itm.key }))}
         />
       </ConfirmModal>
     </div>

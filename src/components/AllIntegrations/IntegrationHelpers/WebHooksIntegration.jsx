@@ -1,7 +1,6 @@
-import { useState, useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useFela } from 'react-fela'
 import 'react-multiple-select-dropdown-lite/dist/index.css'
-import MultiSelect from 'react-multiple-select-dropdown-lite'
 import BackIcn from '../../../Icons/BackIcn'
 import CloseIcn from '../../../Icons/CloseIcn'
 import ExternalLinkIcn from '../../../Icons/ExternalLinkIcn'
@@ -12,11 +11,26 @@ import { __ } from '../../../Utils/i18nwrap'
 import LoaderSm from '../../Loaders/LoaderSm'
 import Btn from '../../Utilities/Btn'
 import Button from '../../Utilities/Button'
+import BitformFieldMapping from './BitformFieldMapping'
+import { IS_PRO } from '../../../Utils/Helpers'
+import { SmartTagField } from '../../../Utils/StaticData/SmartTagField'
+import { nonMappableFields } from '../../../Utils/StaticData/allStaticArrays'
 
 export default function WebHooksLayouts({
   formID, formFields, webHooks, setWebHooks, step, setstep, setSnackbar, create, isInfo,
 }) {
-  const getUrlParams = url => url?.match(/(\?|&)([^=]+)=([^&]+|)/gi)
+  const [filterFields] = useState(() => formFields.filter(field => !nonMappableFields.includes(field.typ)))
+
+  const getUrlParams = (url) => {
+    if (!url) return null
+    const matches = []
+    const regex = /(\?|&)([^=&#]*)=?([^&#]*)/g
+    let match
+    while ((match = regex.exec(url)) !== null) {
+      matches.push(`${match[1]}${match[2]}=${match[3]}`)
+    }
+    return matches.length ? matches : null
+  }
   const [isLoading, setIsLoading] = useState(false)
   const method = ['GET', 'POST', 'PUT', 'PATCH', 'OPTION', 'DELETE', 'TRACE', 'CONNECT']
   const { css } = useFela()
@@ -47,19 +61,48 @@ export default function WebHooksLayouts({
       }
     })
   }
-  const handleParam = (typ, val, pram) => {
+
+  const handleParam = (typ, val, pram, childindx) => {
     const tmpConf = { ...webHooks }
-    if (val !== '') {
-      if (typ === 'key') {
-        tmpConf.url = tmpConf.url.replace(pram, `${pram.charAt(0)}${val}=${pram.split('=')[1]}`)
-      } else {
-        tmpConf.url = tmpConf.url.replace(pram, `${pram.split('=')[0]}=${val}`)
-      }
-    } else if (pram.match(/\?/g) === null) {
-      tmpConf.url = tmpConf.url.replace(pram, '')
-    } else {
-      tmpConf.url = tmpConf.url.replace(`${pram}&`, '?')
+    const { url } = tmpConf
+
+    const [baseUrl, queryString = ''] = url.split('?')
+
+    if (!queryString) {
+      tmpConf.url = baseUrl
+      setWebHooks(tmpConf)
+      return
     }
+
+    const rawParams = queryString.split('&')
+
+    const paramsArray = rawParams.map(p => {
+      const [key, value] = p.split('=')
+      return { [key]: value }
+    })
+
+    const index = childindx
+    if (index !== -1) {
+      if (typ === 'key') {
+        const oldKey = Object.keys(paramsArray[index])[0]
+        const oldValue = paramsArray[index][oldKey]
+        paramsArray[index] = { [val]: oldValue }
+      } else {
+        const key = Object.keys(paramsArray[index])[0]
+        paramsArray[index] = { [key]: val }
+      }
+    }
+
+    const newSearchParams = paramsArray
+      .map(param => {
+        const key = Object.keys(param)[0]
+        const value = param[key]
+        return `${key}=${value}`
+      })
+      .join('&')
+
+    tmpConf.url = newSearchParams ? `${baseUrl}?${newSearchParams}` : baseUrl
+
     setWebHooks(tmpConf)
   }
 
@@ -85,11 +128,32 @@ export default function WebHooksLayouts({
     }
     setWebHooks(tmpConf)
   }
-  const delParam = (param) => {
+
+  const delParam = (childindx) => {
     const tmpConf = { ...webHooks }
-    tmpConf.url = tmpConf.url.replace(param, '')
+    const { url } = tmpConf
+
+    const [baseUrl, queryString] = url.split('?')
+
+    if (!queryString) {
+      tmpConf.url = baseUrl
+      setWebHooks(tmpConf)
+      return
+    }
+
+    const rawParams = queryString.split('&')
+
+    rawParams.splice(childindx, 1)
+
+    const newUrl = rawParams.length > 0
+      ? `${baseUrl}?${rawParams.join('&')}`
+      : baseUrl
+
+    tmpConf.url = newUrl
+
     setWebHooks(tmpConf)
   }
+
   const nextPage = () => {
     setTimeout(() => {
       document.getElementById('btcd-settings-wrp').scrollTop = 0
@@ -97,6 +161,7 @@ export default function WebHooksLayouts({
 
     setstep(2)
   }
+
   return (
     <div style={{ ...{ width: isInfo && 900 } }}>
       <div className="flx ">
@@ -165,7 +230,7 @@ export default function WebHooksLayouts({
               <div className="td">
                 <input
                   className="btcd-paper-inp p-i-sm"
-                  onChange={e => handleParam('key', e.target.value, itm, webHooks, setWebHooks)}
+                  onChange={e => handleParam('key', e.target.value, itm, childindx)}
                   type="text"
                   value={itm.split('=')[0].substr(1)}
                   disabled={isInfo}
@@ -174,7 +239,7 @@ export default function WebHooksLayouts({
               <div className="td">
                 <input
                   className="btcd-paper-inp p-i-sm"
-                  onChange={e => handleParam('val', e.target.value, itm, webHooks, setWebHooks)}
+                  onChange={e => handleParam('val', e.target.value, itm, childindx)}
                   type="text"
                   value={itm.split('=')[1]}
                   disabled={isInfo}
@@ -183,18 +248,36 @@ export default function WebHooksLayouts({
               {!isInfo && (
                 <div className="flx p-atn">
                   <Button
-                    onClick={() => delParam(itm, webHooks, setWebHooks)}
+                    onClick={() => delParam(childindx)}
                     icn
                   >
                     <TrashIcn size={16} />
                   </Button>
-                  <MultiSelect
-                    options={formFields.map(f => ({ label: f.name, value: `\${${f.key}}` }))}
-                    className="btcd-paper-drpdwn wdt-200 ml-2"
-                    singleSelect
-                    onChange={val => setFromField(val, itm, webHooks, setWebHooks)}
+
+                  <select
+                    className="btcd-paper-inp p-i-sm"
+                    name=""
+                    id=""
+                    onChange={(e) => setFromField(e.target.value, itm, webHooks, setWebHooks)}
                     defaultValue={itm.split('=')[1]}
-                  />
+                  >
+                    {/* <BitformFieldMapping
+                      formFields={formFields}
+                      notAllowFieldType={['file-up', 'advanced-file-up']}
+                      shortCode
+                    /> */}
+                    <option value="">{__('Add field')}</option>
+                    <optgroup label="Form Fields">
+                      {filterFields !== null && filterFields.map(f => !f.type.match(/^(file-up|recaptcha)$/) && <option key={f.key} value={`\${${f.key}}`}>{f.name}</option>)}
+                    </optgroup>
+                    <optgroup label={`General Smart Codes ${IS_PRO ? '' : '(PRO)'}`}>
+                      {IS_PRO && SmartTagField?.map(f => !f.name.match(/^(bf_all_data|bf_all_data.onlyValues|_bf_separator|_bf_math\(\)|_bf_concat\(\)|_bf_datetime_difference\(\)|_bf_query_param\(\))$/) && (
+                        <option key={`ff-rm-${f.name}`} value={`\${${f.name}}`}>
+                          {f.label}
+                        </option>
+                      ))}
+                    </optgroup>
+                  </select>
                 </div>
               )}
             </div>
@@ -237,33 +320,23 @@ export default function WebHooksLayouts({
         {__('Try our free webhook test website: ')}
         <a
           className="btcd-link"
-          href="https://webhook.is"
+          href="https://app.webhook.is/test"
           target="_blank"
           rel="noreferrer"
         >
-          https://webhook.is
+          https://app.webhook.is/test
         </a>
       </small>
       {
         create && (
-          <>
-            {/* <button
-              onClick={() => nextPage()}
-              className={`${css(app.btn)} btcd-btn-lg green sh-sm flx`}
-              type="button"
-            >
-              {__('Next')}
-              <BackIcn className="ml-1 rev-icn" />
-            </button> */}
-            <Btn
-              variant="success"
-              onClick={() => nextPage()}
-              type="button"
-            >
-              {__('Next')}
-              <BackIcn className="ml-1 rev-icn" />
-            </Btn>
-          </>
+          <Btn
+            variant="success"
+            onClick={() => nextPage()}
+            type="button"
+          >
+            {__('Next')}
+            <BackIcn className="ml-1 rev-icn" />
+          </Btn>
         )
       }
     </div>

@@ -1,6 +1,8 @@
 import MultiSelect from 'react-multiple-select-dropdown-lite'
+import PlusIcn from '../../../Icons/PlusIcn'
 import { __ } from '../../../Utils/i18nwrap'
 import Loader from '../../Loaders/Loader'
+import { getConnectedAppList, refreshConnectedApps } from '../integrationHelper'
 import { addAddressFieldMap, addFieldMap } from '../IntegrationHelpers/MailChimpIntegrationHelpers'
 import AddressFieldMap from './AddressFieldMap'
 import MailChimpActions from './MailChimpActions'
@@ -8,7 +10,7 @@ import { refreshAudience, refreshTags } from './MailChimpCommonFunc'
 import MailChimpFieldMap from './MailChimpFieldMap'
 
 export default function MailChimpIntegLayout({
-  formID, formFields, handleInput, sheetConf, setSheetConf, isLoading, setisLoading, setSnackbar, a,
+  formID, formFields, handleInput, sheetConf, setSheetConf, isLoading, setisLoading, setSnackbar, setShowMdl,
 }) {
   const address = [
     { tag: 'addr1', name: 'Address 1', required: true },
@@ -30,6 +32,44 @@ export default function MailChimpIntegLayout({
 
   return (
     <>
+      <br />
+      <b className="wdt-150 d-in-b">{__('Authorized App:')}</b>
+      <select
+        className="btcd-paper-inp w-6"
+        value={sheetConf.parentAppId}
+        onChange={handleInput}
+        name="parentAppId"
+      >
+        <option value="">{__('Select an App')}</option>
+        {
+          getConnectedAppList([sheetConf.type]).map(app => (
+            <option key={app.id} value={app.id}>
+              {app.integration_name}
+            </option>
+          ))
+        }
+      </select>
+      <button
+        aria-label="Refresh integrations"
+        onClick={() => refreshConnectedApps(setisLoading, setSnackbar, sheetConf.type)}
+        className="icn-btn sh-sm ml-2 mr-2 tooltip"
+        style={{ '--tooltip-txt': '"Refresh connected apps"' }}
+        type="button"
+        disabled={isLoading}
+      >
+        &#x21BB;
+      </button>
+      <button
+        aria-label="Add New"
+        onClick={() => setShowMdl(true)}
+        className="icn-btn sh-sm ml-2 mr-2 tooltip"
+        style={{ '--tooltip-txt': '"Add New Authorize App"' }}
+        type="button"
+        disabled={isLoading}
+      >
+        <PlusIcn size={18} />
+      </button>
+      <br />
       <br />
       <b className="wdt-150 d-in-b">{__('Audience List:')}</b>
       <select

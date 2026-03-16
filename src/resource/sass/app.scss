@@ -1672,7 +1672,7 @@ input[type="checkbox"].disabled:checked:before {
   &:hover {
     // background: hsla(0, 0%, 97%, 100%);
     background: var(--white-0-97);
-    color: va(--black-0) !important;
+    color: var(--black-0) !important;
   }
 }
 
@@ -1853,6 +1853,7 @@ nav.top-nav {
         text-align: justify;
         margin: 5px 0;
         padding: 5px 5px 0px;
+
         & h3 {
           font-size: 15px;
           font-weight: 600;
@@ -2000,12 +2001,45 @@ nav.top-nav {
   outline: none;
   align-items: center;
 
+  .bf-form-options {
+    margin-top: 2px;
+    height: 0px;
+    overflow: hidden;
+    transition: height 0.2s;
+
+    &>a, &>button {
+      display: inline-block;
+      padding: 2px 0px;
+      margin-right: 10px;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--blue);
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--dp-blue);
+
+      &.bf-delete-btn{
+        color: var(--red);
+      }
+
+      &:hover {
+        color: var(--blue);
+      }
+    }
+  }
+
   &:hover {
     // background: #f4f6ff;
     background: var(--b-97);
     // box-shadow: 0px 1px 4px 1px #cacaca;
     box-shadow: 0px 1px 4px 1px var(--white-0-80);
     z-index: 9;
+
+    .bf-form-options {
+      height: 18px;
+    }
   }
 
   &:focus-within {
@@ -2283,6 +2317,13 @@ nav.top-nav {
     width: 150px;
     border-bottom: 1px solid va(--black-0);
   }
+}
+
+.table-center-header {
+  flex: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .icn-btn {
@@ -3256,6 +3297,10 @@ nav.top-nav {
     // background-color: #eeeeee !important;
     background-color: var(--white-0-95) !important;
   }
+
+  &::placeholder {
+    color: var(--gray-5);
+  }
 }
 
 .integ-fld-wrp {
@@ -3410,6 +3455,10 @@ select.btcd-paper-inp {
     &:hover {
       // background: #f4f6ff;
       background: var(--b-97);
+      &>bf-form-options {
+        display: block;
+        height: 50px;
+      }
     }
   }
 
@@ -3725,9 +3774,9 @@ select.btcd-paper-inp {
       }
 
       & .p-atn {
-        display: none;
+        display: flex;
         position: absolute;
-        top: 0;
+        top: 7px;
         left: 100%;
         padding-left: 3px;
         min-width: 170px;
@@ -3737,11 +3786,11 @@ select.btcd-paper-inp {
         }
       }
 
-      &:hover {
-        & .p-atn {
-          display: flex;
-        }
-      }
+      // &:hover {
+      //   & .p-atn {
+      //     display: flex;
+      //   }
+      // }
     }
 
     & .td {
@@ -4538,7 +4587,7 @@ select.btcd-ud-inp {
 
   & img {
     margin-top: 10px;
-    width: 600px;
+    height: 40vh;
   }
 
   &>h2 {
@@ -5007,6 +5056,10 @@ _:-ms-fullscreen,
 
 .wdt-300 {
   width: 300px !important;
+}
+
+.pt-1 {
+  padding-top: 5px;
 }
 
 .p-1 {
@@ -5619,6 +5672,12 @@ _:-ms-fullscreen,
   .d-in-b {
     width: calc(100% + 44px);
   }
+}
+
+.wrapper-left-border {
+  border-left: 2px solid hsla(var(--blue-h), var(--blue-s), var(--blue-l), .5) !important;;
+  padding: 2px 10px;
+  margin: 5px 0px;
 }
 
 .css-3g92bx-timepicker {

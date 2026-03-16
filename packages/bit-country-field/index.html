@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="country.css">
+
+</head>
+
+
+<body>
+  <form action="">
+    <input type="text">
+    <label id="country-label-2">Select a Country</label>
+    <button id="disable-btn">toggle disable</button>
+    <div class="__fld-key__-country-fld-container">
+      <div class="__fld-key__-country-fld-wrp">
+        <input name="country-name" type="hidden" class="__fld-key__-country-hidden-input">
+        <div class="__fld-key__-dpd-wrp drp-wrp" aria-live="assertive" aria-label="Select a Country" role="combobox"
+          aria-expanded="false" tabindex="0">
+          <div class="__fld-key__-selected-country-wrp">
+            <img class="__fld-key__-selected-country-img" aria-hidden="true" alt="selected country flag"
+              src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'/>">
+            <span class="__fld-key__-selected-country-lbl selected-country-lbl">Select a country</span>
+          </div>
+          <div class="__fld-key__-dpd-btn-wrp">
+            <button type="button" title="Clear selected country value"
+              class="__fld-key__-selected-country-clear-btn selected-country-clear-btn">
+              <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <div class="__fld-key__-dpd-down-btn dpd-down-btn">
+              <svg width="15" height="15" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="__fld-key__-option-wrp">
+          <div class="__fld-key__-option-inner-wrp">
+            <div class="__fld-key__-option-search-wrp">
+              <input type="search" class="__fld-key__-opt-search-input" placeholder="Search for countries"
+                autocomplete="country-name" tabindex="-1">
+              <svg class="__fld-key__-opt-search-icn" aria-hidden="true" width="22" height="22" viewbox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <button type="button" title="Clear search" class="__fld-key__-search-clear-btn" tabindex="-1">
+                <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            <ul class="__fld-key__-option-list" tabindex="-1" role="listbox" aria-label="country list"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <input type="submit" value="Submit">
+  </form>
+
+
+  <!-- PROD -->
+  <script src="/dist/bit-virtualized-list.min.js"></script>
+  <script src="/dist/bit-country-field.dev.js"></script>
+
+  <script type="module">
+    import countryList from './country-list.js'
+
+    const list = new bit_country_field('.__fld-key__-country-fld-wrp', {
+      selectedFlagImage: false,
+      selectedCountryClearable: false,
+      // searchClearable: true,
+      optionFlagImage: false,
+      detectCountryByIp: false,
+      detectCountryByGeo: false,
+      defaultValue: '',
+      placeholder: 'Select a Country',
+      searchPlaceholder: 'Search for countries',
+      maxHeight: 425,
+      onChange: val => { console.log(val) },
+      options: countryList,
+      fieldKey: '__fld-key__'
+    })
+    list.value = 'Pakistan'
+    list.disabled = true
+    // list.readonly = true
+  </script>
+
+  <!-- DEV -->
+  <!-- <script type="module">
+    import BitCountryField from '/dist/bit-country-field.dev.js'
+    console.log('---', BitCountryField);
+  </script> -->
+
+  <!-- <script src="node_modules/virtualized-list/umd/virtualized-list.js"></script> -->
+  <script type="module" src="country-list.js"></script>
+
+</body>
+
+</html>

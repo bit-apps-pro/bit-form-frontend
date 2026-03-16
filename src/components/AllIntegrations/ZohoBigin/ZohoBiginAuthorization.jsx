@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { useAtomValue } from 'jotai'
+import { useEffect, useState } from 'react'
 import { $bits } from '../../../GlobalStates/GlobalStates'
 import { __ } from '../../../Utils/i18nwrap'
 import tutorialLinks from '../../../Utils/StaticData/tutorialLinks'
@@ -10,7 +10,7 @@ import NextBtn from '../NextBtn'
 import { handleAuthorize, refreshModules } from './ZohoBiginCommonFunc'
 
 export default function ZohoBiginAuthorization({
-  formID, biginConf, setBiginConf, step, setstep, isLoading, setisLoading, setSnackbar, redirectLocation, isInfo,
+  formID, biginConf, setBiginConf, step, setstep, isLoading, setisLoading, setSnackbar, redirectLocation, isInfo, authorizedAction,
 }) {
   const bits = useAtomValue($bits)
   const { siteURL } = bits
@@ -33,6 +33,12 @@ export default function ZohoBiginAuthorization({
     setError(rmError)
     setBiginConf(newConf)
   }
+
+  useEffect(() => {
+    if (isAuthorized) {
+      authorizedAction()
+    }
+  }, [isAuthorized])
 
   return (
     <>
@@ -82,7 +88,7 @@ export default function ZohoBiginAuthorization({
           readOnly={isInfo}
         />
 
-        <div className="mt-3"><b>{__('Authorized Redirect URIs:', 'bitform')}</b></div>
+        <div className="mt-3"><b>{__('Authorized Redirect URIs:', 'bit-form')}</b></div>
         <CopyText value={redirectLocation || `${bits.zohoRedirectURL}`} className="field-key-cpy w-6 ml-0" readOnly={isInfo} />
 
         <small className="d-blk mt-5">
@@ -136,10 +142,10 @@ export default function ZohoBiginAuthorization({
               {isLoading && <LoaderSm size={20} clr="#022217" className="ml-2" />}
             </button> */}
             <br />
-            <NextBtn
+            {/* <NextBtn
               nextPageHandler={() => nextPage()}
               disabled={!isAuthorized}
-            />
+            /> */}
             {/* <button
               onClick={nextPage}
               className={`${css(app.btn)} f-right btcd-btn-lg green sh-sm flx`}

@@ -7,16 +7,15 @@ import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import logo from '../logo.svg'
 import { $bits, $unsplashMdl } from './GlobalStates/GlobalStates'
 import { __ } from './Utils/i18nwrap'
-import CashbackModal from './components/CashbackModal'
 import ChangelogToggle from './components/ChangelogToggle'
 import UnsplashImageViewer from './components/CompSettings/StyleCustomize/UnsplashImageViewer'
 import BuilderLoader from './components/Loaders/BuilderLoader'
 import Loader from './components/Loaders/Loader'
 import MigrationModal from './components/MigrationModal'
-import RollbackButton from './components/RollbackButton'
 import Modal from './components/Utilities/Modal'
 import AllForms from './pages/AllForms'
 import DocNSupport from './pages/DocNSupport'
+import FormTemplatePage from './pages/FormTemplatePage'
 
 const loaderStyle = { height: '90vh' }
 const AppSettings = loadable(() => import('./pages/AppSettings'), { fallback: <Loader className="g-c" style={loaderStyle} /> })
@@ -26,17 +25,13 @@ const Error404 = loadable(() => import('./pages/Error404'), { fallback: <Loader 
 const { backgroundColor } = window.getComputedStyle(document.querySelector('#wpadminbar'))
 
 export default function App() {
-  const bits = useAtomValue($bits)
   const [unsplashMdl, setUnsplashMdl] = useAtom($unsplashMdl)
+  const bits = useAtomValue($bits)
   useEffect(removeUnwantedCSS, [])
 
   const isAppSettingsActive = () => {
     const { pathname } = useLocation()
-    const url = pathname.split('/')
-    const len = url.length
-    const nav = ['recaptcha', 'gclid', 'smtp', 'cpt', 'api', 'payments', 'general', 'pdf']
-    const active = nav.includes(url[len - 1]) || false
-    return active
+    return pathname.includes('/app-settings')
   }
 
   return (
@@ -77,11 +72,19 @@ export default function App() {
                   </NavLink>
 
                   <NavLink
-                    to="/app-settings/recaptcha"
+                    to="/form-templates"
+                    className={({ isActive }) => (isActive ? 'app-link-active' : '')}
+                  >
+                    {__('Form Templates')}
+                  </NavLink>
+
+                  <NavLink
+                    to="/app-settings/general"
                     className={isAppSettingsActive() ? 'app-link-active' : ''}
                   >
                     {__('App Settings')}
                   </NavLink>
+
                 </nav>
               </div>
               <nav className="top-nav mr-2">
@@ -101,11 +104,10 @@ export default function App() {
               </nav>
             </div>
             <div className="flx flx-center">
-              <CashbackModal />
+              {/* {!bits?.hideAnnouncementModal && <AnnouncementModal />} */}
+              {/* {!bits?.hideCashbackModal && <CashbackModal />} */}
               <ChangelogToggle />
-              {bits.canRollbackToV1 && (
-                <RollbackButton />
-              )}
+              {/* <ChangelogStepsModal /> */}
             </div>
           </div>
         </div>
@@ -115,6 +117,7 @@ export default function App() {
             <Route path="/" element={<AllForms />} />
             <Route path="/form/:page/:formType/:formID/*" element={<FormDetails />} />
             <Route path="/app-settings/*" element={<AppSettings />} />
+            <Route path="/form-templates" element={<FormTemplatePage />} />
             <Route path="/doc-support" element={<DocNSupport />} />
             <Route path="*" element={<Error404 />} />
           </Routes>

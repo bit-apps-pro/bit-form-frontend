@@ -29,9 +29,9 @@ import {
 } from '../Utils/Helpers'
 import { formsReducer } from '../Utils/Reducers'
 import bitsFetch from '../Utils/bitsFetch'
-import { JCOF } from '../Utils/globalHelpers'
+import { addDomainName, JCOF, removeDomainName } from '../Utils/globalHelpers'
 import { __ } from '../Utils/i18nwrap'
-import FormTemplates from '../components/FormTemplates'
+import FormTemplates from '../components/Template/FormTemplates'
 import ConfirmModal from '../components/Utilities/ConfirmModal'
 import CopyText from '../components/Utilities/CopyText'
 import Modal from '../components/Utilities/Modal'
@@ -79,11 +79,66 @@ function AllFroms() {
     </div>
   )
 
-  const calculateProgress = (entries, views) => (entries === 0 ? 0.00 : ((entries / (views === '0' ? 1 : views)) * 100).toFixed(2))
+  const calculateProgress = (entryCount, viewCount) => {
+    const entries = Number(entryCount)
+    const views = Number(viewCount)
+
+    if (views <= 0 || entries <= 0) return 0.00
+
+    const rate = (entries / views) * 100
+    return Math.min(rate, 100).toFixed(2)
+  }
 
   const [cols, setCols] = useState([
     { width: 70, minWidth: 60, Header: __('Status'), accessor: 'status', Cell: value => <SingleToggle2 className="flx" action={(e) => handleStatus(e, value.row.original.formID)} checked={value.row.original.status} /> },
-    { width: 250, minWidth: 80, Header: __('Form Name'), accessor: 'formName', Cell: v => <Link to={`/form/builder/edit/${v.row.original.formID}/fields-list`} className="btcd-tabl-lnk">{v.row.values.formName}</Link> },
+    {
+      width: 300,
+      minWidth: 200,
+      Header: __('Form Name'),
+      accessor: 'formName',
+      Cell: val => (
+        <div className="bf-options-wrpr">
+          <Link to={`/form/builder/edit/${val.row.original.formID}/fields-list`} className="btcd-tabl-lnk bf-form-name">{val.row.values.formName}</Link>
+          <div className="bf-form-options">
+            <Link
+              to={`/form/builder/edit/${val.row.original.formID}/fields-list`}
+              type="button"
+              aria-label="actions"
+            >
+              {__('Edit')}
+            </Link>
+            <Link
+              to={`/form/responses/edit/${val.row.original.formID}`}
+              type="button"
+              aria-label="actions"
+            >
+              {__('Entries')}
+            </Link>
+            <Link
+              to={`/form/settings/edit/${val.row.original.formID}/form-settings`}
+              type="button"
+              aria-label="form settings"
+            >
+              {__('Settings')}
+            </Link>
+            <a
+              href={`${bits.siteURL}/bitform-form-view/${val.row.original.formID}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {__('Preview')}
+            </a>
+            <button type="button" onClick={() => showDupMdl(val.row.original.formID)}>
+              {__('Duplicate')}
+            </button>
+            <button className="bf-delete-btn" type="button" onClick={() => showDelModal(val.row.original.formID, val.row.index)}>
+              {__('Delete')}
+            </button>
+          </div>
+
+        </div>
+      ),
+    },
     { width: 220, minWidth: 200, Header: __('Short Code'), accessor: 'shortcode', Cell: val => <CopyText value={`[${val.row.values.shortcode}]`} className="cpyTxt" /> },
     { width: 80, minWidth: 60, Header: __('Views'), accessor: 'views' },
     { width: 170, minWidth: 130, Header: __('Completion Rate'), accessor: 'conversion', Cell: val => <Progressbar value={calculateProgress(val.row.values.entries, val.row.values.views)} /> },
@@ -108,12 +163,12 @@ function AllFroms() {
     // eslint-disable-next-line max-len
     ncols.push({
       sticky: 'right',
-      width: 100,
-      minWidth: 60,
-      Header: 'Actions',
+      width: 70,
+      minWidth: 40,
+      Header: __('Actions'),
       accessor: 't_action',
       Cell: val => (
-        <OptionMenu title="Actions" w={165} h={315}>
+        <OptionMenu title={__('Actions')} w={165} h={342}>
           <Link
             to={`/form/builder/edit/${val.row.original.formID}/fields-list`}
             type="button"
@@ -130,7 +185,7 @@ function AllFroms() {
             aria-label="actions"
           >
             <FormResponseIcn size="18" />
-            {__('Responses')}
+            {__('Entries')}
           </Link>
           <Link
             to={`/form/settings/edit/${val.row.original.formID}/form-settings`}
@@ -141,6 +196,14 @@ function AllFroms() {
             <Settings2 size={18} />
             {__('Settings')}
           </Link>
+          <button type="button" onClick={() => showDupMdl(val.row.original.formID)}>
+            <CopyIcn size={18} />
+            {__('Duplicate')}
+          </button>
+          <button type="button" onClick={() => showExportMdl(val.row.original.formID)}>
+            <DownloadIcon size={18} />
+            {__('Export')}
+          </button>
           <Link
             to={`/form/settings/edit/${val.row.original.formID}/confirmations`}
             type="button"
@@ -160,6 +223,15 @@ function AllFroms() {
             {__('Conditional Logic')}
           </Link>
           <Link
+            to={`/form/settings/edit/${val.row.original.formID}/data-views`}
+            type="button"
+            className="flx"
+            aria-label="Data Table"
+          >
+            <CodeSnippetIcn size="18" />
+            {__('Data Table')}
+          </Link>
+          <Link
             to={`/form/settings/edit/${val.row.original.formID}/integrations`}
             type="button"
             className="flx"
@@ -168,14 +240,6 @@ function AllFroms() {
             <CodeSnippetIcn size="18" />
             {__('Integrations')}
           </Link>
-          <button type="button" onClick={() => showDupMdl(val.row.original.formID)}>
-            <CopyIcn size={18} />
-            {__('Duplicate')}
-          </button>
-          <button type="button" onClick={() => showExportMdl(val.row.original.formID)}>
-            <DownloadIcon size={18} />
-            {__('Export')}
-          </button>
 
           <button type="button" onClick={() => showDelModal(val.row.original.formID, val.row.index)}>
             <TrashIcn size={16} />
@@ -257,15 +321,14 @@ function AllFroms() {
         const formDetail = JSON.parse(response)
         const oldFormId = formDetail.form_id
         const newFormDetail = replaceFormId(formDetail, `b${oldFormId}`, `b${newFormId}`)
-        const { style, themeVars, themeColors } = newFormDetail
+        const { style, themeVars, themeColors, fields } = newFormDetail
         newFormDetail.style = JCOF.stringify(style)
         newFormDetail.themeVars = JCOF.stringify(themeVars)
         newFormDetail.themeColors = JCOF.stringify(themeColors)
+        newFormDetail.fields = addDomainName(fields)
         const newFormName = `${formDetail.form_name} (duplicate)`
         newFormDetail.form_name = newFormName
         newFormDetail.formSettings.formName = newFormName
-
-        console.log({ newFormDetail })
 
         return bitsFetch({ formDetail: newFormDetail, newFormId }, 'bitforms_import_aform').then(res => {
           if (res.success) {
@@ -325,10 +388,11 @@ function AllFroms() {
         const themeVars = JCOF.parse(data.themeVars)
         const style = JCOF.parse(data.style)
         const {
-          workFlows, reports, layout, nestedLayout, formInfo, form_name, form_id, formSettings, fields, breakpointSize, additional, builderSettings,
+          workFlows, reports, layout, nestedLayouts, formInfo, form_name, form_id, formSettings, fields, breakpointSize, additional, builderSettings,
         } = data
         const staticStyles = data.staticStyles || {}
-
+        let newFields = fields
+        newFields = removeDomainName(newFields)
         const exportFormData = {
           themeColors,
           themeVars,
@@ -337,12 +401,12 @@ function AllFroms() {
           workFlows,
           reports,
           layout,
-          nestedLayout,
+          nestedLayouts,
           formInfo,
           form_name,
           form_id,
           formSettings,
-          fields,
+          fields: newFields,
           breakpointSize,
           additional,
           builderSettings,
@@ -362,11 +426,12 @@ function AllFroms() {
 
   const handleExport = (formID) => {
     const formExport = getFormDetails(formID).then((formDetails) => {
+      const formData = JSON.parse(formDetails)
       const blob = new Blob([formDetails], { type: 'application/json' })
       const urlBlob = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = urlBlob
-      a.download = `bitform_export-${formID}.json`
+      a.download = `bitform_export-${formID}(${formData?.form_name || 'Untitled Form'}).json`
       document.body.appendChild(a)
       a.click()
       a.remove()
@@ -432,8 +497,9 @@ function AllFroms() {
       <Modal
         show={modal}
         setModal={setModal}
-        title={__('Create Form')}
+        title={__('Create a New Form')}
         subTitle=""
+        lg
       >
         <FormTemplates
           setTempModal={setModal}
@@ -445,7 +511,7 @@ function AllFroms() {
         <div>
           <Table
             className="f-table btcd-all-frm"
-            height={525}
+            height={540}
             columns={cols}
             data={allForms}
             rowSeletable

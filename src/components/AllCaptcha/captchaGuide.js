@@ -1,0 +1,45 @@
+import { __ } from '../../Utils/i18nwrap'
+
+export default {
+  recaptchav2: [
+    `<a className="btcd-link" href="https://www.google.com/recaptcha/admin/" target="_blank" rel="noreferrer">${__('Go to the Google reCaptcha V2 Admin Dashboard')}</a>.`,
+    __('Click on the Register button and add Label.'),
+    __('Choose the type of reCaptcha V2 (either I\'m not a robot checkbox or Invisible reCaptcha badge).'),
+    __('Copy Your Domain URL and Goto Google ReCaptcha Dashboard, paste it under Domains.'),
+    __('Click on the Submit button.'),
+    `${__('You will then see the site key and secret key. Copy both keys and back to Bit form Google reCaptcha Settings to paste them into the corresponding ')}<strong>${__('Site Key')}</strong>${__(' and ')}<strong>${__('Secret Key')}</strong>${__(' fields.')}`,
+    `${__('Click on the ')}<strong>${__('Save')}</strong>${__(' button to apply the settings.')}`,
+    __('Now, Please go to your form and add a Google reCaptcha V2 field.'),
+    `${__('For more details, please visit the ')}<a className="btcd-link" href="https://bitapps.pro/docs/bit-form/form-fields/recaptcha-v2-field/" target="_blank" rel="noreferrer">${__('Bit form Google reCaptcha V2 documentation')}</a>${__(' and watch ')}<a className="btcd-link" href="https://youtu.be/U13Kfj9aDMU?si=9nTiCvBWE5AjWZIL" target="_blank" rel="noreferrer">${__('YouTube Video')}</a>.`,
+  ],
+  recaptchav3: [
+    `<a className="btcd-link" href="https://www.google.com/recaptcha/admin/" target="_blank" rel="noreferrer">${__('Go to the Google reCaptcha V3 Admin Dashboard')}</a>.`,
+    __('Click on the Register button and add Label.'),
+    __('Choose the type of reCaptcha V3 (reCaptcha V3).'),
+    __('Copy Your Domain URL and Goto Google ReCaptcha Dashboard, paste it under Domains.'),
+    __('Click on the Submit button.'),
+    `${__('You will then see the site key and secret key. Copy both keys and back to Bit form Google reCaptcha Settings to paste them into the corresponding ')}<strong>${__('Site Key')}</strong>${__(' and ')}<strong>${__('Secret Key')}</strong>${__(' fields.')}`,
+    `${__('Click on the ')}<strong>${__('Save')}</strong>${__(' button to apply the settings.')}`,
+    __('Now, Please go to your form and add a Google reCaptcha V3 field.'),
+    `${__('For more details, please visit the ')}<a className="btcd-link" href="https://bitapps.pro/docs/bit-form/integrations/recaptcha-v3-integrations/" target="_blank" rel="noreferrer">${__('Bit form Google reCaptcha V3 documentation')}</a>${__(' and watch ')}<a className="btcd-link" href="https://youtu.be/oVDp-hAF7pg?si=j-sH91-1MgnTUD94" target="_blank" rel="noreferrer">${__('YouTube Video')}</a>.`,
+  ],
+  turnstile: [
+    `<a className="btcd-link" href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noreferrer">${__('Go to the Turnstile Admin Dashboard')}</a>.`,
+    __('If you haven\'t created a Turnstile Site yet, click on the "Add Site" button and fill out the required fields.'),
+    __('If you already have a Turnstile Site, click on the Site Name to open the Site Dashboard.'),
+    `${__('You will then see the site key and secret key. Copy both keys and back to Bit form Turnstile Settings to paste them into the corresponding ')}<strong>${__('Site Key')}</strong>${__(' and ')}<strong>${__('Secret Key')}</strong>${__(' fields.')}`,
+    `${__('Click on the ')}<strong>${__('Save')}</strong>${__(' button to apply the settings.')}`,
+    __('Now, Please go to your form and add a Turnstile field.'),
+    `${__('For more details, please visit the ')}<a className="btcd-link" href="https://bitapps.pro/docs/bit-form/form-fields/cloudflare-turnstile-integrations/" target="_blank" rel="noreferrer">${__('Bit form Turnstile documentation')}</a>.`,
+  ],
+  hcaptcha: [
+    `<a className="btcd-link" href="https://dashboard.hcaptcha.com/overview" target="_blank" rel="noreferrer">${__('Go to the hCaptcha Admin Dashboard')}</a>.`,
+    __('If you haven\'t created a hCaptcha Site yet, click on the "Add Site" button and fill out the required fields.'),
+    __('If you already have a hCaptcha Site, click on the Site Name to open the Site Dashboard.'),
+    `${__('You will then see the site. Copy ')}<strong>${__('Site Key')}</strong>${__(' and back to Bit form hCaptcha Settings to paste in Site Key fields.')}`,
+    `${__('Then get the secret key. Go to the Profile → Settings and click the secret tab. You will find secret list or Generate New Secret.')}`,
+    `${__('Click on the ')}<strong>${__('Save')}</strong>${__(' button to apply the settings.')}`,
+    __('Now, Please go to your form and add a hCaptcha field.'),
+    `${__('For more details, please visit the ')}<a className="btcd-link" href="https://bit-form.com/wp-docs/form-fields/hcaptcha-field/" target="_blank" rel="noreferrer">${__('Bit form hCaptcha documentation')}</a>.`,
+  ],
+}

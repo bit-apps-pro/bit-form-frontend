@@ -12,7 +12,7 @@ function RepeaterDataTable(props) {
   const fields = useAtomValue($fields)
   const { title, rptData, entryId } = props
   const allResp = isValidJsonString(rptData) ? JSON.parse(rptData) : []
-  const filterdKeys = Object.keys(allResp[0] || []).filter(fldKey => !['divider', 'image', 'title'].includes(fields[fldKey]?.typ))
+  const filterdKeys = Object.keys(allResp[0] || []).filter(fldKey => !['divider', 'spacer', 'image', 'title'].includes(fields[fldKey]?.typ))
   const tableColumns = filterdKeys.map((fieldKey) => {
     const fldData = fields[fieldKey] || {}
     return {
@@ -20,7 +20,7 @@ function RepeaterDataTable(props) {
       accessor: fieldKey,
       fieldType: fldData.typ,
       minWidth: 50,
-      ...(fldData.typ?.match(/^(file-up|check|select|image-select)$/) && {
+      ...(fldData.typ?.match(/^(file-up|check|select|image-select|signature)$/) && {
         Cell: (row) => {
           if (
             row.cell.value !== null
@@ -38,6 +38,14 @@ function RepeaterDataTable(props) {
                     />
                   ))}
                 </>
+              )
+            }
+            if (fldData.typ === 'signature') {
+              return (
+                <TableFileLink
+                  fname={row.cell.value}
+                  link={`${bits.baseDLURL}formID=${formID}&entryID=${entryId}&fileID=${row.cell.value}`}
+                />
               )
             }
             if (fldData.typ === 'check' || fldData.typ === 'select' || fldData.typ === 'image-select') {

@@ -1,8 +1,9 @@
 import loadable from '@loadable/component'
-import { useState, useEffect, startTransition } from 'react'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useEffect, useState } from 'react'
 import { useFela } from 'react-fela'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { $isDraggable } from '../GlobalStates/FormBuilderStates'
 import { $breakpoint, $builderHelperStates, $builderSettings, $colorScheme, $flags, $selectedFieldId } from '../GlobalStates/GlobalStates'
 import AddIcon from '../Icons/AddIcon'
 import BrushIcn from '../Icons/BrushIcn'
@@ -16,21 +17,20 @@ import LightIcn from '../Icons/LightIcn'
 import MobileIcon from '../Icons/MobileIcon'
 import SettingsIcn from '../Icons/SettingsIcn'
 import TabletIcon from '../Icons/TabletIcon'
+import { addToBuilderHistory, generateHistoryData, reCalculateFldHeights } from '../Utils/FormBuilderHelper'
 import ut from '../styles/2.utilities'
 import OptionToolBarStyle from '../styles/OptionToolbar.style'
-import { addToBuilderHistory, generateHistoryData, reCalculateFldHeights } from '../Utils/FormBuilderHelper'
 import BreakpointSizeControl from './BreakpointSizeControl'
-import BuilderSettings from './BuilderSettings'
 import Grow from './CompSettings/StyleCustomize/ChildComp/Grow'
 import FormBuilderHistory from './FormBuilderHistory'
 import CustomCodeEditorLoader from './Loaders/CustomCodeEditorLoader'
-import { removeUnuseStylesAndUpdateState } from './style-new/styleHelpers'
+import TableBuilderSettings from './TableBuilderSettings'
 import Downmenu from './Utilities/Downmenu'
 import Modal from './Utilities/Modal'
 import StyleSegmentControl from './Utilities/StyleSegmentControl'
 import Tip from './Utilities/Tip'
 import TipGroup from './Utilities/Tip/TipGroup'
-import { $isDraggable } from '../GlobalStates/FormBuilderStates'
+import { removeUnuseStylesAndUpdateState } from './style-new/styleHelpers'
 
 const CustomCodeEditor = loadable(() => import('./CompSettings/CustomCodeEditor'), { fallback: <CustomCodeEditorLoader /> })
 
@@ -49,6 +49,7 @@ export default function OptionToolBar({ showToolBar, setShowToolbar, isV2Form })
   const [settingsModalTab, setSettingsModalTab] = useState('Builder Settings')
   const navigate = useNavigate()
   const [defaultRightPanel, setDefaultRightPanel] = useState('fld-settings')
+  const [defaultLeftPanel, setDefaultLeftPanel] = useState('Fields')
   const path = `/form/builder/${formType}/${formID}`
   const setBreakpoint = useSetAtom($breakpoint)
   const builderHelperStates = useAtomValue($builderHelperStates)
@@ -60,12 +61,14 @@ export default function OptionToolBar({ showToolBar, setShowToolbar, isV2Form })
         setFlags(prvFlags => ({ ...prvFlags, styleMode: false, inspectMode: false }))
       }
       setDefaultRightPanel('fld-settings')
+      setDefaultLeftPanel('Fields')
     }
     if (rightBar.match(/themes|style|field-theme-customize|theme-customize/)) {
       if (!flags.styleMode) {
         setFlags(prvFlags => ({ ...prvFlags, styleMode: true }))
       }
       setDefaultRightPanel('theme-customize')
+      setDefaultLeftPanel('Style')
     }
   }, [rightBar])
 
@@ -101,6 +104,15 @@ export default function OptionToolBar({ showToolBar, setShowToolbar, isV2Form })
     reCalculateFldHeights()
   }
 
+  const handleLeftPanel = (currentActive) => {
+    if (currentActive === 'Fields') {
+      formFieldButtonHandler()
+    } else if (currentActive === 'Style') {
+      styleModeButtonHandler()
+    }
+    setDefaultLeftPanel(currentActive)
+  }
+
   const handleRightPanel = (currentActive) => {
     if (currentActive === 'fld-settings') {
       navigate(`${path}/fields-list`)
@@ -121,10 +133,10 @@ export default function OptionToolBar({ showToolBar, setShowToolbar, isV2Form })
 
   const handleBreakpointChange = brkPoint => {
     setBreakpoint(brkPoint)
-    startTransition(() => {
-      if (builderHelperStates.respectLGLayoutOrder && brkPoint !== 'lg') setIsDraggable(false)
-      else setIsDraggable(true)
-    })
+    // startTransition(() => {
+    //   if (builderHelperStates.respectLGLayoutOrder && brkPoint !== 'lg') setIsDraggable(false)
+    //   else setIsDraggable(true)
+    // })
     addToBuilderHistory(generateHistoryData('', '', 'Breakpoint', brkPoint, { breakpoint: brkPoint }))
   }
 
@@ -133,6 +145,20 @@ export default function OptionToolBar({ showToolBar, setShowToolbar, isV2Form })
       <div className={css(OptionToolBarStyle.form_section)}>
         <div className={css(ut.flxc)}>
           <TipGroup>
+            <StyleSegmentControl
+              borderRadius={10}
+              width={180}
+              show={['icn', 'label']}
+              tipPlace="bottom"
+              defaultActive={defaultLeftPanel}
+              options={[
+                { icn: <AddIcon size="22" />, label: 'Fields', tip: 'Form Fields and Settings' },
+                { icn: <LayerIcon size="22" />, label: 'Style', tip: 'Theme Customization' },
+              ]}
+              onChange={handleLeftPanel}
+              wideTab
+            />
+            {/* *<TipGroup>
             <Tip msg="Form Fields">
               <button
                 data-testid="field-mode"
@@ -153,6 +179,7 @@ export default function OptionToolBar({ showToolBar, setShowToolbar, isV2Form })
                 <LayerIcon size="22" />
               </button>
             </Tip>
+          </TipGroup> */}
             {flags.styleMode && (
               <Tip msg="Inspect Element">
                 <button
@@ -289,7 +316,7 @@ export default function OptionToolBar({ showToolBar, setShowToolbar, isV2Form })
         )}
         closeOnOutsideClick={false}
       >
-        <Grow open={settingsModalTab === 'Builder Settings'}><BuilderSettings /></Grow>
+        <Grow open={settingsModalTab === 'Builder Settings'}><TableBuilderSettings /></Grow>
         <Grow open={settingsModalTab === 'Custom Code'}><CustomCodeEditor /></Grow>
       </Modal>
     </div>

@@ -1,4 +1,4 @@
-export default function Loader({ style, className }) {
+export default function Loader({ style, className, height = 70 }) {
   return (
     <div
       className={className}
@@ -7,7 +7,7 @@ export default function Loader({ style, className }) {
       <div>
         <svg
           version="1.1"
-          style={{ height: 70 }}
+          style={{ height }}
           x="0px"
           y="0px"
           viewBox="0 0 80 80"

@@ -4,6 +4,7 @@ import CloseIcn from '../../../../Icons/CloseIcn'
 import EditIcn from '../../../../Icons/EditIcn'
 import ut from '../../../../styles/2.utilities'
 import { IS_PRO } from '../../../../Utils/Helpers'
+import { __ } from '../../../../Utils/i18nwrap'
 import Tip from '../../../Utilities/Tip'
 import IconStyleBtn from '../../IconStyleBtn'
 import ProBadgeOverlay from './ProBadgeOverlay'
@@ -16,7 +17,7 @@ export default function FieldIconSettings({
   return (
     <div className={`${css(ut.flxcb)} ${classNames} pos-rel`}>
       <div className={css({ flx: 'align-center' })}>
-        <span className={`${css(ut.fw500, ut.ml2)} ${labelClass}`}>{label}</span>
+        <span className={`${css(ut.fw500, ut.ml2)} ${labelClass}`}>{__(label)}</span>
         {isPro && !IS_PRO && <ProBadgeOverlay proProperty={proProperty} />}
       </div>
       <div className={css(ut.flxcb)}>

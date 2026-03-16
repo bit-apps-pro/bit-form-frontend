@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
 import { useAtomValue } from 'jotai'
+import { useEffect, useRef } from 'react'
 import { $reCaptchaV2 } from '../../GlobalStates/AppSettingsStates'
 import { $breakpoint, $fields, $flags } from '../../GlobalStates/GlobalStates'
 import { reCalculateFldHeights } from '../../Utils/FormBuilderHelper'
@@ -69,9 +69,19 @@ export default function ReCaptchaV2({ fieldKey, formId, styleClasses }) {
     <>
       <RenderStyle styleClasses={styleClasses} />
       <div data-dev-fld-wrp={fieldKey} className={`${fieldKey}-recaptcha-container ${fieldKey}-fld-wrp ${styleMode ? '' : 'drag'} ${isHidden ? 'fld-hide' : ''}`}>
-        <div className={`${fieldKey}-recaptcha-wrp`} ref={recaptchaWrapElmRef}>
-          <div className={`${fieldKey}-recaptcha`} />
-        </div>
+
+        {siteKey !== '' ? (
+          <div className={`${fieldKey}-recaptcha-wrp`} ref={recaptchaWrapElmRef}>
+            <div className={`${fieldKey}-recaptcha`} />
+          </div>
+        ) : (
+          <div>
+            To Load reCaptcha Field, Please Configure Site Key and Secret.
+            {' '}
+            <strong>Go to App Settings</strong>
+          </div>
+        )}
+
       </div>
     </>
   )

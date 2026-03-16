@@ -128,14 +128,14 @@ export default function DoubleOptin() {
     <div className="pos-rel">
       <h2>{__('Double Opt-In')}</h2>
       <h5>
-        How to setup Double Opt-In & Send Email Notification:
+        {__('How to setup Double Opt-In & Send Email Notification:')}
         &nbsp;
         <a href={tutorialLinks.doubleOptIn.link} target="_blank" rel="noreferrer" className="yt-txt">
-          YouTube
+          {__('YouTube')}
         </a>
         &nbsp;
         <a href={tutorialLinks.doubleOptInDoc.link} target="_blank" rel="noreferrer" className="doc-txt">
-          Documentation
+          {__('Documentation')}
         </a>
       </h5>
       {!isPro && (
@@ -188,7 +188,7 @@ export default function DoubleOptin() {
                     className="flx"
                   />
                   <label htmlFor="auto_unconfirmed_deleted">
-                    {__('Delete the unconfirmed entries from responses after days: ')}
+                    {__('Delete the unconfirmed entries from responses after days:')}
                   </label>
                   &nbsp;
                   <input
@@ -334,8 +334,8 @@ export default function DoubleOptin() {
               </div>
               <div className="br-5 w-6">
                 <p className="mt-0">
-                  <strong>Note : </strong>
-                  The webhook, email notification & integrations will trigger after the responder confirms their Opt-In.
+                  <strong>{__('Note :')}</strong>
+                  {__('The webhook, email notification & integrations will trigger after the responder confirms their Opt-In.')}
                 </p>
               </div>
               <Btn

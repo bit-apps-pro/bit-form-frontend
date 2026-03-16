@@ -4,7 +4,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable react/jsx-props-no-spreading */
 import BitAdvanceFileUploadField from 'bit-advanced-file-up-field/src/bit-advanced-file-up-field'
-import bitFilePond from 'bit-filepond/src/bit-filepond'
 import bitFilepondPluginFileValidateSize from 'bit-filepond-plugin-file-validate-size/src/bit-filepond-plugin-file-validate-size'
 import bitFilepondPluginFileValidateType from 'bit-filepond-plugin-file-validate-type/src/bit-filepond-plugin-file-validate-type'
 import bitFilepondPluginImageCrop from 'bit-filepond-plugin-image-crop/src/bit-filepond-plugin-image-crop'
@@ -13,11 +12,12 @@ import bitFilepondPluginImageResize from 'bit-filepond-plugin-image-resize/src/b
 import bitFilepondPluginImageTransform from 'bit-filepond-plugin-image-transform/src/bit-filepond-plugin-image-transform'
 import bitFilepondPluginImageValidateSize from 'bit-filepond-plugin-image-validate-size/src/bit-filepond-plugin-image-validate-size'
 import bitFilepondPluginMediaPreview from 'bit-filepond-plugin-media-preview/src/bit-filepond-plugin-media-preview'
+import bitFilePond from 'bit-filepond/src/bit-filepond'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import 'filepond/dist/filepond.min.css'
+import { useAtom, useAtomValue } from 'jotai'
 import { memo, useEffect, useRef, useState } from 'react'
-import { useAtom } from 'jotai'
-import { $fields } from '../../GlobalStates/GlobalStates'
+import { $fields, $flags } from '../../GlobalStates/GlobalStates'
 import { selectAllInGrid, selectInGrid } from '../../Utils/globalHelpers'
 import InputWrapper from '../InputWrapper'
 import RenderStyle from '../style-new/RenderStyle'
@@ -30,6 +30,8 @@ function AdvanceFileUp({ attr, formID, fieldKey, styleClasses }) {
 
   const advanceFileFieldRef = useRef(null)
   const container = useRef(null)
+  const flags = useAtomValue($flags)
+  const { styleMode } = flags
 
   useEffect(() => {
     const iFrameWindow = document.getElementById('bit-grid-layout').contentWindow
@@ -116,7 +118,7 @@ function AdvanceFileUp({ attr, formID, fieldKey, styleClasses }) {
       >
         <input
           hidden
-          id={fieldKey}
+          {...styleMode && { id: fieldKey }}
           type="file"
           className="filepond"
           name="filepond"

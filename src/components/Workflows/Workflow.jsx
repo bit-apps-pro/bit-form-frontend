@@ -10,6 +10,7 @@ import { useFela } from 'react-fela'
 import toast from 'react-hot-toast'
 import { $bits, $formId, $updateBtn, $workflows } from '../../GlobalStates/GlobalStates'
 import CloseIcn from '../../Icons/CloseIcn'
+import CopyIcn from '../../Icons/CopyIcn'
 import StackIcn from '../../Icons/StackIcn'
 import TrashIcn from '../../Icons/TrashIcn'
 import { defaultConds } from '../../Utils/StaticData/form-templates/templateProvider'
@@ -68,6 +69,7 @@ function Workflow() {
         action_run: 'create_edit',
         action_behaviour: 'cond',
         conditions: [{ ...defaultConds }],
+        status: 1,
       })
     })
 
@@ -108,6 +110,14 @@ function Workflow() {
     setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
   }
 
+  const toggleLgcGrpDisable = (e, i) => {
+    const tmpWorkflows = create(workflows, draftWorkflows => {
+      draftWorkflows[i].status = e.target.checked
+    })
+    setWorkflows(tmpWorkflows)
+    setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
+  }
+
   const closeConfMdl = () => {
     confMdl.show = false
     setconfMdl({ ...confMdl })
@@ -123,6 +133,17 @@ function Workflow() {
     }
     confMdl.show = true
     setconfMdl({ ...confMdl })
+  }
+
+  const lgcGrpCloneConf = index => {
+    const tmpWorkflows = create(workflows, draftWorkflows => {
+      const clonedWorkflow = { ...draftWorkflows[index] }
+      clonedWorkflow.title = `${clonedWorkflow.title} (Clone-${workflows.length + 1})`
+      delete clonedWorkflow.id // Remove id to avoid confusion
+      draftWorkflows.splice(index + 1, 0, clonedWorkflow)
+    })
+    setWorkflows(tmpWorkflows)
+    setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
   }
 
   const onWorkflowSortEnd = ({ oldIndex, newIndex }) => {
@@ -195,6 +216,9 @@ function Workflow() {
                     </span>
                   </small>
                 )}
+                toggle
+                checked={lgcGrp.status}
+                action={e => toggleLgcGrpDisable(e, lgcGrpInd)}
                 titleEditable
                 onTitleChange={e => handleLgcTitle(e, lgcGrpInd)}
                 notScroll
@@ -204,11 +228,19 @@ function Workflow() {
                 <WorkflowConditionSection lgcGrpInd={lgcGrpInd} lgcGrp={lgcGrp} />
               </Accordions>
               {isPro && (
-                <div className="mt-2">
+                <div className="mt-2 flx flx-start">
+                  <Button
+                    onClick={() => lgcGrpCloneConf(lgcGrpInd)}
+                    icn
+                    className="ml-2 sh-sm btcd-menu-btn tooltip"
+                    style={{ '--tooltip-txt': '"Clone Action"' }}
+                  >
+                    <CopyIcn size="16" />
+                  </Button>
                   <Button
                     onClick={() => lgcGrpDelConf(lgcGrpInd)}
                     icn
-                    className="ml-2 sh-sm btcd-menu-btn tooltip"
+                    className="sh-sm btcd-menu-btn tooltip"
                     style={{ '--tooltip-txt': '"Delete Action"' }}
                   >
                     <TrashIcn size="16" />
@@ -218,19 +250,15 @@ function Workflow() {
             </div>
             {!isPro && (
               <div className="txt-center bg-pro p-5 mt-2">
-                {__('For')}
-                &nbsp;
-                <span className="txt-pro">{__('UNLIMITED')}</span>
-                &nbsp;
-                {__('Conditional Logics')}
-                ,&nbsp;
-                <a href="https://www.bitapps.pro/bit-form" target="_blank" rel="noreferrer">
+                <a href="https://bit-form.com/#pricing" target="_blank" rel="noreferrer">
                   <b
                     className="txt-pro"
                   >
-                    {__('Buy Premium')}
+                    {__('Upgrade to Pro version')}
                   </b>
                 </a>
+                &nbsp;
+                {__(' to use advanced conditional logic.')}
               </div>
             )}
           </SortableItem>
@@ -239,8 +267,9 @@ function Workflow() {
 
       {workflows.length > 1 && (
         <div className={css(ut.w9, { fs: 13 }, ut.mt4)}>
-          <strong>Note: </strong>
-          Conditional Logics are triggered based on the order of the logic groups. The higher the logic group, the higher the priority. If you want to change the priority, you can sort by drag and drop the logic group.
+          <strong>{__('Note:')}</strong>
+          {' '}
+          {__('Conditional Logics are triggered based on the order of the logic groups. The higher the logic group, the higher the priority. If you want to change the priority, you can sort by drag and drop the logic group.')}
         </div>
       )}
     </div>

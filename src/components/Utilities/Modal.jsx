@@ -5,6 +5,7 @@ import { searchKey } from '../style-new/styleHelpers'
 
 export default function Modal({
   show, setModal, sm, lg, style, className, title, warning, hdrActn: headerAction, children, subTitle, autoHeight, closeOnOutsideClick, onCloseMdl = null, width, showCloseBtn = true,
+  escKeyEvent = true,
 }) {
   const nodeRef = useRef(null)
   const handleClickOutside = e => {
@@ -35,7 +36,7 @@ export default function Modal({
   }
 
   const hideModal = (e) => {
-    if (e.code === 'Escape') {
+    if (e.code === 'Escape' && escKeyEvent) {
       handleCloseBtnClick()
     }
   }

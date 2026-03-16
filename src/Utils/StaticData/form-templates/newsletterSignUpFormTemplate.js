@@ -1,0 +1,132 @@
+export default {
+  name: 'Newsletter Signup Form',
+  theme: 'bitformDefault',
+  formInfo: {
+    formName: 'Newsletter Signup Form',
+  },
+  fields: {
+    'fld_key-1': {
+      typ: 'button',
+      btnSiz: 'md',
+      btnTyp: 'submit',
+      txt: 'Submit',
+      icn: {
+        pos: '',
+        url: '',
+      },
+      valid: {},
+      customClasses: {},
+      customAttributes: {},
+      fulW: true,
+    },
+    'fld_key-2': {
+      typ: 'text',
+      lbl: 'First Name',
+      phHide: true,
+      valid: {
+        req: true,
+        reqPos: 'after',
+        reqShow: true,
+      },
+      err: {
+        req: {
+          dflt: '<p style="margin:0">This field is required</p>',
+          show: true,
+        },
+      },
+      customClasses: {},
+      customAttributes: {},
+      fieldName: 'name',
+      acHide: true,
+      ac: 'name',
+      ph: 'John Doe',
+    },
+    'fld_key-3': {
+      typ: 'text',
+      lbl: 'Last Name',
+      phHide: true,
+      valid: {
+        req: true,
+        reqPos: 'after',
+        reqShow: true,
+      },
+      err: {
+        req: {
+          dflt: '<p style="margin:0">This field is required</p>',
+          show: true,
+        },
+      },
+      customClasses: {},
+      customAttributes: {},
+      fieldName: 'name',
+      acHide: true,
+      ac: 'name',
+      ph: 'John Doe',
+    },
+    'fld_key-4': {
+      typ: 'email',
+      lbl: 'Email',
+      ph: 'example@mail.com',
+      phHide: true,
+      pattern: '^[^$_bf_$s@]+@[^$_bf_$s@]+$_bf_$.[^$_bf_$s@]+$',
+      valid: {
+        req: true,
+        reqPos: 'after',
+        reqShow: true,
+      },
+      err: {
+        invalid: {
+          dflt: '<p style="margin:0">Please, Enter a valid email address.</p>',
+          show: true,
+        },
+        req: {
+          dflt: '<p style="margin:0">This field is required</p>',
+          show: true,
+          custom: true,
+          msg: '<p style="margin:0">Please enter your email.</p>',
+        },
+      },
+      customClasses: {},
+      customAttributes: {},
+      fieldName: 'email',
+      acHide: true,
+      ac: 'email',
+    },
+  },
+  layouts: {
+    lg: [
+      {
+        w: 30,
+        h: 77,
+        x: 0,
+        y: 0,
+        i: 'fld_key-2',
+      },
+      {
+        w: 30,
+        h: 77,
+        x: 30,
+        y: 0,
+        i: 'fld_key-3',
+      },
+      {
+        w: 60,
+        h: 77,
+        x: 0,
+        y: 77,
+        i: 'fld_key-4',
+        minW: 9,
+      },
+      {
+        w: 6,
+        h: 54,
+        x: 0,
+        y: 154,
+        i: 'fld_key-1',
+      },
+    ],
+    md: [],
+    sm: [],
+  },
+
+}

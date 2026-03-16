@@ -42,10 +42,10 @@ export default function ConfType() {
     <div className="mt-4" style={{ width: 900 }}>
       <h2>{__('Confirmations')}</h2>
       <h5 className="mt-3">
-        How to set up Confirmation messages or Redirect page:
+        {__("How to set up Confirmation messages or Redirect page:")}
         &nbsp;
         <a href={tutorialLinks.confirmationDoc.link} target="_blank" rel="noreferrer" className="doc-txt">
-          Documentation
+          {__("Documentation")}
         </a>
       </h5>
       <div>
@@ -67,8 +67,8 @@ export default function ConfType() {
         <Route path="webhooks" element={<WebHooks removeIntegration={removeIntegration} />} />
       </Routes>
       <div className={css(ut.w9, { fs: 13 }, ut.mt4)}>
-        <strong>Note: </strong>
-        Be sure to configure conditional logic for displaying Success/Error messages and Redirect Page. If no conditional logic is set, the default confirmation will be displayed.
+        <strong>{__('Note:')}</strong>
+        {__('Be sure to configure conditional logic for displaying Success/Error messages and Redirect Page. If no conditional logic is set, the default confirmation will be displayed.')}
       </div>
     </div>
   )

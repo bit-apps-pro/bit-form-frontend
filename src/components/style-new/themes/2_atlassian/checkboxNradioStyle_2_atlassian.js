@@ -15,6 +15,7 @@ export default function checkboxNradioStyle_2_atlassian({ fk, type, direction, b
           'border-width': '3px',
           'border-color': 'hsla(var(--gfh), var(--gfs), var(--gfl), 0.3)',
           ...type === 'check' && { 'border-radius': '4px' },
+          'flex-shrink': 0,
         },
         [`.${fk}-ci:hover ~ [data-cl] [data-bx]`]: {
           'border-color': 'hsla(var(--gfh), var(--gfs), var(--gfl), 0.4)',

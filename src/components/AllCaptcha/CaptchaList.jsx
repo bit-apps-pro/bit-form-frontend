@@ -1,14 +1,15 @@
 import { useAtomValue } from 'jotai'
+import { useState } from 'react'
 import { useFela } from 'react-fela'
 import { Link, useLocation } from 'react-router-dom'
-import { useState } from 'react'
-import { $reCaptchaV2, $reCaptchaV3, $turnstile } from '../../GlobalStates/AppSettingsStates'
+import { $hCaptcha, $reCaptchaV2, $reCaptchaV3, $turnstile } from '../../GlobalStates/AppSettingsStates'
 import EditIcn from '../../Icons/EditIcn'
 import { __ } from '../../Utils/i18nwrap'
+import cloudflare from '../../resource/img/cloudflare.svg'
+import recaptcha from '../../resource/img/grecaptcha.svg'
+import hCaptchaImg from '../../resource/img/hcaptcha.svg'
 import style from '../../styles/integrations.style'
 import Tip from '../Utilities/Tip'
-import recaptcha from '../../resource/img/grecaptcha.svg'
-import cloudflare from '../../resource/img/cloudflare.svg'
 
 export default function CaptchaList() {
   const { css } = useFela()
@@ -17,6 +18,7 @@ export default function CaptchaList() {
   const reCaptchaV2 = useAtomValue($reCaptchaV2)
   const reCaptchaV3 = useAtomValue($reCaptchaV3)
   const turnstile = useAtomValue($turnstile)
+  const hCaptcha = useAtomValue($hCaptcha)
   const [searchTxt, setSearchTxt] = useState('')
 
   const captcha = [
@@ -36,12 +38,6 @@ export default function CaptchaList() {
       siteKey: reCaptchaV3?.siteKey,
       secretKey: reCaptchaV3?.secretKey,
     },
-    // {
-    //   name: 'hCaptcha',
-    //   type: 'hCaptcha',
-    //   logo: '',
-    //   path: 'hCaptcha',
-    // },
     {
       name: 'Turnstile',
       type: 'Cloudflare Turnstile',
@@ -49,6 +45,14 @@ export default function CaptchaList() {
       path: 'turnstile',
       siteKey: turnstile?.siteKey,
       secretKey: turnstile?.secretKey,
+    },
+    {
+      name: 'hCaptcha',
+      type: 'hcaptcha',
+      logo: hCaptchaImg,
+      path: 'hcaptcha',
+      siteKey: hCaptcha?.siteKey,
+      secretKey: hCaptcha?.secretKey,
     },
   ]
 
@@ -63,7 +67,7 @@ export default function CaptchaList() {
 
   return (
     <div>
-      <h2>{__('reCaptcha Settings')}</h2>
+      <h2>{__('Captcha Settings')}</h2>
       <div className="btcd-hr" />
       <input
         aria-label="Search..."
@@ -72,6 +76,11 @@ export default function CaptchaList() {
         onChange={e => setSearchTxt(e.target.value.toLowerCase())}
         placeholder="Search..."
       />
+      <p className={css({ fs: 16 })}>
+        <strong>{__("Note:")}</strong>
+        {' '}
+        {__("Please click on the available Captcha option for configuration.")}
+      </p>
       <div className={`pos-rel ${css(style.integWrp, { flx: 1, ai: 'normal', flxp: 1 })}`}>
         {availableCaptchas?.map((captch, i) => (
           <Link

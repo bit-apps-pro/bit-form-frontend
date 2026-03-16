@@ -24,7 +24,7 @@ const Group = ({ title, filteredFields }) => {
       {filteredFields.map(([fldKey, fldData]) => {
         let { lbl } = fldData
         const { typ, adminLbl, txt } = fldData
-        if (typ === 'decision-box') {
+        if (['decision-box', 'gdpr'].includes(typ)) {
           lbl = adminLbl
         } else if (typ === 'button') {
           lbl = txt

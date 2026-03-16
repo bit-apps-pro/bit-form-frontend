@@ -1,11 +1,11 @@
 import { useAtomValue } from 'jotai'
-import { __ } from '../../../Utils/i18nwrap'
-import MtInput from '../../Utilities/MtInput'
-import { addFieldMap, delFieldMap, handleCustomValue, handleFieldMapping } from './IntegrationHelpers'
-import { SmartTagField } from '../../../Utils/StaticData/SmartTagField'
-import { generateMappedField } from './ElasticEmailCommonFunc'
 import { $bits } from '../../../GlobalStates/GlobalStates'
 import TrashIcn from '../../../Icons/TrashIcn'
+import { __ } from '../../../Utils/i18nwrap'
+import { SmartTagField } from '../../../Utils/StaticData/SmartTagField'
+import MtInput from '../../Utilities/MtInput'
+import { generateMappedField } from './ElasticEmailCommonFunc'
+import { addFieldMap, delFieldMap, handleCustomValue, handleFieldMapping } from './IntegrationHelpers'
 
 export default function ElasticEmailFieldMap({ i, formFields, field, elasticEmailConf, setElasticEmailConf }) {
   if (elasticEmailConf?.field_map?.length === 1 && field.elasticEmailField === '') {
@@ -33,7 +33,7 @@ export default function ElasticEmailFieldMap({ i, formFields, field, elasticEmai
             defaultValue="0"
             onChange={(ev) => handleFieldMapping(ev, i, elasticEmailConf, setElasticEmailConf)}
           >
-            <option selected disabled value="0">{__('Select Field')}</option>
+            <option selected value="0">{__('Select Field')}</option>
             <optgroup label="Form Fields">
               {
                 formFields?.map(f => (
@@ -64,7 +64,7 @@ export default function ElasticEmailFieldMap({ i, formFields, field, elasticEmai
             value={i < requiredFlds.length ? (requiredFlds[i].label || '') : (field.elasticEmailField || '')}
             onChange={(ev) => handleFieldMapping(ev, i, elasticEmailConf, setElasticEmailConf)}
           >
-            <option selected disabled value="0">{__('Select Field')}</option>
+            <option selected value="0">{__('Select Field')}</option>
             {
               i < requiredFlds.length ? (
                 <option key={requiredFlds[i].key} value={requiredFlds[i].key}>

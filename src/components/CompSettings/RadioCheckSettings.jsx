@@ -5,11 +5,12 @@ import { create } from 'mutative'
 import { memo, useEffect, useState } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
+import { $globalMessages } from '../../GlobalStates/AppSettingsStates'
 import { $bits, $fields } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import CloseIcn from '../../Icons/CloseIcn'
 import { addToBuilderHistory, reCalculateFldHeights, setRequired } from '../../Utils/FormBuilderHelper'
-import { deepCopy } from '../../Utils/Helpers'
+import { deepCopy, IS_PRO } from '../../Utils/Helpers'
 import tippyHelperMsg from '../../Utils/StaticData/tippyHelperMsg'
 import { isDev } from '../../Utils/config'
 import { __ } from '../../Utils/i18nwrap'
@@ -30,6 +31,7 @@ import RequiredSettings from './CompSettingsUtils/RequiredSettings'
 import SubTitleSettings from './CompSettingsUtils/SubTitleSettings'
 import UniqFieldSettings from './CompSettingsUtils/UniqFieldSettings'
 import EditOptions from './EditOptions/EditOptions'
+import OptionList from './OptionList'
 import SimpleAccordion from './StyleCustomize/ChildComp/SimpleAccordion'
 import FieldSettingTitle from './StyleCustomize/FieldSettingTitle'
 import SizeAndPosition from './StyleCustomize/StyleComponents/SizeAndPosition'
@@ -40,6 +42,8 @@ function RadioCheckSettings() {
   const { css } = useFela()
   const { fieldKey: fldKey } = useParams()
   const [fields, setFields] = useAtom($fields)
+  const globalMessages = useAtomValue($globalMessages)
+  const [styles, setStyles] = useAtom($styles)
   const fieldData = deepCopy(fields[fldKey])
   const options = deepCopy(fields[fldKey].opt)
   const adminLabel = fieldData.adminLbl || ''
@@ -50,7 +54,7 @@ function RadioCheckSettings() {
   const min = fieldData.mn || ''
   const max = fieldData.mx || ''
   const dataSrc = fieldData?.customType?.type || 'fileupload'
-  const [styles, setStyles] = useAtom($styles)
+  const globalErrMsg = globalMessages?.err || {}
 
   let fieldObject = null
   let disabled = false
@@ -98,7 +102,7 @@ function RadioCheckSettings() {
       fieldData.mn = e.target.value
       if (!fieldData.err) fieldData.err = {}
       if (!fieldData.err.mn) fieldData.err.mn = {}
-      fieldData.err.mn.dflt = `<p style="margin:0">Minimum ${e.target.value} option${Number(e.target.value) > 1 ? 's' : ''}<p>`
+      fieldData.err.mn.dflt = globalErrMsg?.[fieldData.typ]?.mn || `<p style="margin:0">Minimum ${e.target.value} option${Number(e.target.value) > 1 ? 's' : ''}<p>`
       fieldData.err.mn.show = true
     }
 
@@ -116,7 +120,7 @@ function RadioCheckSettings() {
       fieldData.mx = e.target.value
       if (!fieldData.err) fieldData.err = {}
       if (!fieldData.err.mx) fieldData.err.mx = {}
-      fieldData.err.mx.dflt = `<p style="margin:0">Maximum ${e.target.value} option${Number(e.target.value) > 1 ? 's' : ''}</p>`
+      fieldData.err.mx.dflt = globalErrMsg?.[fieldData.typ]?.mx || `<p style="margin:0">Maximum ${e.target.value} option${Number(e.target.value) > 1 ? 's' : ''}</p>`
       fieldData.err.mx.show = true
     }
     const allFields = create(fields, draft => { draft[fldKey] = fieldData })
@@ -137,7 +141,6 @@ function RadioCheckSettings() {
   }
 
   const handleOptions = newOpts => {
-    console.log('newOpts', newOpts)
     const reqOpts = newOpts.filter(opt => opt.req)
     reqOpts.length && setRequired({ target: { checked: true } })
     const allFields = create(fields, draft => {
@@ -145,7 +148,7 @@ function RadioCheckSettings() {
       if (reqOpts.length && draft[fldKey].err.req) {
         draft[fldKey].err.req.custom = true
         draft[fldKey].err.req.msg = `<p style="margin:0">${reqOpts.map(opt => opt.lbl).join(',')} is required</p>`
-      } else if (draft[fldKey].err.req) draft[fldKey].err.req.msg = '<p style="margin:0">This field is required</p>'
+      } else if (draft[fldKey].err.req) draft[fldKey].err.req.msg = `<p style="margin:0">${__('This field is required')}</p>`
     })
     setFields(allFields)
     addToBuilderHistory({
@@ -157,6 +160,7 @@ function RadioCheckSettings() {
   }
 
   function setColumn({ target: { value } }) {
+    if (!IS_PRO) return
     if (value === '') {
       delete fieldData.optionCol
     } else {
@@ -233,6 +237,29 @@ function RadioCheckSettings() {
 
       <AdminLabelSettings />
 
+      <FieldSettingsDivider />
+
+      <div className={css(FieldStyle.fieldSection)}>
+        <div className={css(FieldStyle.fieldSectionTitle)}>
+          {__('Options')}
+        </div>
+        <OptionList
+          options={options}
+          onClick={() => setOptionMdl(true)}
+        />
+        <Btn
+          dataTestId="edt-opt-stng"
+          variant="primary-outline"
+          size="sm"
+          className={css({ mt: 10 })}
+          onClick={openOptionModal}
+        >
+          {__('Add/Edit Options')}
+          <span className={css(style.plsIcn)}>
+            <CloseIcn size="13" stroke="3" />
+          </span>
+        </Btn>
+      </div>
       <FieldSettingsDivider />
 
       <SizeAndPosition />
@@ -437,28 +464,12 @@ function RadioCheckSettings() {
       </SimpleAccordion> */}
       <UniqFieldSettings
         type="entryUnique"
-        title="Unique Entry"
+        title={__('Unique Entry')}
         tipTitle={tippyHelperMsg.uniqueEntry}
         className={css(FieldStyle.fieldSection, FieldStyle.hover_tip)}
         isUnique="show"
       />
 
-      <FieldSettingsDivider />
-
-      <div className={css(FieldStyle.fieldSection)}>
-        <Btn
-          dataTestId="edt-opt-stng"
-          variant="primary-outline"
-          size="sm"
-          className={css({ mt: 10 })}
-          onClick={openOptionModal}
-        >
-          {__('Add/Edit Options')}
-          <span className={css(style.plsIcn)}>
-            <CloseIcn size="13" stroke="3" />
-          </span>
-        </Btn>
-      </div>
       <FieldSettingsDivider />
 
       <Modal

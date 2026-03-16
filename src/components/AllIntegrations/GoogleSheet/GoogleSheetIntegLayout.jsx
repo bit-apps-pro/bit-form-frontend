@@ -1,15 +1,54 @@
+import PlusIcn from '../../../Icons/PlusIcn'
 import { __ } from '../../../Utils/i18nwrap'
 import Loader from '../../Loaders/Loader'
+import { getConnectedAppList, refreshConnectedApps } from '../integrationHelper'
 import { addFieldMap } from '../IntegrationHelpers/GoogleIntegrationHelpers'
 import { refreshSpreadsheets, refreshWorksheetHeaders, refreshWorksheets } from './GoogleSheetCommonFunc'
 import GoogleSheetFieldMap from './GoogleSheetFieldMap'
 
 export default function GoogleSheetIntegLayout({
-  formID, formFields, handleInput, sheetConf, setSheetConf, isLoading, setisLoading, setSnackbar,
+  formID, formFields, handleInput, sheetConf, setSheetConf, isLoading, setisLoading, setSnackbar, setShowMdl,
 }) {
-  // console.log('sheetConf', sheetConf)
   return (
     <>
+      <br />
+      <b className="wdt-150 d-in-b">{__('Authorize App:')}</b>
+      <select
+        className="btcd-paper-inp w-6"
+        value={sheetConf.parentAppId}
+        onChange={handleInput}
+        name="parentAppId"
+      >
+        <option value="">{__('Select an App')}</option>
+        {
+          getConnectedAppList([sheetConf.type]).map(app => (
+            <option key={app.id} value={app.id}>
+              {app.integration_name}
+            </option>
+          ))
+        }
+      </select>
+      <button
+        aria-label="Refresh google sheet app"
+        onClick={() => refreshConnectedApps(setisLoading, setSnackbar, sheetConf.type)}
+        className="icn-btn sh-sm ml-2 mr-2 tooltip"
+        style={{ '--tooltip-txt': '"Refresh connected google sheet apps"' }}
+        type="button"
+        disabled={isLoading}
+      >
+        &#x21BB;
+      </button>
+      <button
+        aria-label="Add New"
+        onClick={() => setShowMdl(true)}
+        className="icn-btn sh-sm ml-2 mr-2 tooltip"
+        style={{ '--tooltip-txt': '"Add New Authorize App"' }}
+        type="button"
+        disabled={isLoading}
+      >
+        <PlusIcn size={18} />
+      </button>
+      <br />
       <br />
       <b className="wdt-150 d-in-b">{__('Spreadsheets:')}</b>
       <select

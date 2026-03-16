@@ -8,7 +8,7 @@ import Cooltip from '../../Utilities/Cooltip'
 import SnackMsg from '../../Utilities/SnackMsg'
 import TutorialLink from '../../Utilities/TutorialLink'
 import { saveIntegConfig } from '../IntegrationHelpers/IntegrationHelpers'
-import SaveIntergrationBrn from '../SaveIntergrationBrn'
+import SaveIntegrationBtn from '../SaveIntegrationBtn'
 import { addFieldMap, checkMappedAcfFields, checkMappedPostFields, refreshAcfFields, refreshPostTypes } from './AcfHelperFunction'
 import FieldMap from './FieldMap'
 
@@ -106,7 +106,7 @@ function Acf({ formFields, setIntegration, integrations, allIntegURL }) {
         youTubeLink={tutorialLinks.acf.link}
       />
 
-      <div className="mt-3"><b>{__('Integration Name ', 'bitform')}</b></div>
+      <div className="mt-3"><b>{__('Integration Name', 'bit-form')}</b></div>
       <input
         className="btcd-paper-inp w-5 mt-1"
         onChange={(e) => handleInput(e.target.name, e.target.value)}
@@ -347,9 +347,8 @@ function Acf({ formFields, setIntegration, integrations, allIntegURL }) {
           </button>
         </div>
       </div>
-      <SaveIntergrationBrn
-        onClick={() => saveConfig()}
-      />
+
+      <SaveIntegrationBtn onClick={() => saveConfig()} />
     </div>
   )
 }

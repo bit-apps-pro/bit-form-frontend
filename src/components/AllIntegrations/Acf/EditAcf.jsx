@@ -7,7 +7,7 @@ import { postFields } from '../../../Utils/StaticData/postField'
 import Cooltip from '../../Utilities/Cooltip'
 import SnackMsg from '../../Utilities/SnackMsg'
 import { saveIntegConfig } from '../IntegrationHelpers/IntegrationHelpers'
-import SaveIntergrationBrn from '../SaveIntergrationBrn'
+import SaveIntegrationBtn from '../SaveIntegrationBtn'
 import { addFieldMap, checkMappedAcfFields, checkMappedPostFields, refreshAcfFields } from './AcfHelperFunction'
 import FieldMap from './FieldMap'
 
@@ -87,7 +87,7 @@ function EditAcf({ formFields, setIntegration, integrations, allIntegURL }) {
   return (
     <div style={{ width: 900 }}>
       <SnackMsg snack={snack} setSnackbar={setSnackbar} />
-      <div className="mt-3"><b>{__('Integration Name ')}</b></div>
+      <div className="mt-3"><b>{__('Integration Name')}</b></div>
       <input
         className="btcd-paper-inp w-5 mt-1"
         onChange={(e) => handleInput(e.target.name, e.target.value)}
@@ -101,7 +101,7 @@ function EditAcf({ formFields, setIntegration, integrations, allIntegURL }) {
         <b>{__('Post Type')}</b>
         <Cooltip width={250} icnSize={17} className="ml-2">
           <div className="txt-body">
-            Select one of the defined WordPress post types Or custom post types for the post.
+            {__('Select one of the defined WordPress post types Or custom post types for the post.')}
             <br />
           </div>
         </Cooltip>
@@ -113,7 +113,7 @@ function EditAcf({ formFields, setIntegration, integrations, allIntegURL }) {
           value={data.post_type}
           className="btcd-paper-inp w-5 mt-1"
         >
-          <option disabled selected>Select Post Type</option>
+          <option disabled selected>{__('Select Post Type')}</option>
           {postTypes.map((postType, key) => (
             <option key={`acf-${key * 2}`} value={postType?.name}>{postType?.label}</option>
           ))}
@@ -125,7 +125,7 @@ function EditAcf({ formFields, setIntegration, integrations, allIntegURL }) {
         <b>{__('Post Status')}</b>
         <Cooltip width={250} icnSize={17} className="ml-2">
           <div className="txt-body">
-            Select the status for the post. If published status is selected and the post date is in the future, it will automatically be changed to scheduled
+            {__('Select the status for the post. If published status is selected and the post date is in the future, it will automatically be changed to scheduled')}
             <br />
           </div>
         </Cooltip>
@@ -147,7 +147,7 @@ function EditAcf({ formFields, setIntegration, integrations, allIntegURL }) {
         <b>{__('Author')}</b>
         <Cooltip width={250} icnSize={17} className="ml-2">
           <div className="txt-body">
-            Select the user to be assigned to the post.
+            {__('Select the user to be assigned to the post.')}
             <br />
           </div>
         </Cooltip>
@@ -160,6 +160,7 @@ function EditAcf({ formFields, setIntegration, integrations, allIntegURL }) {
           className="btcd-paper-inp w-5 mt-2"
         >
           <option disabled selected>{__('Select Author')}</option>
+          <option value="logged_in_user">Logged In User</option>
           {users.map((user, key) => (
             <option key={`acf-${key * 2}`} value={user.ID}>{user.display_name}</option>
           ))}
@@ -328,7 +329,7 @@ function EditAcf({ formFields, setIntegration, integrations, allIntegURL }) {
         {__('Save')}
         {' '}
       </button> */}
-      <SaveIntergrationBrn onClick={() => saveConfig()} />
+      <SaveIntegrationBtn onClick={() => saveConfig()} />
     </div>
   )
 }

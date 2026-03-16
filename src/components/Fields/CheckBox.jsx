@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/jsx-props-no-spreading */
-import { useState } from 'react'
 import { useAtomValue } from 'jotai'
+import { useState } from 'react'
 import { $fields } from '../../GlobalStates/GlobalStates'
 import { reCalculateFldHeights } from '../../Utils/FormBuilderHelper'
 import { getCustomAttributes, getCustomClsName } from '../../Utils/globalHelpers'
@@ -230,7 +230,7 @@ export default function CheckBox({ attr, onBlurHandler, resetFieldValue, formID,
                   className={`${fieldKey}-ct ${getCustomClsName(fieldKey, 'ct')}`}
                   {...getCustomAttributes(fieldKey, 'ct')}
                 >
-                  Other..
+                  {attr.otherOptLbl || 'Other...'}
                 </span>
               </label>
               <div data-oinp-wrp className={`${fieldKey}-other-inp-wrp`}>

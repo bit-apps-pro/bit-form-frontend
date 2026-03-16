@@ -1,0 +1,9 @@
+/* eslint-disable import/no-import-module-exports */
+// eslint-disable-next-line import/no-relative-packages
+import generateRollupConfig from '../configs/generate-rollup-config'
+
+module.exports = generateRollupConfig({
+  isFrontend: true, // ✅ Correct environment
+  useBrowserResolution: false, // ✅ Bypass problematic browser field
+  commonJSPackages: ['filepond-plugin-image-resize'],
+})

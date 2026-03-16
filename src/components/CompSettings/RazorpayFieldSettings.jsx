@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useEffect, useState } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom, useAtomValue } from 'jotai'
 import { $payments } from '../../GlobalStates/AppSettingsStates'
 import { $fields } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
@@ -32,15 +32,20 @@ export default function RazorpayFieldSettings() {
   const formFields = Object.entries(fields)
   const payments = useAtomValue($payments)
   const { css } = useFela()
-  const [payNotes, setPayNotes] = useState([{}])
+  const [payNotes, setPayNotes] = useState(() => {
+    if (fieldData?.options?.notes) {
+      return Object.entries(fieldData?.options?.notes).map(([key, value]) => ({ key, value }))
+    }
+    return [{}]
+  })
   const isSubscription = fieldData?.payType === 'subscription'
   const isDynamicAmount = fieldData.options.amountType === 'dynamic'
-
-  console.log({ fieldData })
+  const newOrderId = fieldData?.newOrderId || false
 
   useEffect(() => {
     removeFormUpdateError(fldKey, 'razorpayAmountFldMissing')
     removeFormUpdateError(fldKey, 'razorpayAmountMissing')
+    removeFormUpdateError(fldKey, 'razorpayOrderIdFldMissing')
     if (isDynamicAmount && !fieldData.options?.amountFld) {
       addFormUpdateError({
         fieldKey: fldKey,
@@ -56,7 +61,15 @@ export default function RazorpayFieldSettings() {
         errorUrl: `field-settings/${fldKey}`,
       })
     }
-  }, [fieldData.options?.amountType, fieldData.options?.amount, fieldData.options?.amountFld])
+    if (fieldData.includeOrderId && !fieldData.newOrderId && !fieldData.orderIdFld) {
+      addFormUpdateError({
+        fieldKey: fldKey,
+        errorKey: 'razorpayOrderIdFldMissing',
+        errorMsg: __('Razorpay Order ID Field is not Selected'),
+        errorUrl: `field-settings/${fldKey}`,
+      })
+    }
+  }, [fieldData.options?.amountType, fieldData.options?.amount, fieldData.options?.amountFld, fieldData.includeOrderId, fieldData.newOrderId, fieldData.orderIdFld])
 
   const pos = [
     { name: __('Left'), value: 'left' },
@@ -192,9 +205,20 @@ export default function RazorpayFieldSettings() {
 
     fieldData.options.notes = noteObj
     // eslint-disable-next-line no-param-reassign
-    const allFields = create(fields, draft => { draft[fldKey] = fieldData })
+    const allFields = create(fields, draft => {
+      draft[fldKey] = fieldData
+      return draft
+    })
     setFields(allFields)
     addToBuilderHistory({ event: `Notes Changes: ${fieldData.lbl || fldKey}`, type: 'set_notes', state: { fields: allFields, fldKey } })
+  }
+
+  const handleAction = (name, value) => {
+    fieldData[name] = value
+    // eslint-disable-next-line no-param-reassign
+    const allFields = create(fields, draft => { draft[fldKey] = fieldData })
+    setFields(allFields)
+    addToBuilderHistory({ event: `${name} "${value ? 'On' : 'Off'}": ${fieldData.lbl || fldKey}`, type: `${name}_changed`, state: { fields: allFields, fldKey } })
   }
 
   const getSpecifiedFields = type => {
@@ -207,6 +231,8 @@ export default function RazorpayFieldSettings() {
       pattern = /text|email/g
     } else if (type === 'number') {
       pattern = /number/g
+    } else if (type === 'orderId') {
+      pattern = /text|radio|select|html-select/g
     }
     const filteredFields = formFields.filter(field => field[1].typ.match(pattern))
     return filteredFields.map(itm => (<option key={itm[0]} value={itm[0]}>{itm[1].adminLbl || itm[1].lbl}</option>))
@@ -231,7 +257,7 @@ export default function RazorpayFieldSettings() {
       <FieldSettingsDivider />
 
       <div className={css(ut.ml2, ut.mr2, ut.mt2, ut.p1)}>
-        <b>{__('Select Config')}</b>
+        <b>{__('Razorpay Accounts')}</b>
         <br />
         <select
           data-testid="slct-cnfg-slct"
@@ -241,7 +267,7 @@ export default function RazorpayFieldSettings() {
           className={css(FieldStyle.input)}
           value={fieldData.payIntegID}
         >
-          <option value="">Select Config</option>
+          <option value="">Select Account</option>
           {getRazorpayConfigs()}
         </select>
       </div>
@@ -337,6 +363,45 @@ export default function RazorpayFieldSettings() {
               </div>
             </>
           )}
+          <FieldSettingsDivider />
+          <SimpleAccordion
+            id="order-stng"
+            title="Include Order ID"
+            className={css(FieldStyle.fieldSection)}
+            switching
+            toggleAction={(e) => {
+              handleAction('includeOrderId', e.target.checked)
+              if (!e.target.checked) {
+                handleAction('newOrderId', false)
+              }
+              if (e.target.checked && !fieldData?.orderIdFld) {
+                handleAction('newOrderId', true)
+              }
+            }}
+            toggleChecked={fieldData?.includeOrderId}
+            open={fieldData?.includeOrderId}
+            disable={!fieldData?.includeOrderId}
+          >
+            <div className={css({})}>
+              <CheckBox id="amnt-typ-fxd" onChange={e => handleAction('newOrderId', e.target.checked)} check sqr checked={newOrderId} title={__('Generate new ID')} value="newOrderId" />
+            </div>
+            {!newOrderId && (
+              <div className={css(ut.ml2, ut.mr2, ut.p1)}>
+                <b>{__('Select Order Id Field')}</b>
+                <select
+                  data-testid="slct-amnt-fld-slct"
+                  onChange={e => handleAction(e.target.name, e.target.value)}
+                  name="orderIdFld"
+                  className={css(FieldStyle.input)}
+                  value={fieldData?.orderIdFld || ''}
+                >
+                  <option value="">{__('Select Field')}</option>
+                  {getSpecifiedFields('orderId')}
+                </select>
+              </div>
+            )}
+
+          </SimpleAccordion>
           <FieldSettingsDivider />
           <SimpleAccordion
             id="adtnl-stng"
@@ -540,8 +605,8 @@ export default function RazorpayFieldSettings() {
           <FieldSettingsDivider />
         </>
       )}
-      <FieldSettingsDivider />
       <FieldHideSettings />
+      <FieldSettingsDivider />
     </div>
   )
 }

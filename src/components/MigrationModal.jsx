@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useResetAtom } from 'jotai/utils'
 import { useEffect, useState } from 'react'
+import { useFela } from 'react-fela'
 import { $bits, $formId } from '../GlobalStates/GlobalStates'
 import { generateUpdateFormData, getConfirmationStyle, getStatesToReset, setFormReponseDataToStates, setStyleRelatedStates } from '../Utils/Helpers'
 import bitsFetch from '../Utils/bitsFetch'
@@ -15,6 +16,8 @@ export default function MigrationModal() {
   const setFormId = useSetAtom($formId)
   const [migratingCount, setMigratingCount] = useState(0)
   const [totalForms, setTotalForms] = useState(0)
+  const [showSupportInfo, setShowSupportInfo] = useState(false)
+  const { css } = useFela()
   const atomResetters = getStatesToReset().map(stateAtom => useResetAtom(stateAtom))
 
   useEffect(() => {
@@ -49,6 +52,8 @@ export default function MigrationModal() {
                     window.location.reload()
                   })
               })
+          } else {
+            setShowSupportInfo(true)
           }
         })
     }
@@ -62,17 +67,34 @@ export default function MigrationModal() {
   return (
     <Modal sm show={bits.isMigratingToV2} showCloseBtn={false}>
       <div className="flx flx-col flx-center">
-        <h3 className="mb-0">{__('Migrating to V2')}</h3>
-        <p className="mb-2">{__('Please wait while we migrate your data to V2')}</p>
-        {!totalForms && <Loader />}
-        {!!totalForms && (
+        {showSupportInfo && (
           <>
-            <div className="flx flx-center" style={{ width: '70%' }}><Progressbar value={getMigratedPercentage()} /></div>
-            <p className="m-0">{`Migrated ${migratingCount} out of ${totalForms} forms`}</p>
+            <h3 className="mb-2">{__('Migration Issue Detected')}</h3>
+            <p className="m-0 mb-2 txt-center">{__('There may have been a problem during auto-migrating your Bit Forms from V1 to V2.')}</p>
+            <p className="mb-2">
+              {__('Please contact support for assistance at ')}
+              <a href="mailto:support@bitapps.pro" rel="noreferrer" className={css({ td: 'underline !important' })}>
+                support@bitapps.pro
+              </a>
+            </p>
           </>
         )}
-        <p className="m-0 mt-2">{__('This may take a few minutes...')}</p>
-        <p className="mt-0 mb-2">{__('Meanwhile do not close this window.')}</p>
+        {!showSupportInfo && (
+          <>
+            <h3 className="mb-0">{__('Migrating to V2')}</h3>
+            <p className="mb-2">{__('Please wait while we migrate your data to V2')}</p>
+            {!totalForms && <Loader />}
+            {!!totalForms && (
+              <>
+                <div className="flx flx-center" style={{ width: '70%' }}><Progressbar value={getMigratedPercentage()} /></div>
+                <p className="m-0">{`Migrated ${migratingCount} out of ${totalForms} forms`}</p>
+              </>
+            )}
+            <p className="m-0 mt-2">{__('This may take a few minutes...')}</p>
+            <p className="mt-0 mb-2">{__('Meanwhile do not close this window.')}</p>
+          </>
+        )}
+
       </div>
     </Modal>
   )

@@ -24,7 +24,8 @@ export default function IntegrationStepThree({ step, saveConfig, edit, disabled 
             disabled={disabled}
             className={css(app.btn, { flxi: 'center' })}
           >
-            {__('Finish & Save ')}
+            {__('Finish & Save')}
+            {' '}
             &nbsp;✔
           </Btn>
         </div>

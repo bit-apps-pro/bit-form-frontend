@@ -2,8 +2,8 @@
 import BitCurrencyField from 'bit-currency-field/src/bit-currency-field'
 import { observeElm } from 'bit-helpers/src'
 import bitVirtualizedList from 'bit-virtualized-list/src/bit-virtualized-list'
-import { useEffect, useRef } from 'react'
 import { useAtomValue } from 'jotai'
+import { useEffect, useRef } from 'react'
 import { $bits, $fields } from '../../GlobalStates/GlobalStates'
 import { getCustomAttributes, getCustomClsName, getDataDevAttrArr, selectInGrid } from '../../Utils/globalHelpers'
 import InputWrapper from '../InputWrapper'
@@ -23,6 +23,7 @@ const CurrencyField = ({ fieldKey, formID, attr, onBlurHandler, contentID, style
     defaultCurrencyKey,
     searchPlaceholder,
     noCurrencyFoundText,
+    defaultValue,
   } = fieldData.config
 
   useEffect(() => {
@@ -47,6 +48,7 @@ const CurrencyField = ({ fieldKey, formID, attr, onBlurHandler, contentID, style
       searchClearable,
       optionFlagImage,
       defaultCurrencyKey,
+      defaultValue,
       searchPlaceholder,
       noCurrencyFoundText,
       options,

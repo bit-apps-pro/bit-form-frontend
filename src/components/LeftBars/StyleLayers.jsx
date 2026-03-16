@@ -331,7 +331,7 @@ function StyleLayers() {
                 />
               )}
               <ElementConfiguration fldKey={fldKey} />
-              {fldData.typ.match(/^(check|radio|decision-box)/gi) && (
+              {fldData.typ.match(/^(check|radio|decision-box|gdpr)/gi) && (
                 <>
                   <NavBtn
                     subRoute={fldKey}
@@ -372,7 +372,7 @@ function StyleLayers() {
                 </>
               )}
 
-              {fldData.typ.match(/(check|decision-box|radio)/gi) && (
+              {fldData.typ.match(/(check|decision-box|radio|gdpr)/gi) && (
                 <NavBtn
                   subRoute={fldKey}
                   route="bx"
@@ -419,6 +419,26 @@ function StyleLayers() {
                     offset="2.5"
                     highlightSelector={`[data-dev-stripe-pay-btn="${fldKey}"]`}
                     styleOverride={isLabelOverrideStyles(styles, fldKey, 'stripe-pay-btn')}
+                  />
+                </>
+              )}
+              {fldData.typ === 'mollie' && (
+                <>
+                  <NavBtn
+                    subRoute={fldKey}
+                    route="mollie-btn"
+                    label="Mollie Button"
+                    offset="2.5"
+                    highlightSelector={`[data-dev-mollie-btn="${fldKey}"]`}
+                    styleOverride={isLabelOverrideStyles(styles, fldKey, 'mollie-btn')}
+                  />
+                  <NavBtn
+                    subRoute={fldKey}
+                    route="mollie-icn"
+                    label="Mollie Icon"
+                    offset="2.5"
+                    highlightSelector={`[data-dev-mollie-icn="${fldKey}"]`}
+                    styleOverride={isLabelOverrideStyles(styles, fldKey, 'mollie-icn')}
                   />
                 </>
               )}
@@ -853,6 +873,14 @@ function StyleLayers() {
                   />
                   <NavBtn
                     subRoute={fldKey}
+                    route="dpd-wrp"
+                    label="Dropdown Wrapper"
+                    offset="2.5"
+                    highlightSelector={`[data-dev-dpd-wrp="${fldKey}"]`}
+                    styleOverride={isLabelOverrideStyles(styles, fldKey, 'dpd-wrp')}
+                  />
+                  <NavBtn
+                    subRoute={fldKey}
                     route="selected-opt-img"
                     label="Selected Option Image"
                     offset="2.5"
@@ -989,7 +1017,7 @@ function StyleLayers() {
                   />
                 </>
               )}
-              {!fldData.typ.match(/^(button|divider|title|image|html|razorpay|paypal|recaptcha|section|repeater|turnstile)$/) && (
+              {!fldData.typ.match(/^(button|divider|spacer|title|image|html|razorpay|paypal|recaptcha|section|repeater|turnstile|hcaptcha)$/) && (
                 <NavBtn
                   subRoute={fldKey}
                   route="err-msg"

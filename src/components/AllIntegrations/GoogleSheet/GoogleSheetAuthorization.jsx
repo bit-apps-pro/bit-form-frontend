@@ -1,16 +1,15 @@
-import { useState } from 'react'
 import { useAtomValue } from 'jotai'
+import { useEffect, useState } from 'react'
 import { $bits } from '../../../GlobalStates/GlobalStates'
 import { __ } from '../../../Utils/i18nwrap'
 import tutorialLinks from '../../../Utils/StaticData/tutorialLinks'
 import CopyText from '../../Utilities/CopyText'
 import TutorialLink from '../../Utilities/TutorialLink'
 import AuthorizeBtn from '../AuthorizeBtn'
-import NextBtn from '../NextBtn'
 import { handleAuthorize, refreshSpreadsheets } from './GoogleSheetCommonFunc'
 
 export default function GoogleSheetAuthorization({
-  formID, sheetConf, setSheetConf, step, setstep, isLoading, setisLoading, setSnackbar, redirectLocation, isInfo,
+  formID, sheetConf, setSheetConf, step, setstep, isLoading, setisLoading, setSnackbar, redirectLocation, isInfo, authorizedAction,
 }) {
   const [isAuthorized, setisAuthorized] = useState(false)
   const [error, setError] = useState({ clientId: '', clientSecret: '' })
@@ -32,6 +31,13 @@ export default function GoogleSheetAuthorization({
     setstep(2)
     refreshSpreadsheets(formID, sheetConf, setSheetConf, setisLoading, setSnackbar)
   }
+
+  useEffect(() => {
+    if (isAuthorized) {
+      authorizedAction()
+    }
+  }, [isAuthorized])
+
   return (
     <>
       <TutorialLink
@@ -40,7 +46,7 @@ export default function GoogleSheetAuthorization({
       />
       <div
         className="btcd-stp-page"
-        style={{ ...{ width: step === 1 && 900 }, ...{ height: step === 1 && `${100}%` } }}
+        style={{ width: 900, height: '100%' }}
       >
         <div className="mt-3">
           <b>{__('Integration Name:')}</b>
@@ -116,10 +122,10 @@ export default function GoogleSheetAuthorization({
               handleAuthorize={() => handleAuthorize(sheetConf, setSheetConf, setError, setisAuthorized, setisLoading, setSnackbar)}
             />
             <br />
-            <NextBtn
+            {/* <NextBtn
               nextPageHandler={() => nextPage(2)}
               disabled={!isAuthorized}
-            />
+            /> */}
           </>
         )}
       </div>

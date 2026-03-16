@@ -109,7 +109,7 @@ export default function SendinBlueIntegLayout({
             {sendinBlueConf.actions?.double_optin && (
               <>
                 <div className="flx">
-                  <b className="wdt-150 d-in-b">{__('Template: ')}</b>
+                  <b className="wdt-150 d-in-b">{__('Template:')}</b>
                   <div className="w-5">
                     <select
                       onChange={handleInput}

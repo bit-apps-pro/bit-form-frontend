@@ -9,11 +9,13 @@ import { $fields, $selectedFieldId } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import { addToBuilderHistory } from '../../Utils/FormBuilderHelper'
 import { IS_PRO, deepCopy } from '../../Utils/Helpers'
+import { sanitizeHTML } from '../../Utils/globalHelpers'
 import { __ } from '../../Utils/i18nwrap'
 import FieldStyle from '../../styles/FieldStyle.style'
 import Modal from '../Utilities/Modal'
 import SingleToggle from '../Utilities/SingleToggle'
 import { addDefaultStyleClasses, iconElementLabel, isStyleExist, setIconFilterValue, styleClasses } from '../style-new/styleHelpers'
+import AdminLabelSettings from './CompSettingsUtils/AdminLabelSettings'
 import AutoResizeInput from './CompSettingsUtils/AutoResizeInput'
 import FieldDisabledSettings from './CompSettingsUtils/FieldDisabledSettings'
 import FieldHideSettings from './CompSettingsUtils/FieldHideSettings'
@@ -52,7 +54,9 @@ export default function ButtonSettings() {
   }
 
   function setSubBtnTxt(e) {
-    fieldData.txt = e.target.value
+    const { value } = e.target
+    const val = sanitizeHTML(value)
+    fieldData.txt = val
     const allFields = create(fields, draft => { draft[fldKey] = fieldData })
     setFields(allFields)
     addToBuilderHistory({ event: `Button text updated : ${fieldData.txt}`, type: 'change_btn_txt', state: { fields: allFields, fldKey } })
@@ -193,7 +197,7 @@ export default function ButtonSettings() {
             />
           </div>
           <FieldIconSettings
-            label="Leading Icon"
+            label={__('Leading Icon')}
             iconSrc={fieldData?.btnPreIcn}
             styleRoute="btn-pre-i"
             setIcon={() => setIconModel('btnPreIcn')}
@@ -201,7 +205,7 @@ export default function ButtonSettings() {
             isPro
           />
           <FieldIconSettings
-            label="Trailing Icon"
+            label={__('Trailing Icon')}
             iconSrc={fieldData?.btnSufIcn}
             styleRoute="btn-suf-i"
             setIcon={() => setIconModel('btnSufIcn')}
@@ -212,6 +216,10 @@ export default function ButtonSettings() {
 
         <FieldSettingsDivider />
 
+        <AdminLabelSettings />
+
+        <FieldSettingsDivider />
+
         <HelperTxtSettings />
 
         <FieldSettingsDivider />
@@ -219,39 +227,59 @@ export default function ButtonSettings() {
         <FieldDisabledSettings />
 
         <FieldSettingsDivider />
-        <SimpleAccordion
-          id="btn-algn"
-          title={__('Button Align')}
-          className={css(FieldStyle.fieldSection)}
-          open
-        >
-          <div className={css(FieldStyle.placeholder)}>
-            <select
-              data-testid="btn-algn-slct"
-              className={css(FieldStyle.input)}
-              name=""
-              id=""
-              value={btnAlign}
-              onChange={setButtonAlign}
-            >
-              {pos.map(itm => <option key={`btcd-k-${itm.name}`} value={itm.value}>{itm.name}</option>)}
-            </select>
-          </div>
-        </SimpleAccordion>
 
+        <div className={css(FieldStyle.fieldSection, { pr: '36px' })}>
+          <SingleToggle
+            id="ful-wid-btn"
+            tip="By disabling this option, the button full width will be remove"
+            title={__('Full Width')}
+            action={setFulW}
+            isChecked={fulW || ''}
+          />
+        </div>
         <FieldSettingsDivider />
-        <SimpleAccordion
-          id="txt-algn"
-          title={__('Text Align')}
-          className={css(FieldStyle.fieldSection)}
-          open
-        >
-          <div className={css(FieldStyle.placeholder)}>
-            <select data-testid="txt-algn-slct" className={css(FieldStyle.input)} name="" id="" value={txtAlign || 'center'} onChange={setButtonTextAlign}>
-              {pos.map(itm => <option key={`btcd-k-${itm.name}`} value={itm.value}>{itm.name}</option>)}
-            </select>
-          </div>
-        </SimpleAccordion>
+        {!fulW && (
+          <SimpleAccordion
+            id="btn-algn"
+            title={__('Button Align')}
+            className={css(FieldStyle.fieldSection)}
+            open
+          >
+            <div className={css(FieldStyle.placeholder)}>
+              <select
+                data-testid="btn-algn-slct"
+                className={css(FieldStyle.input)}
+                name=""
+                id=""
+                value={btnAlign}
+                onChange={setButtonAlign}
+              >
+                {pos.map(itm => <option key={`btcd-k-${itm.name}`} value={itm.value}>{itm.name}</option>)}
+              </select>
+            </div>
+          </SimpleAccordion>
+        )}
+        {fulW && (
+          <SimpleAccordion
+            id="txt-algn"
+            title={__('Text Align')}
+            className={css(FieldStyle.fieldSection)}
+            open
+          >
+            <div className={css(FieldStyle.placeholder)}>
+              <select
+                data-testid="txt-algn-slct"
+                className={css(FieldStyle.input)}
+                name=""
+                id=""
+                value={txtAlign || 'center'}
+                onChange={setButtonTextAlign}
+              >
+                {pos.map(itm => <option key={`btcd-k-${itm.name}`} value={itm.value}>{itm.name}</option>)}
+              </select>
+            </div>
+          </SimpleAccordion>
+        )}
 
         <FieldSettingsDivider />
 
@@ -285,18 +313,6 @@ export default function ButtonSettings() {
 
         <FieldSettingsDivider />
 
-        <div className={css(FieldStyle.fieldSection, { pr: '36px' })}>
-          <SingleToggle
-            id="ful-wid-btn"
-            tip="By disabling this option, the button full width will be remove"
-            title={__('Full Width')}
-            action={setFulW}
-            isChecked={fulW || ''}
-          />
-        </div>
-
-        <FieldSettingsDivider />
-
         <FieldHideSettings />
 
       </div>
@@ -310,8 +326,11 @@ export default function ButtonSettings() {
         title={__('Icons')}
       >
         <div className="pos-rel" />
-
-        <Icons iconType={icnType} addPaddingOnSelect={false} setModal={setIcnMdl} />
+        <Icons
+          iconType={icnType}
+          addPaddingOnSelect={false}
+          setModal={setIcnMdl}
+        />
       </Modal>
     </>
   )

@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+import { create } from 'mutative'
 import { useEffect, useState } from 'react'
 import { useFela } from 'react-fela'
 import 'react-multiple-select-dropdown-lite/dist/index.css'
@@ -6,17 +8,21 @@ import BackIcn from '../../../Icons/BackIcn'
 import ut from '../../../styles/2.utilities'
 import { __ } from '../../../Utils/i18nwrap'
 import Btn from '../../Utilities/Btn'
+import Modal from '../../Utilities/Modal'
 import SnackMsg from '../../Utilities/SnackMsg'
 import Steps from '../../Utilities/Steps'
+import ConnectedAppsList from '../ConnectedAppsList'
+import { getConnectedAppList } from '../integrationHelper'
 import { saveIntegConfig, setGrantTokenResponse } from '../IntegrationHelpers/GoogleIntegrationHelpers'
 import IntegrationStepThree from '../IntegrationHelpers/IntegrationStepThree'
 import GoogleSheetAuthorization from './GoogleSheetAuthorization'
-import { checkMappedFields, handleInput } from './GoogleSheetCommonFunc'
+import { checkMappedFields, handleInput, refreshSpreadsheets } from './GoogleSheetCommonFunc'
 import GoogleSheetIntegLayout from './GoogleSheetIntegLayout'
 
 function GoogleSheet({ formFields, setIntegration, integrations, allIntegURL }) {
   const history = useNavigate()
   const { formID } = useParams()
+  const [showMdl, setShowMdl] = useState(false)
   const [isLoading, setisLoading] = useState(false)
   const [step, setstep] = useState(1)
   const { css } = useFela()
@@ -24,8 +30,8 @@ function GoogleSheet({ formFields, setIntegration, integrations, allIntegURL }) 
   const [sheetConf, setSheetConf] = useState({
     name: 'Google Sheet API',
     type: 'Google Sheet',
-    clientId: process.env.NODE_ENV === 'development' ? '182445826641-ai9pm4fcg4somihe32187gb8s1mpl0pr.apps.googleusercontent.com' : '',
-    clientSecret: process.env.NODE_ENV === 'development' ? 'yHz87_FvXtU8NZ4OGHjRflYP' : '',
+    clientId: process.env.NODE_ENV === 'development' ? '' : '',
+    clientSecret: process.env.NODE_ENV === 'development' ? '' : '',
     spreadsheetId: '',
     worksheetName: '',
     field_map: [
@@ -35,6 +41,38 @@ function GoogleSheet({ formFields, setIntegration, integrations, allIntegURL }) 
     headerRow: 'A1',
     actions: {},
   })
+  const connectedGoogleSheetApps = getConnectedAppList([sheetConf.type])
+
+  const authorizedAction = () => {
+    setTimeout(() => { history(`${allIntegURL}/new/${sheetConf.type}`) }, 1000)
+    setShowMdl(false)
+  }
+
+  const authAppCardClickAction = (app, i) => {
+    if (app.integration_type === sheetConf.type) {
+      const appDetails = JSON.parse(app.integration_details)
+      setSheetConf(draftSheetConf => create(draftSheetConf, tempSheetConf => {
+        tempSheetConf.parentAppId = app.id
+        tempSheetConf.clientId = appDetails.clientId
+        tempSheetConf.clientSecret = appDetails.clientSecret
+        tempSheetConf.tokenDetails = appDetails.tokenDetails
+      }))
+      setstep(2)
+    }
+  }
+
+  useEffect(() => {
+    setSheetConf(draftSheetConf => create(draftSheetConf, tempSheetConf => {
+      const selectedApp = connectedGoogleSheetApps.find(app => app.id === sheetConf.parentAppId)
+      if (selectedApp) {
+        const appDetails = JSON.parse(selectedApp.integration_details)
+        tempSheetConf.clientId = appDetails.clientId
+        tempSheetConf.clientSecret = appDetails.clientSecret
+        tempSheetConf.tokenDetails = appDetails.tokenDetails
+      }
+    }))
+    if (sheetConf?.parentAppId) refreshSpreadsheets(formID, sheetConf, setSheetConf, setisLoading, setSnackbar)
+  }, [sheetConf.parentAppId])
 
   useEffect(() => {
     window.opener && setGrantTokenResponse('googleSheet')
@@ -55,13 +93,54 @@ function GoogleSheet({ formFields, setIntegration, integrations, allIntegURL }) 
 
   return (
     <div>
+
+      <Modal
+        title={__('Authorize New Google App')}
+        show={showMdl}
+        setModal={(() => setShowMdl(false))}
+      >
+        <GoogleSheetAuthorization
+          formID={formID}
+          sheetConf={sheetConf}
+          setSheetConf={setSheetConf}
+          step={step}
+          setstep={setstep}
+          setSnackbar={setSnackbar}
+          isLoading={isLoading}
+          setisLoading={setisLoading}
+          allIntegURL={allIntegURL}
+          authorizedAction={authorizedAction}
+        />
+      </Modal>
       <SnackMsg snack={snack} setSnackbar={setSnackbar} />
       <div className="txt-center w-9 mt-2 cal-width">
         <Steps step={3} active={step} />
       </div>
 
       {/* STEP 1 */}
-      <GoogleSheetAuthorization
+      {
+        (connectedGoogleSheetApps.length > 0 && step === 1) && (
+          <ConnectedAppsList allIntegURL={allIntegURL} specificTypes={[sheetConf.type]} onClickAction={authAppCardClickAction} allowAddNew addNewAction={() => setShowMdl(true)} />
+        )
+      }
+      {
+        step === 1 && connectedGoogleSheetApps.length === 0 && (
+          <GoogleSheetAuthorization
+            formID={formID}
+            sheetConf={sheetConf}
+            setSheetConf={setSheetConf}
+            step={step}
+            setstep={setstep}
+            setSnackbar={setSnackbar}
+            isLoading={isLoading}
+            setisLoading={setisLoading}
+            allIntegURL={allIntegURL}
+            authorizedAction={authorizedAction}
+          />
+        )
+      }
+
+      {/* <GoogleSheetAuthorization
         formID={formID}
         sheetConf={sheetConf}
         setSheetConf={setSheetConf}
@@ -70,7 +149,7 @@ function GoogleSheet({ formFields, setIntegration, integrations, allIntegURL }) 
         setSnackbar={setSnackbar}
         isLoading={isLoading}
         setisLoading={setisLoading}
-      />
+      /> */}
 
       {/* STEP 2 */}
       <div className="btcd-stp-page" style={{ width: step === 2 && 900, height: step === 2 && `${100}%` }}>
@@ -84,6 +163,7 @@ function GoogleSheet({ formFields, setIntegration, integrations, allIntegURL }) 
           isLoading={isLoading}
           setisLoading={setisLoading}
           setSnackbar={setSnackbar}
+          setShowMdl={setShowMdl}
         />
         {/* {console.log(sheetConf.spreadsheetId, sheetConf.worksheetName, sheetConf.field_map)} */}
         <Btn

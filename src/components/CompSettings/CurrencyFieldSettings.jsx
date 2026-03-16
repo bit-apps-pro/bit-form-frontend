@@ -1,16 +1,18 @@
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useState } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
+import { $globalMessages } from '../../GlobalStates/AppSettingsStates'
 import { $fields } from '../../GlobalStates/GlobalStates'
 import CloseIcn from '../../Icons/CloseIcn'
 import ut from '../../styles/2.utilities'
 import FieldStyle from '../../styles/FieldStyle.style'
 import { isDev } from '../../Utils/config'
 import { addToBuilderHistory } from '../../Utils/FormBuilderHelper'
-import { deepCopy } from '../../Utils/Helpers'
+import { deepCopy, IS_PRO } from '../../Utils/Helpers'
 import { __ } from '../../Utils/i18nwrap'
+import tippyHelperMsg from '../../Utils/StaticData/tippyHelperMsg'
 import Btn from '../Utilities/Btn'
 import Modal from '../Utilities/Modal'
 import SingleToggle from '../Utilities/SingleToggle'
@@ -36,33 +38,42 @@ const CurrencyFieldSettings = () => {
   if (!fldKey) return <>No field exist with this field key</>
   const { css } = useFela()
   const [fields, setFields] = useAtom($fields)
+  const globalMessages = useAtomValue($globalMessages)
   const [optionMdl, setOptionMdl] = useState(false)
   const fieldData = deepCopy(fields[fldKey])
   const adminLabel = fieldData.adminLbl || ''
   const { options } = fieldData
+  const globalErrMsg = globalMessages?.err || {}
 
   const {
     selectedFlagImage,
     selectedCurrencyClearable,
+    defaultValue,
     searchClearable,
     optionFlagImage,
     showSearchPh,
     searchPlaceholder,
     noCurrencyFoundText,
     maxHeight,
-    minimumFractionDigits,
-    maximumFractionDigits,
-    decimalSeparator,
-    numberFormat,
     minValue,
     maxValue,
   } = fieldData.config
 
-  const { showCurrencySymbol,
-    roundToClosestInteger,
-    roundToClosestFractionDigits, formatter: inputFormatter } = fieldData.inputFormatOptions
+  const {
+    showCurrencySymbol,
+    roundToClosestInteger: inputRoundToClosestInteger,
+    roundToClosestFractionDigits: inputRoundToClosestFractionDigit,
+    formatter: inputFormatter,
+    numberFormat: inputNumberFormat,
+    decimalSeparator: inputDecimalSeparator,
+    minimumFractionDigits: inputMinimumFractionDigits,
+    maximumFractionDigits: inputMaximumFractionDigits,
+  } = fieldData.inputFormatOptions
 
-  const { formatter: valueFormatter, symbolPosition, currencyPosition } = fieldData.valueFormatOptions
+  const {
+    formatter: valueFormatter, numberFormat, decimalSeparator, minimumFractionDigits,
+    maximumFractionDigits, symbolPosition, currencyPosition, roundToClosestInteger, roundToClosestFractionDigits,
+  } = fieldData.valueFormatOptions
 
   const openOptionModal = () => {
     setOptionMdl(true)
@@ -72,6 +83,30 @@ const CurrencyFieldSettings = () => {
     setOptionMdl(false)
   }
 
+  const hideDefalutValue = (e) => {
+    if (!IS_PRO) return
+    if (e.target.checked) {
+      fieldData.config.defaultValue = 'USD 0.0'
+      fieldData.defaultValueHide = true
+    } else {
+      fieldData.defaultValueHide = false
+      delete fieldData.config.defaultValue
+    }
+    const req = e.target.checked ? 'on' : 'off'
+    const allFields = create(fields, draft => { draft[fldKey] = fieldData })
+    setFields(allFields)
+    addToBuilderHistory({ event: `Default value ${req}: ${fieldData.lbl || adminLabel || fldKey}`, type: `${req.toLowerCase()}_defaultValue`, state: { fields: allFields, fldKey } })
+  }
+
+  const setDefaultValue = ({ target: { value } }) => {
+    if (!IS_PRO) return
+    if (value === '') delete fieldData.config.defaultValue
+    else fieldData.config.defaultValue = value
+
+    const allFields = create(fields, draft => { draft[fldKey] = fieldData })
+    setFields(allFields)
+    addToBuilderHistory({ event: `Default value updated: ${value || fieldData.lbl || adminLabel || fldKey}`, type: 'change_defaultValue', state: { fields: allFields, fldKey } })
+  }
   const handleOptions = newOpts => {
     const checkedOpt = newOpts.find(opt => opt.check)
     const allFields = create(fields, draft => {
@@ -84,6 +119,8 @@ const CurrencyFieldSettings = () => {
 
   const handleConfigChange = (val, name, config) => {
     fieldData[config][name] = val
+    if (name === 'minValue') fieldData.err.minValue.dflt = globalErrMsg?.[fieldData.typ]?.minValue || globalErrMsg?.minValue || `Invalid amount. The minimum amount allowed is ${val}.`
+    else if (name === 'maxValue') fieldData.err.maxValue.dflt = globalErrMsg?.[fieldData.typ]?.maxValue || globalErrMsg?.maxValue || `Invalid amount. The maximum amount allowed is ${val}.`
     const allFields = create(fields, draft => { draft[fldKey] = fieldData })
     setFields(allFields)
     addToBuilderHistory({ event: `${propNameLabel[name]} '${String(val || 'Off').replace('true', 'On')}': ${fieldData.lbl || fldKey}`, type: `${name}_changed`, state: { fields: allFields, fldKey } })
@@ -148,6 +185,34 @@ const CurrencyFieldSettings = () => {
 
       <RequiredSettings />
 
+      <FieldSettingsDivider />
+
+      <SimpleAccordion
+        id="dflt-val-stng"
+        title={__('Default Amount Value')}
+        className={css(FieldStyle.fieldSection, FieldStyle.hover_tip)}
+        switching
+        tip={tippyHelperMsg.defaultValue}
+        tipProps={{ width: 250, icnSize: 17 }}
+        toggleAction={hideDefalutValue}
+        toggleChecked={fieldData?.defaultValueHide}
+        open={fieldData?.defaultValueHide}
+        {...IS_PRO && { disable: !fieldData?.defaultValueHide }}
+        isPro
+        proProperty="defaultValue"
+      >
+        <div className={css(FieldStyle.placeholder)}>
+          <input
+            data-testid="dflt-val-stng-inp"
+            aria-label="Default value for this Field"
+            placeholder="e.g. USD 100.0"
+            className={css(FieldStyle.input)}
+            type={fieldData.typ}
+            value={defaultValue}
+            onChange={setDefaultValue}
+          />
+        </div>
+      </SimpleAccordion>
       <FieldSettingsDivider />
 
       <FieldReadOnlySettings />
@@ -256,7 +321,7 @@ const CurrencyFieldSettings = () => {
               tip="By disabling this option, the currency symbol will be show"
               title={__('Round to Closest Integer:')}
               action={e => handleConfigChange(e.target.checked, 'roundToClosestInteger', 'inputFormatOptions')}
-              isChecked={roundToClosestInteger}
+              isChecked={inputRoundToClosestInteger}
             />
           </div>
           {
@@ -268,7 +333,7 @@ const CurrencyFieldSettings = () => {
                     tip="By Enabling this option, the Fraction Will Rounded"
                     title={__('Round to Closest Fraction Digits:')}
                     action={e => handleConfigChange(e.target.checked, 'roundToClosestFractionDigits', 'inputFormatOptions')}
-                    isChecked={roundToClosestFractionDigits}
+                    isChecked={inputRoundToClosestFractionDigit}
                     className={css(ut.m0, FieldStyle.title)}
                   />
                 </div>
@@ -282,7 +347,7 @@ const CurrencyFieldSettings = () => {
                     placeholder="Minimum Fraction Digit"
                     className={css(FieldStyle.input, FieldStyle.w60, ut.mt1)}
                     type="number"
-                    value={minimumFractionDigits}
+                    value={inputMinimumFractionDigits}
                     onChange={e => handleConfigChange(e.target.value, 'minimumFractionDigits', 'inputFormatOptions')}
                   />
                 </div>
@@ -295,7 +360,7 @@ const CurrencyFieldSettings = () => {
                     placeholder="Maximum Fraction Digit"
                     className={css(FieldStyle.input, FieldStyle.w60, ut.mt1)}
                     type="number"
-                    value={maximumFractionDigits}
+                    value={inputMaximumFractionDigits}
                     onChange={e => handleConfigChange(e.target.value, 'maximumFractionDigits', 'inputFormatOptions')}
                   />
                 </div>
@@ -308,7 +373,7 @@ const CurrencyFieldSettings = () => {
                     placeholder="Decimal Separator"
                     className={css(FieldStyle.input, FieldStyle.w60, ut.mt1)}
                     type="text"
-                    value={decimalSeparator}
+                    value={inputDecimalSeparator}
                     onChange={e => handleConfigChange(e.target.value, 'decimalSeparator', 'inputFormatOptions')}
                   />
                 </div>
@@ -321,7 +386,7 @@ const CurrencyFieldSettings = () => {
                     placeholder="Ex: ###,###,###"
                     className={css(FieldStyle.input, ut.mt1, { w: 120 })}
                     type="text"
-                    value={numberFormat}
+                    value={inputNumberFormat}
                     onChange={e => handleConfigChange(e.target.value, 'numberFormat', 'inputFormatOptions')}
                   />
                 </div>
@@ -420,16 +485,6 @@ const CurrencyFieldSettings = () => {
                     title={__('Round to Closest Fraction Digits:')}
                     action={e => handleConfigChange(e.target.checked, 'roundToClosestFractionDigits', 'valueFormatOptions')}
                     isChecked={roundToClosestFractionDigits}
-                  />
-                </div>
-                <div className={css(FieldStyle.fieldSection, FieldStyle.hover_tip, { pr: '10px', m: 0 })}>
-                  <SingleToggle
-                    id="rnd-to-clsst-frc-dgt"
-                    tip="By Enabling this option, the Fraction Will Rounded"
-                    title={__('Round to Closest Fraction Digits:')}
-                    action={e => handleConfigChange(e.target.checked, 'roundToClosestFractionDigits', 'valueFormatOptions')}
-                    isChecked={roundToClosestFractionDigits}
-                    className={css(ut.m0, FieldStyle.title)}
                   />
                 </div>
 

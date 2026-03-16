@@ -5,6 +5,7 @@ import BtnIcn from '../../Icons/BtnIcn'
 import CheckBoxIcn from '../../Icons/CheckBoxIcn'
 import ChevronDownIcn from '../../Icons/ChevronDownIcn'
 import ChevronRightIcon from '../../Icons/ChevronRightIcon'
+import CloudflareIcn from '../../Icons/CloudflareIcn'
 import CodeSnippetIcn from '../../Icons/CodeSnippetIcn'
 import ColorPickerIcn from '../../Icons/ColorPickerIcn'
 import CurrencyIcn from '../../Icons/CurrencyIcn'
@@ -13,11 +14,15 @@ import DateTimeIcn from '../../Icons/DateTimeIcn'
 import DecisionBoxIcn from '../../Icons/DecisionBoxIcn'
 import DividerIcn from '../../Icons/DividerIcn'
 import DropDownIcn from '../../Icons/DropDownIcn'
+import EyeOffIcon from '../../Icons/EyeOffIcon'
 import FileUploadIcn from '../../Icons/FileUploadIcn'
 import FlagIcn from '../../Icons/FlagIcn'
+import GDPRIcn from '../../Icons/GDPRIcn'
+import HCaptchaIcn from '../../Icons/HCaptchaIcn'
 import ImageIcn from '../../Icons/ImageIcn'
 import ImageSelectIcn from '../../Icons/ImageSelectIcn'
 import MailIcn from '../../Icons/MailIcn'
+import MollieIcn from '../../Icons/MollieIcn'
 import MonthIcn from '../../Icons/MonthIcn'
 import NumberIcn from '../../Icons/NumberIcn'
 import PasswordIcn from '../../Icons/PasswordIcn'
@@ -29,7 +34,10 @@ import ReCaptchaIcn from '../../Icons/ReCaptchaIcn'
 import RepeatIcon from '../../Icons/RepeatIcon'
 import ReviewStarIcn from '../../Icons/ReviewStarIcn'
 import SectionIcon from '../../Icons/SectionIcon'
+import ShortcodeIcn from '../../Icons/ShortcodeIcn'
 import SignaturePenIcn from '../../Icons/SignaturePenIcn'
+import SliderIcn from '../../Icons/SliderIcn'
+import SpacerIcn from '../../Icons/SpacerIcn'
 import StripeIcn from '../../Icons/StripeIcn'
 import TextIcn from '../../Icons/TextIcn'
 import TextareaIcn from '../../Icons/TextareaIcn'
@@ -41,7 +49,6 @@ import WeekIcn from '../../Icons/WeekIcn'
 import { ucFirst } from '../../Utils/Helpers'
 import { selectInGrid } from '../../Utils/globalHelpers'
 import { __ } from '../../Utils/i18nwrap'
-import CloudflareIcn from '../../Icons/CloudflareIcn'
 
 export default function FieldLinkBtn({ icn, title, subTitle, fieldKey }) {
   const { formType, formID } = useParams()
@@ -95,6 +102,7 @@ const FieldIcon = icon => {
   const icons = {
     title: <TitleIcn w="14" />,
     divider: <DividerIcn w="14" />,
+    spacer: <SpacerIcn size="17" />,
     image: <ImageIcn w="14" />,
     text: <TextIcn size="14" />,
     username: <UserIcn size="14" />,
@@ -116,10 +124,13 @@ const FieldIcon = icon => {
     color: <ColorPickerIcn w="14" />,
     recaptcha: <ReCaptchaIcn size="14" />,
     'decision-box': <DecisionBoxIcn size="14" />,
+    gdpr: <GDPRIcn size="14" />,
     button: <BtnIcn size="14" />,
     html: <CodeSnippetIcn size="14" />,
+    shortcode: <ShortcodeIcn size="14" />,
     paypal: <PaypalIcn w="14" />,
     stripe: <StripeIcn size="18" />,
+    mollie: <MollieIcn size="18" />,
     razorpay: <RazorPayIcn w="14" h="19" />,
     'advanced-file-up': <FileUploadIcn w="14" />,
     currency: <CurrencyIcn size="15" />,
@@ -131,6 +142,10 @@ const FieldIcon = icon => {
     signature: <SignaturePenIcn size="18" />,
     'image-select': <ImageSelectIcn size="16" />,
     turnstile: <CloudflareIcn size="16" />,
+    hcaptcha: <HCaptchaIcn size="16" />,
+    range: <SliderIcn size="16" />,
+    hidden: <EyeOffIcon size="15" />,
+    'advanced-datetime': <DateTimeIcn w="14" />,
   }
   return icons[icon]
 }

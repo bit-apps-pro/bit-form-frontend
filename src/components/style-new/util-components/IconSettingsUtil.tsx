@@ -10,10 +10,14 @@ import { IconSettingsProps } from './Icons'
 import IconsUtil from './IconsUtil'
 
 export default function IconSettingsUtil({
-  id, classNames, label="Icon", alt, iconSrc, setIconHandler, removeIconHandler,
+  id, classNames, label="Icon", alt, iconSrc, setIconHandler, removeIconHandler, uploadLbl, selected
 }:IconSettingsProps) {
   const [icnMdl, setIcnMdl] = useState(false)
   const { css } = useFela()
+  const setIconAction = (src:string) => {
+    setIconHandler(src)
+    setIcnMdl(false)
+  }
   return (
     <div className={`${css(ut.flxcb)} ${classNames} pos-rel`}>
       <div className={css(ut.flxcb)}>
@@ -63,8 +67,10 @@ export default function IconSettingsUtil({
         <div className="pos-rel" />
 
         <IconsUtil
-          onSaveIcon={setIconHandler}
+          onSaveIcon={setIconAction}
           onRemoveIcon={removeIconHandler}
+          uploadLbl={uploadLbl}
+          selected={selected}
         />
       </Modal>
     </div>

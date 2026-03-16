@@ -32,7 +32,6 @@ export default function EditEntryData(props) {
     const form = iframeDoc?.querySelector('form')
     const contentId = form.id.slice(form.id.indexOf('-') + 1)
     let formData = new FormData(form)
-    console.log('advancedFileHandle= ', typeof iframeWindow.advancedFileHandle)
     const queryParam = { formID, entryID: props.entryID }
     const hidden = []
     const objProp = iframeWindow.bf_globals[contentId]

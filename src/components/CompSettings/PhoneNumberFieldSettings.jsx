@@ -1,20 +1,27 @@
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
+import { $globalMessages } from '../../GlobalStates/AppSettingsStates'
 import { $fields } from '../../GlobalStates/GlobalStates'
+import BdrDottedIcn from '../../Icons/BdrDottedIcn'
 import CloseIcn from '../../Icons/CloseIcn'
-import { addToBuilderHistory } from '../../Utils/FormBuilderHelper'
-import { deepCopy } from '../../Utils/Helpers'
+import { addToBuilderHistory, escapeBackslashPattern, generateBackslashPattern } from '../../Utils/FormBuilderHelper'
+import { deepCopy, IS_PRO } from '../../Utils/Helpers'
+import predefinedPatterns from '../../Utils/StaticData/phonePatterns.json'
+import tippyHelperMsg from '../../Utils/StaticData/tippyHelperMsg'
 import { isDev } from '../../Utils/config'
 import { __ } from '../../Utils/i18nwrap'
+import ut from '../../styles/2.utilities'
 import FieldStyle from '../../styles/FieldStyle.style'
 import Btn from '../Utilities/Btn'
+import Downmenu from '../Utilities/Downmenu'
 import Modal from '../Utilities/Modal'
+import SingleInput from '../Utilities/SingleInput'
 import SingleToggle from '../Utilities/SingleToggle'
-import { iconElementLabel } from '../style-new/styleHelpers'
 import AdminLabelSettings from './CompSettingsUtils/AdminLabelSettings'
+import AutoResizeInput from './CompSettingsUtils/AutoResizeInput'
 import ErrorMessageSettings from './CompSettingsUtils/ErrorMessageSettings'
 import FieldDisabledSettings from './CompSettingsUtils/FieldDisabledSettings'
 import FieldHideSettings from './CompSettingsUtils/FieldHideSettings'
@@ -26,6 +33,7 @@ import OptionsListHeightSettings from './CompSettingsUtils/OptionsListHeightSett
 import PlaceholderSettings from './CompSettingsUtils/PlaceholderSettings'
 import RequiredSettings from './CompSettingsUtils/RequiredSettings'
 import SubTitleSettings from './CompSettingsUtils/SubTitleSettings'
+import UniqFieldSettings from './CompSettingsUtils/UniqFieldSettings'
 import EditOptions from './EditOptions/EditOptions'
 import Icons from './Icons'
 import SimpleAccordion from './StyleCustomize/ChildComp/SimpleAccordion'
@@ -39,14 +47,20 @@ const PhoneNumberFieldSettings = () => {
   const { css } = useFela()
   const [fields, setFields] = useAtom($fields)
   const [optionMdl, setOptionMdl] = useState(false)
+  const globalMessages = useAtomValue($globalMessages)
   const [icnMdl, setIcnMdl] = useState(false)
   const [fieldName, setFieldName] = useState('')
   const fieldData = deepCopy(fields[fldKey])
+  const patternTippy = useRef()
+  const regexr = fieldData.valid.regexr || ''
+  const flags = fieldData.valid.flags || ''
   const adminLabel = fieldData.adminLbl || ''
+  const globalErrMsg = globalMessages.err || {}
   const { placeholderImage, options } = fieldData
 
   const {
     selectedFlagImage,
+    hideCountryList,
     selectedCountryClearable,
     searchClearable,
     optionFlagImage,
@@ -89,6 +103,30 @@ const PhoneNumberFieldSettings = () => {
     setOptionMdl(false)
   }
 
+  const setDefaultValue = ({ target: { value } }) => {
+    if (!IS_PRO) return
+    if (value === '') delete fieldData.defaultValue
+    else fieldData.defaultValue = value
+
+    const allFields = create(fields, draft => { draft[fldKey] = fieldData })
+    setFields(allFields)
+    addToBuilderHistory({ event: `Default value updated: ${value || fieldData.lbl || adminLabel || fldKey}`, type: 'change_defaultValue', state: { fields: allFields, fldKey } })
+  }
+
+  const hideDefalutValue = (e) => {
+    if (!IS_PRO) return
+    if (e.target.checked) {
+      fieldData.defaultValueHide = true
+    } else {
+      fieldData.defaultValueHide = false
+      delete fieldData.defaultValue
+    }
+    const req = e.target.checked ? 'on' : 'off'
+    const allFields = create(fields, draft => { draft[fldKey] = fieldData })
+    setFields(allFields)
+    addToBuilderHistory({ event: `Default value ${req}: ${fieldData.lbl || adminLabel || fldKey}`, type: `${req.toLowerCase()}_defaultValue`, state: { fields: allFields, fldKey } })
+  }
+
   const handleOptions = newOpts => {
     const checkedOpt = newOpts.find(opt => opt.check)
     const allFields = create(fields, draft => {
@@ -106,18 +144,61 @@ const PhoneNumberFieldSettings = () => {
     addToBuilderHistory({ event: `${propNameLabel[name]} '${String(val || 'Off').replace('true', 'On')}': ${fieldData.lbl || fldKey}`, type: `${name}_changed`, state: { fields: allFields, fldKey } })
   }
 
-  const setIconModel = (typ) => {
-    setIcnMdl(true)
-    setFieldName(typ)
+  const setRegexrValue = value => {
+    // eslint-disable-next-line no-underscore-dangle
+    patternTippy?.current?._tippy?.hide()
+    if (!IS_PRO) return
+    if (value === '') {
+      delete fieldData.valid.regexr
+    } else {
+      const val = escapeBackslashPattern(value)
+      fieldData.valid.regexr = val
+      if (!fieldData.err) fieldData.err = {}
+      if (!fieldData.err.regexr) fieldData.err.regexr = {}
+      const ifPredefined = predefinedPatterns.find(opt => opt.val === val)
+      fieldData.err.regexr.dflt = ifPredefined ? `<p style="margin:0">${ifPredefined.msg}</p>` : (globalErrMsg[fieldData.typ]?.regexr || globalErrMsg?.regexr || '<p style="margin:0">Pattern not matched</p>')
+      fieldData.err.regexr.show = true
+      if (fieldData.typ === 'password') {
+        delete fieldData.valid.validations
+      }
+    }
+    const allFields = create(fields, draft => { draft[fldKey] = fieldData })
+    setFields(allFields)
+    addToBuilderHistory({ event: `Regex Pattern updated: ${fieldData.lbl || adminLabel || fldKey}`, type: 'set_regexr', state: { fields: allFields, fldKey } })
   }
 
-  const removeImage = () => {
-    if (fieldData[fieldName]) {
-      delete fieldData[fieldName]
-      const allFields = create(fields, draft => { draft[fldKey] = fieldData })
-      setFields(allFields)
-      addToBuilderHistory({ event: `${iconElementLabel[fieldName]} Icon Deleted`, type: `delete_${fieldName}`, state: { fldKey, fields: allFields } })
+  const setRegexr = e => {
+    if (!IS_PRO) return
+    const { value } = e.target
+    if (value === '') {
+      delete fieldData.valid.regexr
+    } else {
+      const val = escapeBackslashPattern(value)
+      fieldData.valid.regexr = val
+      if (!fieldData.err) fieldData.err = {}
+      if (!fieldData.err.regexr) fieldData.err.regexr = {}
+      const ifPredefined = predefinedPatterns.find(opt => opt.val === val)
+      fieldData.err.regexr.dflt = ifPredefined ? `<p style="margin:0">${ifPredefined.msg}</p>` : (globalErrMsg[fieldData.typ]?.regexr || globalErrMsg?.regexr || '<p style="margin:0">Pattern not matched</p>')
+      fieldData.err.regexr.show = true
+      if (fieldData.typ === 'password') {
+        delete fieldData.valid.validations
+      }
     }
+    const allFields = create(fields, draft => { draft[fldKey] = fieldData })
+    setFields(allFields)
+    addToBuilderHistory({ event: `Regex Pattern updated: ${fieldData.lbl || adminLabel || fldKey}`, type: 'set_regexr', state: { fields: allFields, fldKey } })
+  }
+
+  const setFlags = e => {
+    if (!IS_PRO) return
+    if (e.target.value === '') {
+      delete fieldData.valid.flags
+    } else {
+      fieldData.valid.flags = e.target.value
+    }
+    const allFields = create(fields, draft => { draft[fldKey] = fieldData })
+    setFields(allFields)
+    addToBuilderHistory({ event: `Regex Pattern Flag updated: ${fieldData.lbl || adminLabel || fldKey}`, type: 'set_flags', state: { fields: allFields, fldKey } })
   }
 
   if (isDev) {
@@ -166,6 +247,34 @@ const PhoneNumberFieldSettings = () => {
 
       <FieldDisabledSettings />
 
+      <FieldSettingsDivider />
+
+      <SimpleAccordion
+        id="dflt-val-stng"
+        title={__('Default Phone Number')}
+        className={css(FieldStyle.fieldSection, FieldStyle.hover_tip)}
+        switching
+        tip={tippyHelperMsg.defaultValue}
+        tipProps={{ width: 250, icnSize: 17 }}
+        toggleAction={hideDefalutValue}
+        toggleChecked={fieldData?.defaultValueHide}
+        open={fieldData?.defaultValueHide}
+        {...IS_PRO && { disable: !fieldData?.defaultValueHide }}
+        isPro
+        proProperty="defaultValue"
+      >
+        <div className={css(FieldStyle.placeholder)}>
+          <input
+            data-testid="dflt-val-stng-inp"
+            aria-label="Default value for this Field"
+            placeholder="Type a phone number.. (Ex: +01 555 1523)"
+            className={css(FieldStyle.input)}
+            type={fieldData.typ === 'textarea' ? 'text' : fieldData.typ}
+            value={fieldData?.defaultValue || ''}
+            onChange={setDefaultValue}
+          />
+        </div>
+      </SimpleAccordion>
       <FieldSettingsDivider />
 
       <SimpleAccordion
@@ -218,6 +327,90 @@ const PhoneNumberFieldSettings = () => {
         </div>
       </SimpleAccordion>
 
+      <FieldSettingsDivider />
+
+      <SimpleAccordion
+        id="ptrn-stng"
+        title={__('Custom Validation (RegEx) Pattern')}
+        className={css(FieldStyle.fieldSection)}
+        isPro
+        tip={tippyHelperMsg.pattern}
+        proProperty="regexPattern"
+      >
+        <>
+          <div className={css(ut.mr2, ut.mt3, ut.pl1)}>
+            <div className={css(ut.flxcb, ut.ml1)}>
+              <h4 className={css(ut.m0, FieldStyle.title)}>
+                {__('Expression')}
+                :
+              </h4>
+              <Downmenu instance={patternTippy}>
+                <button
+                  data-testid="ptrn-stng-exprsn-btn"
+                  data-close
+                  type="button"
+                  className={css(style.dotBtn)}
+                  unselectable="on"
+                  draggable="false"
+                  style={{ cursor: 'pointer' }}
+                  title={__('Fields')}
+                >
+                  <BdrDottedIcn size="19" />
+                </button>
+                <div>
+                  <ul role="menu">
+                    {predefinedPatterns?.map((opt, i) => (
+                      <li
+                        data-testid={`ptrn-stng-expn-itm-${i}`}
+                        // eslint-disable-next-line react/no-array-index-key
+                        key={i}
+                        role="menuitem"
+                        className={`${css(style.button)} btnHover`}
+                        onKeyDown={() => setRegexrValue(opt.val)}
+                        onClick={() => setRegexrValue(opt.val)}
+                      >
+                        <span>{opt.lbl}</span>
+                        <br />
+                        <small>{generateBackslashPattern(opt.val)}</small>
+                      </li>
+                    ))}
+                  </ul>
+                  {/* {predefinedPatterns.map((opt, i) => <option key={`${i * 2}`} value={generateBackslashPattern(opt.val)}>{opt.lbl}</option>)} */}
+                </div>
+              </Downmenu>
+            </div>
+            <AutoResizeInput
+              id="ptrn-stng-expn"
+              ariaLabel="Pattern for input field"
+              placeholder="e.g. ([A-Z])\w+"
+              list="patterns"
+              disabled={!IS_PRO}
+              value={generateBackslashPattern(regexr)}
+              changeAction={setRegexr}
+            />
+          </div>
+          <div className={css({ mr: 5 }, ut.pl1)}>
+            <SingleInput
+              id="ptrn-stng-flg"
+              inpType="text"
+              title={__('Flags:')}
+              value={flags}
+              action={setFlags}
+              placeholder="e.g. g"
+              cls={css(FieldStyle.input)}
+              disabled={!IS_PRO}
+            />
+          </div>
+          {regexr && (
+            <ErrorMessageSettings
+              id="ptrn-stng-expn"
+              type="regexr"
+              title="Error Message"
+              tipTitle={tippyHelperMsg.patternsErrMsg}
+            />
+          )}
+        </>
+      </SimpleAccordion>
       <FieldSettingsDivider />
 
       <SimpleAccordion id="nmbr-stng" title="Invalid Error Message:" className={css(FieldStyle.fieldSection)}>
@@ -299,6 +492,19 @@ const PhoneNumberFieldSettings = () => {
       <FieldSettingsDivider />
 
       <SingleToggle
+        id="hide-slctble-opt"
+        tip="By enabling this option, the country list will be hidden."
+        className={css(FieldStyle.fieldSection, FieldStyle.hover_tip, FieldStyle.singleOption)}
+        title={__('Hide Country List')}
+        action={e => handleConfigChange(e.target.checked, 'hideCountryList', 'config')}
+        isChecked={hideCountryList}
+        isPro
+        proProperty="hideCountryList"
+      />
+
+      <FieldSettingsDivider />
+
+      <SingleToggle
         id="slctd-clrbl-stng"
         tip="By disabling this option, the selected country clearable button will be hidden"
         className={css(FieldStyle.fieldSection, FieldStyle.hover_tip, FieldStyle.singleOption)}
@@ -358,26 +564,6 @@ const PhoneNumberFieldSettings = () => {
       />
 
       <FieldSettingsDivider />
-      {/* <div className={css(FieldStyle.section, FieldStyle.fieldSection, { pr: '26px !important' })}>
-        <span>Placeholder Image</span>
-        <div className={css(ut.flxcb)}>
-          {placeholderImage && (
-            <img src={placeholderImage} alt="Placeholder " width="18" height="18" />
-          )}
-          <button data-testid="plchldr-img-edt-btn" type="button" className={css(ut.icnBtn)} onClick={() => setIconModel('placeholderImage')}>
-            <EditIcn size={22} />
-          </button>
-          {
-            placeholderImage && (
-              <button data-testid="plchldr-img-rmv-btn" type="button" className={css(ut.icnBtn)} onClick={() => removeImage('placeholderImage')}>
-                <CloseIcn size="13" />
-              </button>
-            )
-          }
-        </div>
-      </div> */}
-
-      <FieldSettingsDivider />
 
       <FieldHideSettings />
 
@@ -385,6 +571,15 @@ const PhoneNumberFieldSettings = () => {
 
       <OptionsListHeightSettings />
 
+      <FieldSettingsDivider />
+
+      <UniqFieldSettings
+        type="entryUnique"
+        title={__('Unique Entry')}
+        tipTitle={tippyHelperMsg.uniqueEntry}
+        className={css(FieldStyle.fieldSection, FieldStyle.hover_tip)}
+        isUnique="show"
+      />
       <FieldSettingsDivider />
 
       <div className={css(FieldStyle.fieldSection)}>
@@ -460,6 +655,31 @@ const propNameLabel = {
   optionFlagImage: 'Option Flag Image',
   detectCountryByIp: 'Detect Country By IP',
   detectCountryByGeo: 'Detect Country By Geo',
+}
+
+const style = {
+  dotBtn: {
+    b: 0,
+    brs: 5,
+    mr: 15,
+    curp: 1,
+  },
+  button: {
+    dy: 'block',
+    w: '100%',
+    ta: 'left',
+    b: 0,
+    bd: 'none',
+    p: 3,
+    curp: 1,
+    '&:hover':
+    {
+      bd: 'var(--white-0-95)',
+      cr: 'var(--black-0)',
+      brs: 8,
+    },
+    fs: 11,
+  },
 }
 
 export default PhoneNumberFieldSettings

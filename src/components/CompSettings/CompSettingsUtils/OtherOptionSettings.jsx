@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
+import { $globalMessages } from '../../../GlobalStates/AppSettingsStates'
 import { $fields } from '../../../GlobalStates/GlobalStates'
 import ut from '../../../styles/2.utilities'
 import FieldStyle from '../../../styles/FieldStyle.style'
@@ -17,6 +18,7 @@ import ErrorMessageSettings from './ErrorMessageSettings'
 export default function OtherOptionSettings() {
   const { fieldKey: fldKey } = useParams()
   const [fields, setFields] = useAtom($fields)
+  const globalMessages = useAtomValue($globalMessages)
   const fieldData = deepCopy(fields[fldKey])
   const { css } = useFela()
 
@@ -29,7 +31,7 @@ export default function OtherOptionSettings() {
       fieldData.valid.otherOptReq = true
       if (!fieldData.err) fieldData.err = {}
       if (!fieldData.err.otherOptReq) fieldData.err.otherOptReq = {}
-      fieldData.err.otherOptReq.dflt = '<p style="margin:0">Custom Option Required</p>'
+      fieldData.err.otherOptReq.dflt = globalMessages?.err?.otherOptReq || '<p style="margin:0">Custom Option Required</p>'
       fieldData.err.otherOptReq.show = true
       addDefaultStyleClasses(fldKey, 'otherOptions')
     } else {
@@ -78,6 +80,13 @@ export default function OtherOptionSettings() {
     addToBuilderHistory({ event: `${req} Placeholder: ${fieldData.lbl || adminLabel || fldKey}`, type: `${req.toLowerCase()}_placeholder`, state: { fields: allFields, fldKey } })
   }
 
+  const otherOptionLabel = (e) => {
+    fieldData.otherOptLbl = e.target.value
+    const allFields = create(fields, draft => { draft[fldKey] = fieldData })
+    setFields(allFields)
+    addToBuilderHistory({ event: `Other Option Label updated: ${fieldData.lbl || adminLabel || fldKey}`, type: 'change_other_option_label', state: { fields: allFields, fldKey } })
+  }
+
   function setOtherInpPlaceholder(e) {
     if (e.target.value === '') {
       delete fieldData.otherInpPh
@@ -105,6 +114,18 @@ export default function OtherOptionSettings() {
       proProperty="otherOption"
     >
       <div className={css(FieldStyle.placeholder)}>
+        <div className={css({ flx: 'center-between', my: 5 })}>
+          <span className={css(FieldStyle.title, { w: '150px', ml: 0 })}>Option Label</span>
+          <input
+            data-testid="other-opt-inp"
+            aria-label="Other Option Label"
+            placeholder="Type Option Label here..."
+            className={css(FieldStyle.input, { mt: 5 })}
+            type="text"
+            value={fieldData.otherOptLbl || ''}
+            onChange={otherOptionLabel}
+          />
+        </div>
         <div className={css({ flx: 'center-between', my: 5 })}>
           <span>Required Custom Input</span>
           <SingleToggle id="req-other-opt" className={css(ut.mr2)} name="req-other-opt" action={toggleOtherOptReq} isChecked={!!fieldData.valid.otherOptReq} />

@@ -5,6 +5,7 @@ import 'react-multiple-select-dropdown-lite/dist/index.css'
 import { useParams } from 'react-router-dom'
 import { IS_PRO } from '../../../Utils/Helpers'
 import { userFields } from '../../../Utils/StaticData/userField'
+import { __ } from '../../../Utils/i18nwrap'
 import useSWROnce from '../../../hooks/useSWROnce'
 import SnackMsg from '../../Utilities/SnackMsg'
 import UserFieldMap from './UserFieldMap'
@@ -18,13 +19,11 @@ export default function Registration({ formFields, dataConf, setDataConf, pages,
   useSWROnce('bitforms_get_wp_roles', {}, { fetchCondition: IS_PRO, onSuccess: data => setRoles(Object.values(data)) })
 
   useEffect(() => {
-    const tmpConf = create(dataConf, draft => {
+    setDataConf(tmpConf => create(tmpConf, draft => {
       if (!draft[type]?.user_map?.[0]?.userField) {
         draft[type].user_map = userFields.filter(fld => fld.required).map(fl => ({ formField: '', userField: fl.key, required: fl.required }))
       }
-    })
-
-    setDataConf(tmpConf)
+    }))
   }, [])
 
   return (
@@ -52,9 +51,9 @@ export default function Registration({ formFields, dataConf, setDataConf, pages,
         <br />
       </div>
       <p className="p-1 f-m">
-        <strong>Note</strong>
+        <strong>{__('Note:')}</strong>
         {' '}
-        : If the Username and Password fields are blank then the user will take the value of the email field as the field and the password will be auto-generated.
+        {__('If the Username and Password fields are blank then the user will take the value of the email field as the field and the password will be auto-generated.')}
       </p>
 
     </div>

@@ -2,13 +2,16 @@ import { useAtom, useSetAtom } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import { useFela } from 'react-fela'
 import toast from 'react-hot-toast'
+import { $activeBuilderStep } from '../GlobalStates/FormBuilderStates'
 import {
+  $allLayouts,
   $breakpoint,
   $builderHistory,
   $builderHookStates,
   $colorScheme,
   $fields,
-  $layouts,
+  $formInfo,
+  $nestedLayouts
 } from '../GlobalStates/GlobalStates'
 import { $allStyles, $styles } from '../GlobalStates/StylesState'
 import { $allThemeColors, $themeColors } from '../GlobalStates/ThemeColorsState'
@@ -43,7 +46,9 @@ export default function FormBuilderHistory() {
   const [disabled, setDisabled] = useState(false)
   const [showHistory, setShowHistory] = useState(null)
   const setFields = useSetAtom($fields)
-  const setLayouts = useSetAtom($layouts)
+  const setFormInfo = useSetAtom($formInfo)
+  const setAllLayouts = useSetAtom($allLayouts)
+  const setNestedLayouts = useSetAtom($nestedLayouts)
   const setColorScheme = useSetAtom($colorScheme)
   const setBreakpoint = useSetAtom($breakpoint)
   const setStyles = useSetAtom($styles)
@@ -52,6 +57,7 @@ export default function FormBuilderHistory() {
   const setAllStyles = useSetAtom($allStyles)
   const setAllThemeColors = useSetAtom($allThemeColors)
   const setAllThemeVars = useSetAtom($allThemeVars)
+  const setActiveBuilderStep = useSetAtom($activeBuilderStep)
   const [builderHistory, setBuilderHistory] = useAtom($builderHistory)
   const setBuilderHookStates = useSetAtom($builderHookStates)
   const rowVirtualizer = useRef(null)
@@ -89,10 +95,28 @@ export default function FormBuilderHistory() {
       checkForPreviousState(indx, setFields, 'fields')
     }
 
-    if (state.layouts) {
-      setLayouts(state.layouts)
+    if (state.activeBuilderStep !== undefined) {
+      setActiveBuilderStep(state.activeBuilderStep)
     } else {
-      checkForPreviousState(indx, setLayouts, 'layouts')
+      checkForPreviousState(indx, setActiveBuilderStep, 'activeBuilderStep')
+    }
+
+    if (state.formInfo) {
+      setFormInfo(state.formInfo)
+    } else {
+      checkForPreviousState(indx, setFormInfo, 'formInfo')
+    }
+
+    if (state.allLayouts) {
+      setAllLayouts(state.allLayouts)
+    } else {
+      checkForPreviousState(indx, setAllLayouts, 'allLayouts')
+    }
+
+    if (state.nestedLayouts) {
+      setNestedLayouts(state.nestedLayouts)
+    } else {
+      checkForPreviousState(indx, setNestedLayouts, 'nestedLayouts')
     }
 
     if (state.styles) {
@@ -128,7 +152,12 @@ export default function FormBuilderHistory() {
     showEventMessages(indx)
 
     setBuilderHistory(oldHistory => ({ ...oldHistory, active: indx }))
-    setBuilderHookStates(prv => ({ ...prv, forceBuilderWidthToBrkPnt: prv.forceBuilderWidthToBrkPnt + 1, reRenderGridLayoutByRootLay: prv.reRenderGridLayoutByRootLay + 1 }))
+    setBuilderHookStates(prv => ({
+      ...prv,
+      forceBuilderWidthToBrkPnt: prv.forceBuilderWidthToBrkPnt + 1,
+      reRenderGridLayoutByRootLay: prv.reRenderGridLayoutByRootLay + 1,
+      recalculateNestedField: { counter: prv.recalculateNestedField.counter + 1 },
+    }))
     reCalculateFldHeights()
     setDisabled(false)
   }

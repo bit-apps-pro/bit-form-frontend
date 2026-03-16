@@ -2,11 +2,12 @@
 /* eslint-disable no-console */
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable no-param-reassign */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useState } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom, useAtomValue } from 'jotai'
+import { $globalMessages } from '../../GlobalStates/AppSettingsStates'
 import { $fields, $selectedFieldId } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import ut from '../../styles/2.utilities'
@@ -40,6 +41,7 @@ export default function FileUploadSettings() {
   const { fieldKey: fldKey } = useParams()
   const [fields, setFields] = useAtom($fields)
   const selectedFieldId = useAtomValue($selectedFieldId)
+  const globalMessages = useAtomValue($globalMessages)
   const styles = useAtomValue($styles)
   const { css } = useFela()
   const [icnMdl, setIcnMdl] = useState(false)
@@ -52,6 +54,7 @@ export default function FileUploadSettings() {
   minFile = isNaN(minFile) ? 0 : Number(minFile)
   maxFile = isNaN(maxFile) ? 0 : Number(maxFile)
   const { btnTxt } = fieldData
+  const globalErrMsg = globalMessages?.err || {}
   const existType = allowedFileType ? allowedFileType.split(',._RF_,') : []
   const options = [
     { label: 'Images', value: '.xbm,.tif,.pjp,.pjpeg,.svgz,.jpg,.jpeg,.ico,.tiff,.gif,.svg,.bmp,.png,.jfif,.webp,.tif' },
@@ -99,14 +102,14 @@ export default function FileUploadSettings() {
       if (propName === 'maxFile' && minFile && value < minFile && minFile) {
         console.log('minFile=', typeof minFile)
         fieldData.config.minFile = value
-        fieldData.err.minFile.dflt = `Minimum ${value} File Required`
+        fieldData.err.minFile.dflt = globalErrMsg?.minFile || `Minimum ${value} File Required`
       } else if (propName === 'minFile' && value > maxFile && maxFile) {
         console.log('maxFile=', typeof maxFile)
         fieldData.config.maxFile = value
-        fieldData.err.maxFile.dflt = `Maximum ${value} File can uploaded`
+        fieldData.err.maxFile.dflt = globalErrMsg?.maxFile || `Maximum ${value} File can uploaded`
       }
-      if (propName === 'minFile') fieldData.err.minFile.dflt = `Minimum ${value} File Required`
-      else if (propName === 'maxFile') fieldData.err.maxFile.dflt = `Maximum ${value} File can uploaded`
+      if (propName === 'minFile') fieldData.err.minFile.dflt = globalErrMsg?.minFile || `Minimum ${value} File Required`
+      else if (propName === 'maxFile') fieldData.err.maxFile.dflt = globalErrMsg?.maxFile || `Maximum ${value} File can uploaded`
 
       fieldData.config[propName] = value
       const allFields = create(fields, draft => { draft[fldKey] = fieldData })

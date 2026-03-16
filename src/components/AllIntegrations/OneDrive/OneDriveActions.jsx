@@ -6,6 +6,7 @@ import MultiSelect from 'react-multiple-select-dropdown-lite'
 import { __ } from '../../../Utils/i18nwrap'
 import ConfirmModal from '../../Utilities/ConfirmModal'
 import TableCheckBox from '../../Utilities/TableCheckBox'
+import { fileUpOrMappableImageFieldTypes } from '../../../Utils/StaticData/allStaticArrays'
 
 export default function OneDriveActions({ oneDriveConf, setOneDriveConf, formFields, formID, setSnackbar }) {
   const folder = oneDriveConf.folderMap ? oneDriveConf.folderMap[0] : oneDriveConf.folder
@@ -62,7 +63,7 @@ export default function OneDriveActions({ oneDriveConf, setOneDriveConf, formFie
     setOneDriveConf({ ...newConf })
   }
 
-  const getFileUpFields = () => formFields.filter(itm => (itm.type === 'file-up')).map(itm => ({ label: itm.lbl, value: itm.key }))
+  const getFileUpFields = () => formFields.filter(itm => (fileUpOrMappableImageFieldTypes.includes(itm.type))).map(itm => ({ label: itm.lbl, value: itm.key }))
 
   return (
     <div className="pos-rel d-flx w-5">

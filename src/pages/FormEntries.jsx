@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useFela } from 'react-fela'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -10,12 +10,14 @@ import {
 } from '../GlobalStates/GlobalStates'
 import SettingsIcn from '../Icons/SettingsIcn'
 import { getUploadedFilesArr, isValidJsonString } from '../Utils/FormBuilderHelper'
-import { deepCopy, formatIpNumbers } from '../Utils/Helpers'
+import { dateTimeFormatter, deepCopy, formatIpNumbers } from '../Utils/Helpers'
 import { formsReducer } from '../Utils/Reducers'
+import { fileUpOrMappableImageFieldTypes } from '../Utils/StaticData/allStaticArrays'
 import bitsFetch from '../Utils/bitsFetch'
 import { __ } from '../Utils/i18nwrap'
 import EditEntryData from '../components/EditEntryData'
 import EntryRelatedInfo from '../components/EntryRelatedInfo/EntryRelatedInfo'
+import EntryRelatedInfoModal from '../components/EntryRelatedInfo/EntryRelatedInfoModal'
 import ExportImportMenu from '../components/ExportImport/ExportImportMenu'
 import RepeaterDataTable from '../components/RepeaterDataTable'
 import EntriesFilter from '../components/Report/EntriesFilter'
@@ -51,7 +53,7 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
   const [countEntries, setCountEntries] = useState(0)
   const [refreshResp, setRefreshResp] = useState(0)
   const bits = useAtomValue($bits)
-  const currentReportData = useAtomValue($reportSelector)
+  const [currentReportData, setCurrentReport] = useAtom($reportSelector)
   const reportId = useAtomValue($reportId)
   const reports = useAtomValue($reports)
   const rprtIndx = reports.findIndex(r => r?.id && r.id.toString() === reportId?.id?.toString())
@@ -59,11 +61,11 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
   const navigate = useNavigate()
   const { css } = useFela()
   const fields = useAtomValue($fields)
-  const filterFieldType = ['divider', 'image', 'title', 'section']
+  const filterFieldType = ['divider', 'spacer', 'shortcode', 'image', 'title', 'section']
 
   useEffect(() => {
     const repeatedFieldKeys = Object.entries(nestedLayouts).reduce((acc, [key, val]) => {
-      if (fields[key].typ !== 'repeater') return acc
+      if (fields[key]?.typ !== 'repeater') return acc
       val.lg.forEach((itm) => {
         acc.push(itm.i)
       })
@@ -218,7 +220,7 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
       fieldType: val.type,
       minWidth: 50,
       ...('type' in val
-        && val.type.match(/^(file-up|advanced-file-up|signature|check|select|sys|repeater|image-select)$/) && {
+        && val.type.match(/^(file-up|advanced-file-up|signature|check|select|url|sys|repeater|image-select)$/) && {
         // eslint-disable-next-line react/no-unstable-nested-components
         Cell: (row) => {
           if (
@@ -226,7 +228,7 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
             && row.cell.value !== undefined
             && row.cell.value !== ''
           ) {
-            if (val.type === 'file-up' || val.type === 'advanced-file-up' || val.type === 'signature') {
+            if (fileUpOrMappableImageFieldTypes.includes(val.type)) {
               return (
                 <>
                   {getUploadedFilesArr(row.cell.value).map((itm, i) => (
@@ -270,6 +272,11 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
                 return row.cell.value
               }
             }
+
+            if (val.type === 'url' || val.key === '__referer') {
+              return (<a href={row.cell.value} target="_blank" rel="noopener noreferrer">{row.cell.value}</a>)
+            }
+
             if (val.key === '__user_id') {
               return bits?.user[row.cell.value]?.url ? (<a href={bits.user[row.cell.value].url}>{bits.user[row.cell.value].name}</a>) : null
             }
@@ -282,6 +289,11 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
             if (val.key === '__user_ip' && isFinite(Number(row.cell.value))) {
               return formatIpNumbers(row.cell.value)
             }
+
+            if (val.key === '__created_at' || val.key === '__updated_at') {
+              return dateTimeFormatter(row.cell.value, bits.dateFormat)
+            }
+
             return row.cell.value
           }
           return null
@@ -442,8 +454,8 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
           bitsFetch({ formId: formID, entryId }, 'bitforms_entry_status_update')
             .then(resp => {
               if (resp.success) {
-                const { fetchData: fetchRowData } = rowFetchData
-                setTimeout(() => fetchRowData(currentReportData.details), 1000)
+                const { fetchData: fetchRowData, data: reportData } = rowFetchData
+                setTimeout(() => fetchRowData({ ...currentReportData.details, ...reportData }), 1000)
               }
             })
         }
@@ -509,8 +521,16 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
       return Array.isArray(value) ? value.toString() : value
     }
 
+    if (entry.fieldType === 'url' || entry.accessor === '__referer') {
+      return <a href={allResp?.[rowDtl.idx]?.[entry.accessor]} target="_blank" rel="noreferrer noopener">{allResp?.[rowDtl.idx]?.[entry.accessor]}</a>
+    }
+
     if (entry.accessor === '__user_id') {
       return bits?.user[allResp[rowDtl.idx]?.[entry.accessor]]?.url ? (<a href={bits.user[allResp[rowDtl.idx]?.[entry.accessor]].url}>{bits.user[allResp[rowDtl.idx]?.[entry.accessor]].name}</a>) : null
+    }
+
+    if (entry.accessor === '__created_at' || entry.accessor === '__updated_at') {
+      return dateTimeFormatter(allResp[rowDtl.idx]?.[entry.accessor], bits.dateFormat)
     }
 
     if (entry.accessor === '__user_ip' && isFinite(allResp[rowDtl.idx]?.[entry.accessor])) {
@@ -521,6 +541,17 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
       return getEntryStatus(status)
     }
     return allResp?.[rowDtl.idx]?.[entry.accessor]
+  }
+  const setTblColumns = (cols) => {
+    const colOrder = ['selection', ...cols.map(c => c.accessor)]
+    setCurrentReport({
+      ...currentReportData,
+      details: {
+        ...currentReportData.details,
+        order: colOrder,
+      },
+    })
+    setTableColumns(cols)
   }
 
   return (
@@ -553,7 +584,7 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
       {
         showRelatedInfoMdl
         && (
-          <EntryRelatedInfo
+          <EntryRelatedInfoModal
             close={setshowRelatedInfoMdl}
             entryID={entryID}
             setSnackbar={setSnackbar}
@@ -563,28 +594,46 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
       }
 
       <Drawer
-        title={__(`Response Details #${rowSl.current}`)}
+        title={__(`Entry Details #${rowSl.current}`)}
         show={rowDtl.show}
         close={closeRowDetail}
         relatedinfo={() => relatedinfo(rowDtl)}
         delConfMdl={() => delConfMdl(rowDtl, rowDtl.fetchData)}
         editData={() => editData(rowDtl)}
+        rowDetails={rowDtl}
       >
-        <table className="btcd-row-detail-tbl">
-          <tbody>
-            <tr className="txt-dp">
-              <th>{__('Title')}</th>
-              <th>{__('Value')}</th>
-            </tr>
-            {rowDtl.show
-              && filterEntryLabels().map((label, i) => (
-                <tr key={`rw-d-${i + 2}`}>
-                  <th>{label.Header}</th>
-                  <td>{drawerEntryMap(label)}</td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+        <div>
+          <table className="btcd-row-detail-tbl">
+            <tbody>
+              <tr className="txt-dp">
+                <th>{__('Title')}</th>
+                <th>{__('Value')}</th>
+              </tr>
+              {rowDtl.show
+                && filterEntryLabels().map((label, i) => (
+                  <tr key={`rw-d-${i + 2}`}>
+                    <th>{label.Header}</th>
+                    <td>{drawerEntryMap(label)}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+          <hr />
+          {
+            rowDtl.data[0]?.row?.original?.entry_id && (
+              <div className={css({ mxh: '80vh', ow: 'scroll' })}>
+                <EntryRelatedInfo
+                  close={setshowRelatedInfoMdl}
+                  entryID={rowDtl.data[0]?.row?.original?.entry_id}
+                  setSnackbar={setSnackbar}
+                  rowDtl={allResp[rowDtl.idx]}
+                />
+              </div>
+            )
+          }
+
+        </div>
+
       </Drawer>
 
       {
@@ -621,6 +670,13 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
           leftHeaderClasses={css(app.leftHeader)}
           rightHeader={(
             <>
+              <Btn
+                className={css(ut.mr1)}
+                size="sm"
+                onClick={() => navigate(`/form/settings/${formType}/${formID}/data-views`)}
+              >
+                {__('Data Views & Edit')}
+              </Btn>
               <Btn className={css(ut.mr2)} size="sm" onClick={() => navigate(`/form/report-view/${formType}/${formID}`)}>
                 {__('View Analytics Report')}
               </Btn>
@@ -633,8 +689,18 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
               <EntriesFilter fetchData={fetchData} />
             </>
           )}
+          initialState={{
+            pageIndex: 0,
+            hiddenColumns: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'hiddenColumns' in currentReportData.details) ? currentReportData.details.hiddenColumns : [],
+            pageSize: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'pageSize' in currentReportData.details) ? currentReportData.details.pageSize : 10,
+            sortBy: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'sortBy' in currentReportData.details) ? currentReportData.details.sortBy : [],
+            filters: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'filters' in currentReportData.details) ? currentReportData.details.filters : [],
+            globalFilter: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'globalFilter' in currentReportData.details) ? currentReportData.details.globalFilter : '',
+            columnOrder: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'order' in currentReportData.details) ? currentReportData.details.order : [],
+            conditions: (currentReportData && 'details' in currentReportData && typeof currentReportData.details === 'object' && 'conditions' in currentReportData.details) ? currentReportData.details.conditions : [],
+          }}
           formID={formID}
-          setTableCols={setTableColumns}
+          setTableCols={setTblColumns}
           fetchData={fetchData}
           setBulkDelete={setBulkDelete}
           duplicateData={bulkDuplicateData}
@@ -647,7 +713,7 @@ function FormEntries({ allResp, setAllResp, isloading: isFetching }) {
         {!isloading && allResp.length === 0 && (
           <div className="btcd-no-data txt-center">
             <img src={noData} alt="no data found" />
-            <div className="mt-2 data-txt">{__('No Response Found.')}</div>
+            <div className="mt-2 data-txt">{__('No Entry Found.')}</div>
           </div>
         )}
       </div>

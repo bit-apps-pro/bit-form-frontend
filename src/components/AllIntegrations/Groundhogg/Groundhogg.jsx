@@ -1,15 +1,19 @@
-import { useState } from 'react'
+import { useAtomValue } from 'jotai'
+import { create } from 'mutative'
+import { useEffect, useState } from 'react'
 import { useFela } from 'react-fela'
 import 'react-multiple-select-dropdown-lite/dist/index.css'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useAtomValue } from 'jotai'
 import { $bits } from '../../../GlobalStates/GlobalStates'
 import BackIcn from '../../../Icons/BackIcn'
 import ut from '../../../styles/2.utilities'
 import { __ } from '../../../Utils/i18nwrap'
 import Btn from '../../Utilities/Btn'
+import Modal from '../../Utilities/Modal'
 import SnackMsg from '../../Utilities/SnackMsg'
 import Steps from '../../Utilities/Steps'
+import ConnectedAppsList from '../ConnectedAppsList'
+import { getConnectedAppList } from '../integrationHelper'
 import { saveIntegConfig } from '../IntegrationHelpers/IntegrationHelpers'
 import IntegrationStepThree from '../IntegrationHelpers/IntegrationStepThree'
 import GroundhoggAuthorization from './GroundhoggAuthorization'
@@ -20,11 +24,13 @@ function Groundhogg({ formFields, setIntegration, integrations, allIntegURL }) {
   const history = useNavigate()
   const { formID } = useParams()
   const bits = useAtomValue($bits)
-  const { css } = useFela()
 
   const [isLoading, setIsLoading] = useState(false)
-  const [step, setstep] = useState(1)
+  const [step, setStep] = useState(1)
   const [snack, setSnackbar] = useState({ show: false })
+  const [showMdl, setShowMdl] = useState(false)
+  const { css } = useFela()
+
   const contactsFields = [
     { key: 'email', label: 'Email', required: true },
     { key: 'first_name', label: 'First Name', required: false },
@@ -47,6 +53,7 @@ function Groundhogg({ formFields, setIntegration, integrations, allIntegURL }) {
     { key: '1', label: 'Create Contact' },
     { key: '2', label: 'Add tag to user' },
   ]
+
   const [groundhoggConf, setGroundhoggConf] = useState({
     name: 'Groundhogg',
     type: 'Groundhogg',
@@ -84,33 +91,100 @@ function Groundhogg({ formFields, setIntegration, integrations, allIntegURL }) {
       return
     }
     if (groundhoggConf.listId !== '') {
-      setstep(3)
+      setStep(3)
     }
   }
+
   const isDisabled = !((groundhoggConf.mainAction === '2' && groundhoggConf.addTagToUser !== ''))
 
   const saveConfig = () => {
     saveIntegConfig(integrations, setIntegration, allIntegURL, groundhoggConf, history)
   }
 
+  const connectedGroundHogApps = getConnectedAppList([groundhoggConf.type])
+
+  const authorizedAction = () => {
+    setTimeout(() => { history(`${allIntegURL}/new/${groundhoggConf.type}`) }, 1000)
+    setShowMdl(false)
+  }
+
+  const authAppCardClickAction = (app, i) => {
+    if (app.integration_type === groundhoggConf.type) {
+      const appDetails = JSON.parse(app.integration_details)
+      setGroundhoggConf(draftGroundhoggConf => create(draftGroundhoggConf, tempGroundhoggConf => {
+        tempGroundhoggConf.parentAppId = app.id
+        tempGroundhoggConf.public_key = appDetails.public_key
+        tempGroundhoggConf.token = appDetails.token
+        tempGroundhoggConf.domainName = appDetails.domainName
+      }))
+      setStep(2)
+    }
+  }
+
+  useEffect(() => {
+    setGroundhoggConf(draftGroundhoggConf => create(draftGroundhoggConf, tempGroundhoggConf => {
+      const selectedApp = getConnectedAppList([groundhoggConf.type]).find(app => app.id === groundhoggConf.parentAppId)
+      if (selectedApp) {
+        const appDetails = JSON.parse(selectedApp.integration_details)
+        tempGroundhoggConf.public_key = appDetails.public_key
+        tempGroundhoggConf.token = appDetails.token
+        tempGroundhoggConf.domainName = appDetails.domainName
+      }
+    }))
+  }, [groundhoggConf.parentAppId])
+
   return (
     <div>
+      <Modal
+        title="Authorize New Groundhogg App"
+        show={showMdl}
+        setModal={() => setShowMdl(false)}
+      >
+        <GroundhoggAuthorization
+          formID={formID}
+          groundhoggConf={groundhoggConf}
+          setGroundhoggConf={setGroundhoggConf}
+          step={step}
+          setStep={setStep}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          setSnackbar={setSnackbar}
+          authorizedAction={authorizedAction}
+        />
+      </Modal>
+
       <SnackMsg snack={snack} setSnackbar={setSnackbar} />
       <div className="txt-center w-9 mt-2 cal-width">
         <Steps step={3} active={step} />
       </div>
 
       {/* STEP 1 */}
-      <GroundhoggAuthorization
-        formID={formID}
-        groundhoggConf={groundhoggConf}
-        setGroundhoggConf={setGroundhoggConf}
-        step={step}
-        setstep={setstep}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
-        setSnackbar={setSnackbar}
-      />
+      {
+        (connectedGroundHogApps.length > 0 && step === 1) && (
+          <ConnectedAppsList
+            allIntegURL={allIntegURL}
+            specificTypes={[groundhoggConf.type]}
+            onClickAction={authAppCardClickAction}
+            allowAddNew
+            addNewAction={() => setShowMdl(true)}
+          />
+        )
+      }
+      {
+        step === 1 && connectedGroundHogApps.length === 0 && (
+          <GroundhoggAuthorization
+            formID={formID}
+            groundhoggConf={groundhoggConf}
+            setGroundhoggConf={setGroundhoggConf}
+            step={step}
+            setStep={setStep}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+            setSnackbar={setSnackbar}
+            authorizedAction={authorizedAction}
+          />
+        )
+      }
 
       {/* STEP 2 */}
       <div
@@ -137,25 +211,13 @@ function Groundhogg({ formFields, setIntegration, integrations, allIntegURL }) {
           &nbsp;
           <BackIcn className="ml-1 rev-icn" />
         </Btn>
-        {/*
-        <button
-          onClick={() => nextPage(3)}
-          disabled={(groundhoggConf.mainAction === '2' ? isDisabled : (!((groundhoggConf.field_map?.length >= 1)))) || isLoading}
-          className="btn f-right btcd-btn-lg green sh-sm flx"
-          type="button"
-        >
-          {__('Next')}
-          {' '}
-          &nbsp;
-          <div className="btcd-icn icn-arrow_back rev-icn d-in-b" />
-        </button> */}
       </div>
+
       {/* STEP 3 */}
       <IntegrationStepThree
         step={step}
         saveConfig={() => saveConfig()}
       />
-
     </div>
   )
 }

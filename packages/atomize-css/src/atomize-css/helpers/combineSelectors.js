@@ -25,10 +25,22 @@ export default function combineSelectors(cssClassesObj) {
       })
 
       if (sameProValSelectors.length > 1) {
-        if (!combinedCssRulesObj[sameProValSelectors.join(',')]) {
-          combinedCssRulesObj[sameProValSelectors.join(',')] = { [prop]: value }
+        // ignore selectors for combine
+        const ignoreSelectors = /(-webkit-)|(-moz-)|(-ms-)/
+        const ignoreConcatSelectors = sameProValSelectors.filter((sel) => ignoreSelectors.test(sel))
+        const validConcatSelectors = sameProValSelectors.filter((sel) => !ignoreSelectors.test(sel))
+        ignoreConcatSelectors.forEach((selectr) => {
+          if (!combinedCssRulesObj[selectr]) {
+            combinedCssRulesObj[selectr] = { [prop]: value }
+          } else {
+            combinedCssRulesObj[selectr][prop] = value
+          }
+        })
+
+        if (!combinedCssRulesObj[validConcatSelectors.join(',')]) {
+          combinedCssRulesObj[validConcatSelectors.join(',')] = { [prop]: value }
         } else {
-          combinedCssRulesObj[sameProValSelectors.join(',')][prop] = value
+          combinedCssRulesObj[validConcatSelectors.join(',')][prop] = value
         }
 
         sameProValSelectors.forEach((selectr) => {

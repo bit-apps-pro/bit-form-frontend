@@ -1,12 +1,11 @@
-/* eslint-disable no-undef */
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useFela } from 'react-fela'
 import ut from '../../styles/2.utilities'
 import bitsFetch from '../../Utils/bitsFetch'
 import { __ } from '../../Utils/i18nwrap'
 import LoaderSm from '../Loaders/LoaderSm'
 import Btn from '../Utilities/Btn'
+import DropDown from '../Utilities/DropDown'
 import Modal from '../Utilities/Modal'
 import SnackMsg from '../Utilities/SnackMsg'
 
@@ -21,67 +20,89 @@ export default function Export({ showExportMdl, close, cols, formID, report }) {
     limit: null,
     custom: 'all',
     formId: formID,
+    filter: 'All Entries',
     selectedField: '',
   })
 
-  const order = report ? report[report.length - 1]?.details?.order : ['bf3-1-']
-  const hidden = report ? report[report.length - 1]?.details?.hiddenColumns : []
-  const columns = cols.filter((col) => col.Header !== '#' && typeof col.Header !== 'object')
+  const [selectedColumns, setSelectedColumns] = useState([])
+  const { order, hidden } = useMemo(() => ({
+    order: report ? report[report.length - 1]?.details?.order : ['bf3-1-'],
+    hidden: report ? report[report.length - 1]?.details?.hiddenColumns : [],
+  }), [report])
 
-  const colHeading = []
-  const fieldKey = []
+  const columns = useMemo(() => cols.filter((col) => col.Header !== '#' && typeof col.Header !== 'object'), [cols])
 
-  columns.map((col, index) => {
-    if (!hidden?.includes(col.accessor)) {
-      colHeading[index] = {
-        key: col.accessor,
-        val: col.Header,
+  const colHeading = useMemo(() => {
+    const arr = []
+    let i = 0
+    columns.map((col) => {
+      if (!hidden?.includes(col.accessor)) {
+        arr[i] = {
+          key: col.accessor,
+          val: col.Header,
+        }
+        // fieldKey[i] = col.accessor
+        i += 1
       }
-      fieldKey[index] = col.accessor
-    }
-  })
+    })
+    return arr
+  }, [columns, hidden])
+
+  // const fieldKey = []
+
+  useEffect(() => {
+    const hiddenColumns = report.find(rpt => rpt.details.report_name === data.filter)?.details.hiddenColumns || []
+    const notHidden = columns.filter(col => !hiddenColumns?.includes(col.accessor)).map(col => ({ label: col.Header, value: col.accessor }))
+
+    setSelectedColumns(notHidden)
+  }, [report, cols, data.filter])
+
+  const onSelectColumsChange = (val) => {
+    const newCols = columns.filter(col => val.split(',').includes(col.accessor)).map(col => ({ label: col.Header, value: col.accessor }))
+    setSelectedColumns(newCols)
+  }
 
   // fieldKey = fieldKey.filter((col) => !hidden.includes(col))
   // colHeading = colHeading.filter((col) => !hidden.includes(col.key))
-  data.selectedField = JSON.stringify(fieldKey)
-
-  const getEntry = (e) => {
+  // data.selectedField = JSON.stringify(fieldKey)
+  const getEntry = async (e) => {
     e.preventDefault()
+
+    const newData = { ...data }
+    const selectedReport = report.find(rpt => rpt.details.report_name === data.filter)
+
+    newData.filter = selectedReport ? selectedReport.details.conditions || [] : []
+    newData.selectedField = JSON.stringify(selectedColumns.map(col => col.value))
+    if (selectedColumns.length < 1) {
+      return setSnackbar({ ...{ show: true, msg: __('Please select at least one column') } })
+    }
     setIsLoading(true)
-    bitsFetch(
-      { data },
-      'bitforms_filter_export_data',
-    ).then((res) => {
-      if (res !== undefined && res.success) {
-        if (res.data?.count !== 0) {
-          const header = []
-          header[0] = 'Entry ID'
-          colHeading.map((col, index) => {
-            header[index + 1] = col.val
-          })
-          const ws = XLSX.utils.json_to_sheet(res.data)
-          /* add to workbook */
-          const wb = XLSX.utils.book_new()
-          XLSX.utils.sheet_add_aoa(ws, [header])
-          XLSX.utils.book_append_sheet(wb, ws)
-          /* generate an XLSX file */
-          XLSX.writeFile(wb, `bitform ${formID}.${data?.fileFormate}`)
-        } else {
-          setSnackbar({ ...{ show: true, msg: __('no response found') } })
-        }
+    try {
+      const res = await bitsFetch(
+        { data: newData },
+        'bitforms_filter_export_data',
+      )
+      if (res !== undefined && res.success && res.data?.count !== 0) {
+        const XLSX = await import('xlsx')
+        const header = ['Entry ID', ...selectedColumns.map(col => col.label)]
+        const ws = XLSX.utils.json_to_sheet(res.data)
+        const wb = XLSX.utils.book_new()
+        XLSX.utils.sheet_add_aoa(ws, [header])
+        XLSX.utils.book_append_sheet(wb, ws)
+        XLSX.writeFile(wb, `bitform ${formID}.${newData?.fileFormate}`)
+      } else if (res !== undefined && res.success && res.data?.count === 0) {
+        setSnackbar({ ...{ show: true, msg: __('no response found') } })
       }
+    } finally {
       setIsLoading(false)
-    })
+    }
   }
 
   const handleInput = (typ, val) => {
-    const tmpData = { ...data }
-    if (typeof val === 'number') {
-      tmpData[typ] = Number(val)
-    } else {
-      tmpData[typ] = val
-    }
-    setData(tmpData)
+    setData(prev => ({
+      ...prev,
+      [typ]: typeof val === 'number' ? Number(val) : val,
+    }))
   }
   return (
     <div>
@@ -119,6 +140,44 @@ export default function Export({ showExportMdl, close, cols, formID, report }) {
             </div>
           )}
 
+          <div className="mt-3 flx">
+            <b style={{ width: 200 }}>{__('Select filter')}</b>
+            <select
+              className="btcd-paper-inp ml-2"
+              name="filter"
+              style={{ width: 250 }}
+              onChange={(e) => handleInput(e.target.name, e.target.value)}
+              value={data.filter}
+            >
+              {report?.map(rpt => <option key={rpt.id} value={rpt.details.report_name}>{rpt.details.report_name}</option>)}
+            </select>
+          </div>
+          <div className="mt-3 flx">
+            <b style={{ width: 200 }}>{__('Select columns')}</b>
+            <div className="w-4 " style={{ paddingRight: '14px' }}>
+
+              <DropDown
+                placeholder="Select column"
+                className={css({
+                  '&.msl-wrp': {
+                    margin: '0 0 0 10px!important',
+                    transition: 'all 0.2s ease!important',
+                    '&:hover': {
+                      borderColor: 'black!important',
+                    },
+                  },
+                  '&.msl-wrp > .msl': {
+                    'background-color': '#fff!important',
+
+                  },
+                })}
+                isMultiple
+                action={onSelectColumsChange}
+                options={columns.map(col => ({ label: col.Header, value: col.accessor }))}
+                value={selectedColumns}
+              />
+            </div>
+          </div>
           <div className="mt-3 flx">
             <b style={{ width: 200 }}>{__('Sort Order')}</b>
             <select

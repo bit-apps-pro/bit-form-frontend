@@ -17,10 +17,10 @@ export const extraFields = [
     key: '_bf_form',
     name: 'Form',
   },
-  {
-    key: '_bf_step_no',
-    name: 'Step No.',
-  },
+  // {
+  //   key: '_bf_step_no',
+  //   name: 'Step No.',
+  // },
 ]
 
 const flatAllLogics = lgcs => {
@@ -35,22 +35,23 @@ const flatAllLogics = lgcs => {
   return flatLogics
 }
 
-const getStepBtns = () => {
+const getStepBtnAndStepKeys = () => {
   const allLayouts = getAtom($allLayouts)
   const isMultiStep = Array.isArray(allLayouts) && allLayouts.length > 1
   const formInfo = getAtom($formInfo)
   const btnSettings = isMultiStep ? formInfo.multiStepSettings.btnSettings : {}
   const { show, prevBtn, nextBtn } = btnSettings
-  if (!show) return {}
-  return {
-    [prevBtn.key]: { ...prevBtn },
-    [nextBtn.key]: { ...nextBtn },
-  }
+  const keysObject = {}
+  if (isMultiStep) keysObject._bf_step_no = { typ: 'text', key: '_bf_step_no', lbl: 'Active Step' }
+  if (!show) return keysObject
+  if (prevBtn) keysObject[prevBtn.key] = { ...prevBtn }
+  if (nextBtn) keysObject[nextBtn.key] = { ...nextBtn }
+  return keysObject
 }
 
 export const filterFormFields = condGrp => {
   const allFields = getAtom($fields)
-  const fields = { ...allFields, ...getStepBtns() }
+  const fields = { ...allFields, ...getStepBtnAndStepKeys() }
   const nestedLayouts = getAtom($nestedLayouts)
   const formFields = makeFieldsArrByLabel(fields, [])
   const logicFlds = flatAllLogics(condGrp.logics || [])

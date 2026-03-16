@@ -4,6 +4,7 @@
 import { combineSelectors, objectToCssText } from 'atomize-css'
 import filepondPluginImagePreviewCSS from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css?inline'
 import filepondCSS from 'filepond/dist/filepond.min.css?inline'
+import flatpickrCSS from 'flatpickr/dist/flatpickr.min.css?inline'
 import { hexToCSSFilter } from 'hex-to-css-filter'
 import { create } from 'mutative'
 import { getAtom, setAtom } from '../../GlobalStates/BitStore'
@@ -27,17 +28,21 @@ import currencyStyle_1_BitformDefault from './themes/1_bitformDefault/currencySt
 import dividerStyle1BitformDefault from './themes/1_bitformDefault/dividerStyle_1_bitformDefault'
 import dropdownStyle_1_BitformDefault from './themes/1_bitformDefault/dropdownStyle_1_bitformDefault'
 import fileUploadStyle_1_BitformDefault from './themes/1_bitformDefault/fileUpload_1_bitformDefault'
+import hiddenStyle_1_bitformDefault from './themes/1_bitformDefault/hiddenStyle_1_bitformDefault'
 import htmlStyle_1_bitformDefault from './themes/1_bitformDefault/htmlStyle_1_bitformDefault'
+import imageSelectStyle_1_bitformDefault from './themes/1_bitformDefault/imageSelectStyle_1_bitformDefault'
 import imageStyle1BitformDefault from './themes/1_bitformDefault/imageStyle_1_bitformDefault'
 import phoneNumberStyle_1_bitformDefault from './themes/1_bitformDefault/phoneNumberStyle_1_bitformDefault'
+import ratingStyle_1_bitformDefault from './themes/1_bitformDefault/ratingStyle_1_bitformDefault'
 import recaptchaStyle_1_bitformDefault from './themes/1_bitformDefault/recaptchaStyle_1_bitformDefault'
 import repeaterStyle_1_bitformDefault from './themes/1_bitformDefault/repeaterStyle_1_bitformDefault'
 import sectionStyle_1_bitformDefault from './themes/1_bitformDefault/sectionStyle_1_bitformDefault'
 import selectStyle_1_BitformDefault from './themes/1_bitformDefault/selectStyle_1_bitformDefault'
+import shortcodeStyle_1_bitformDefault from './themes/1_bitformDefault/shortcodeStyle_1_bitformDefault'
+import sliderStyle1BitformDefault from './themes/1_bitformDefault/sliderStyle_1_bitformDefault'
+import spacerStyle_1_bitformDefault from './themes/1_bitformDefault/spacerStyle_1_bitformDefault'
 import textStyle1BitformDefault from './themes/1_bitformDefault/textStyle_1_bitformDefault'
 import titleStyle1BitformDefault from './themes/1_bitformDefault/titleStyle_1_bitformDefault'
-import ratingStyle_1_bitformDefault from './themes/1_bitformDefault/ratingStyle_1_bitformDefault'
-import imageSelectStyle_1_bitformDefault from './themes/1_bitformDefault/imageSelectStyle_1_bitformDefault'
 
 export const assignNestedObj = (obj, keyPath, value) => {
   const paths = keyPath?.split('->') || []
@@ -587,6 +592,14 @@ export const mergeOtherStylesWithAtomicCSS = () => {
   if (Object.keys(fields).find((f) => fields[f].typ === 'advanced-file-up')) {
     cssText += generateCombinedCSSWithImportantRule(filepondCSS, { combined: false })
   }
+
+  if (Object.keys(fields).find((f) => fields[f].typ === 'advanced-datetime')) {
+    const styleFix = `.flatpickr-current-month .numInputWrapper{
+        width: 6ch !important;
+    }`
+    cssText += generateCombinedCSSWithImportantRule(flatpickrCSS + styleFix, { combined: false })
+  }
+
   if (Object.keys(fields).find((f) => fields[f].typ === 'advanced-file-up' && fields[f]?.config?.allowImagePreview)) {
     cssText += generateCombinedCSSWithImportantRule(filepondPluginImagePreviewCSS, { combined: false })
   }
@@ -638,6 +651,10 @@ export const addDefaultStyleClasses = (fk, element) => {
           const textStyleBitFormDefault = textStyle1BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: textStyleBitFormDefault })
           break
+        case 'range':
+          const sliderStyleBitFormDefault = sliderStyle1BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: sliderStyleBitFormDefault })
+          break
         case 'title':
           const titleStyleBitFormDefault = titleStyle1BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: titleStyleBitFormDefault })
@@ -645,6 +662,10 @@ export const addDefaultStyleClasses = (fk, element) => {
         case 'divider':
           const dividerStyleBitFormDefault = dividerStyle1BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: dividerStyleBitFormDefault })
+          break
+        case 'spacer':
+          const spacerStyleBitFormDefault = spacerStyle_1_bitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: spacerStyleBitFormDefault })
           break
         case 'image':
           const imageStyleBitFormDefault = imageStyle1BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
@@ -666,6 +687,10 @@ export const addDefaultStyleClasses = (fk, element) => {
         case 'html':
           const htmlBitFormDefault = htmlStyle_1_bitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: htmlBitFormDefault })
+          break
+        case 'shortcode':
+          const shortcodeBitformDefault = shortcodeStyle_1_bitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: shortcodeBitformDefault })
           break
         case 'currency':
           const currencyStyle1BitformDefault = currencyStyle_1_BitformDefault({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
@@ -700,6 +725,10 @@ export const addDefaultStyleClasses = (fk, element) => {
           const dropdownStyle1BitformDefault = dropdownStyle_1_BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: dropdownStyle1BitformDefault })
           break
+        case 'hidden':
+          const hiddenStyle1BitformDefault = hiddenStyle_1_bitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: hiddenStyle1BitformDefault })
+          break
         case 'phone-number':
           const phoneNumberStyleBitformDefault = phoneNumberStyle_1_bitformDefault({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: phoneNumberStyleBitformDefault })
@@ -723,6 +752,10 @@ export const addDefaultStyleClasses = (fk, element) => {
         case 'image-select':
           const imageSelectStyleBitformDefault = imageSelectStyle_1_bitformDefault({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: imageSelectStyleBitformDefault })
+          break
+        case 'advanced-datetime':
+          const advancedDataTimeStyleBitformDefault = imageSelectStyle_1_bitformDefault({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
+          addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: advancedDataTimeStyleBitformDefault })
           break
 
         default:
@@ -846,7 +879,12 @@ export const arrayToObject = (arr) => {
 
 export const isFieldOverrideStyles = (styles, fldKey) => styles?.fields?.[fldKey]?.overrideGlobalTheme?.length > 0
 
-export const isLabelOverrideStyles = (styles, fldKey, lblName) => styles?.fields?.[fldKey]?.overrideGlobalTheme?.includes(lblName)
+export const isLabelOverrideStyles = (styles, fldKey, lblName) => {
+  if (Array.isArray(styles?.fields?.[fldKey]?.overrideGlobalTheme)) {
+    return styles?.fields?.[fldKey]?.overrideGlobalTheme?.includes(lblName)
+  }
+  return false
+}
 
 export const isValidURL = (string) => {
   const res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/g)
@@ -981,7 +1019,7 @@ export const sortArrOfObjByMultipleProps = (props = []) => {
   }
 }
 
-export const lowerCaseAllAndReplaceSpaceToHipen = (str) => str.toLowerCase().replace(/ /g, '-')
+export const lowerCaseAllAndReplaceSpaceToHipen = (str) => str?.toLowerCase().replace(/ /g, '-')
 
 export const styleToGradientObj = (styleStr) => {
   // get linera or radial type from style string

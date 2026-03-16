@@ -2,6 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { $bits, $fieldsArr, $mailTemplates, $pdfTemplates, $updateBtn, $workflows } from '../../GlobalStates/GlobalStates'
+import { fileUpOrMappableImageFieldTypes } from '../../Utils/StaticData/allStaticArrays'
 import { __ } from '../../Utils/i18nwrap'
 import ut from '../../styles/2.utilities'
 import DropDown from '../Utilities/DropDown'
@@ -26,7 +27,7 @@ export default function EmailNotificationWorkflowAction({
   const fileInFormField = () => {
     const file = []
     fieldsArr.map(field => {
-      if (field.type === 'file-up' || field.type === 'advanced-file-up') {
+      if (fileUpOrMappableImageFieldTypes.includes(field.type)) {
         file.push({ label: field.name, value: field.key })
       }
     })
@@ -108,12 +109,29 @@ export default function EmailNotificationWorkflowAction({
             action={val => setEmailSetting('from', val)}
             placeholder={__('Add mail from address')}
             value={getValueFromArr(actionKey, 'from')}
-            title={<span className="f-m f-5">{__('From')}</span>}
+            title={<span className="f-m f-5">{__('From Mail')}</span>}
             titleClassName="w-7 mt-2"
             className="w-10 mt-1"
             addable
             options={mailOptions(getValueFromArr(actionKey, 'from'))}
+            tip={__('Some servers block emails if "From Email" differs from the authenticated (login) email— use the same email to ensure delivery.')}
           />
+          <div className="mt-1" />
+          <div>
+            <label htmlFor="from_name" className="f-m f-5">
+              {__('From Name')}
+            </label>
+            <div className="mt-2" />
+            <input
+              id="from_name"
+              type="text"
+              className="btcd-paper-inp"
+              style={{ height: '35px', width: '69%', background: 'var(--b-79-96)' }}
+              value={getValueFromArr(actionKey, 'from_name')}
+              onChange={e => setEmailSetting('from_name', e.target.value)}
+              placeholder="Add mail from name"
+            />
+          </div>
           <DropDown
             action={val => setEmailSetting('cc', val ? val.split(',') : [])}
             value={getValueFromArr(actionKey, 'cc')}

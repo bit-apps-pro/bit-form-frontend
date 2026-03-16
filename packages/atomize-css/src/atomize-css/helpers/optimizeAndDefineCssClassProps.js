@@ -14,7 +14,7 @@ export default function optimizeAndDefineCssClassProps(selectorObj, cssVarDefina
   for (let i = 0; i < selectorsCount; i += 1) {
     const selector = selectors[i]
     if (Object.hasOwnProperty.call(selectorsObj, selector)) {
-      const declaration = selectorsObj[selector]
+      const declaration = selectorsObj[selector] || {}
       const newSelectors = normalizeSelector(selector).split(',')
       const props = Object.keys(declaration)
       const propsCount = props.length
@@ -30,7 +30,7 @@ export default function optimizeAndDefineCssClassProps(selectorObj, cssVarDefina
           }
           if (value === undefined || value === null) value = ''
           let newValue = value
-            .trim()
+            ?.trim()
             .replace(/\s{2,}/g, ' ')
             .replace(/\\n\s*/g, '')
             .replace(/,\s*/g, ',')

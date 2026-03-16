@@ -22,10 +22,10 @@ export default function BreakpointSizeControl() {
   const setUpdateBtn = useSetAtom($updateBtn)
 
   const toggleRespectOrder = () => {
-    startTransition(() => {
-      if (builderHelperStates.respectLGLayoutOrder && breakpoint !== 'lg') setIsDraggable(false)
-      else setIsDraggable(true)
-    })
+    // startTransition(() => {
+    //   if (builderHelperStates.respectLGLayoutOrder && breakpoint !== 'lg') setIsDraggable(false)
+    //   else setIsDraggable(true)
+    // })
     setBuilderHelperStates(prv => ({ ...prv, respectLGLayoutOrder: !prv.respectLGLayoutOrder }))
   }
   const breakpointSizeHandler = ({ target: { name, value } }) => {

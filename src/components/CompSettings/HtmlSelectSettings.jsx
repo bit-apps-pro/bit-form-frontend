@@ -22,6 +22,7 @@ import RequiredSettings from './CompSettingsUtils/RequiredSettings'
 import SubTitleSettings from './CompSettingsUtils/SubTitleSettings'
 import UniqFieldSettings from './CompSettingsUtils/UniqFieldSettings'
 import EditOptions from './EditOptions/EditOptions'
+import OptionList from './OptionList'
 import FieldSettingTitle from './StyleCustomize/FieldSettingTitle'
 import SizeAndPosition from './StyleCustomize/StyleComponents/SizeAndPosition'
 
@@ -61,6 +62,29 @@ export default function HtmlSelectSettings() {
 
       <FieldSettingsDivider />
 
+      <div className={css(FieldStyle.fieldSection)}>
+        <div className={css(FieldStyle.fieldSectionTitle)}>
+          {__('Options')}
+        </div>
+        <OptionList
+          options={options}
+          onClick={() => setOptionMdl(true)}
+        />
+        <Btn
+          dataTestId="edt-opt-stng"
+          variant="primary-outline"
+          size="sm"
+          className={css({ mt: 10 })}
+          onClick={() => setOptionMdl(true)}
+        >
+          {__('Add/Edit Options')}
+          <span className={css({ ml: 3, mt: 3, tm: 'rotate(45deg)' })}>
+            <CloseIcn size="12" stroke="4" />
+          </span>
+        </Btn>
+      </div>
+      <FieldSettingsDivider />
+
       <SizeAndPosition />
 
       <FieldSettingsDivider />
@@ -89,26 +113,10 @@ export default function HtmlSelectSettings() {
 
       <FieldSettingsDivider />
 
-      <div className={css(FieldStyle.fieldSection)}>
-        <Btn
-          dataTestId="edt-opt-stng"
-          variant="primary-outline"
-          size="sm"
-          className={css({ mt: 10 })}
-          onClick={() => setOptionMdl(true)}
-        >
-          {__('Add/Edit Options')}
-          <span className={css({ ml: 3, mt: 3, tm: 'rotate(45deg)' })}>
-            <CloseIcn size="13" stroke="3" />
-          </span>
-        </Btn>
-      </div>
-      <FieldSettingsDivider />
-
       <UniqFieldSettings
         type="entryUnique"
-        title="Validate as Entry Unique"
-        tipTitle="Enabling this option will check from the entry database whether its value is duplicate."
+        title={__('Validate as Entry Unique')}
+        tipTitle={__('Enabling this option will check from the entry database whether its value is duplicate.')}
         className={css(FieldStyle.fieldSection, FieldStyle.hover_tip)}
         isUnique="show"
       />

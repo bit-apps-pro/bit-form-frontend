@@ -23,7 +23,7 @@ export type valueObject = {
   [K in ColorProp]?: string;
 } & BackgroundObject;
 
-type colorObj = {
+export type colorObj = {
   h: number,
   s: number,
   v: number,

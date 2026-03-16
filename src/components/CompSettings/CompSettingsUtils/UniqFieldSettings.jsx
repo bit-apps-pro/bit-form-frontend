@@ -1,16 +1,19 @@
 /* eslint-disable no-param-reassign */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
+import { $globalMessages } from '../../../GlobalStates/AppSettingsStates'
 import { $fields } from '../../../GlobalStates/GlobalStates'
 import { addToBuilderHistory } from '../../../Utils/FormBuilderHelper'
 import { deepCopy, IS_PRO } from '../../../Utils/Helpers'
+import { __ } from '../../../Utils/i18nwrap'
 import SimpleAccordion from '../StyleCustomize/ChildComp/SimpleAccordion'
 import ErrorMessageSettings from './ErrorMessageSettings'
 
 export default function UniqFieldSettings({ type, title, tipTitle, isUnique, className }) {
   const { fieldKey: fldKey } = useParams()
   const [fields, setFields] = useAtom($fields)
+  const globalMessages = useAtomValue($globalMessages)
   const fieldData = deepCopy(fields[fldKey])
 
   const setShowErrMsg = e => {
@@ -20,8 +23,8 @@ export default function UniqFieldSettings({ type, title, tipTitle, isUnique, cla
     if (!fieldData.err[type]) fieldData.err[type] = {}
     if (checked) {
       fieldData.err[type].show = true
-      const msg = 'That field is taken. Try another'
-      if (!fieldData.err[type].dflt) fieldData.err[type].dflt = msg
+      const msg = 'That field value is taken. Try another'
+      if (!fieldData.err[type].dflt) fieldData.err[type].dflt = globalMessages?.err?.[fieldData.typ]?.[type] || globalMessages?.err?.[type] || msg
     } else {
       delete fieldData.err[type].show
     }
@@ -33,7 +36,7 @@ export default function UniqFieldSettings({ type, title, tipTitle, isUnique, cla
   return (
     <SimpleAccordion
       id={`${type}-stng`}
-      title={title}
+      title={__(title)}
       className={className}
       tip={tipTitle}
       toggleName={type}

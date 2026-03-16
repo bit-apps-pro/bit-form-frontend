@@ -5,9 +5,11 @@ import Loader from '../../Loaders/Loader'
 import CheckBox from '../../Utilities/CheckBox'
 import TinyMCE from '../../Utilities/TinyMCE'
 import TelegramActions from './TelegramActions'
-import { refreshGetUpdates } from './TelegramCommonFunc'
+import { allowUploadedFiletype, refreshGetUpdates } from './TelegramCommonFunc'
 
 export default function TelegramIntegLayout({ formFields, telegramConf, setTelegramConf, isLoading, setisLoading, setSnackbar }) {
+  const formFieldsNew = formFields.filter(f => (!allowUploadedFiletype.includes(f.type)))
+
   const handleInput = e => {
     const newConf = { ...telegramConf }
     newConf[e.target.name] = e.target.value
@@ -32,7 +34,7 @@ export default function TelegramIntegLayout({ formFields, telegramConf, setTeleg
     <>
       <br />
       <div className="flx">
-        <b className="wdt-150 d-in-b">{__('Chat List: ')}</b>
+        <b className="wdt-150 d-in-b">{__('Chat List:')}</b>
         <select
           onChange={handleInput}
           name="chat_id"
@@ -72,7 +74,7 @@ export default function TelegramIntegLayout({ formFields, telegramConf, setTeleg
         && (
           <>
             <div className="flx mt-4">
-              <b className="wdt-150 d-in-b">{__('Parse Mode: ')}</b>
+              <b className="wdt-150 d-in-b">{__('Parse Mode:')}</b>
               <CheckBox
                 radio
                 onChange={e => changeActionRun(e)}
@@ -91,10 +93,10 @@ export default function TelegramIntegLayout({ formFields, telegramConf, setTeleg
               />
             </div>
             <div className="flx mt-4">
-              <b className="wdt-150 d-in-b">{__('Messages: ')}</b>
+              <b className="wdt-150 d-in-b">{__('Messages:')}</b>
               {telegramConf?.parse_mode === 'HTML' ? (
                 <TinyMCE
-                  formFields={formFields}
+                  formFields={formFieldsNew}
                   value={telegramConf.body}
                   onChangeHandler={setFromField}
                   width="100%"
@@ -110,7 +112,7 @@ export default function TelegramIntegLayout({ formFields, telegramConf, setTeleg
                     value={telegramConf.body}
                   />
                   <MultiSelect
-                    options={formFields.filter(f => (f.type !== 'file-up')).map(f => ({ label: f.name, value: `\${${f.key}}` }))}
+                    options={formFieldsNew.map(f => ({ label: f.name, value: `\${${f.key}}` }))}
                     className="btcd-paper-drpdwn wdt-200 ml-2"
                     singleSelect
                     onChange={val => setFromField(val)}

@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable no-param-reassign */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useState } from 'react'
 import { useFela } from 'react-fela'
-import { useAtom, useAtomValue } from 'jotai'
 import { $fields } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import { $themeColors } from '../../GlobalStates/ThemeColorsState'
@@ -13,11 +13,11 @@ import TxtAlignCntrIcn from '../../Icons/TxtAlignCntrIcn'
 import TxtAlignJustifyIcn from '../../Icons/TxtAlignJustifyIcn'
 import TxtAlignLeftIcn from '../../Icons/TxtAlignLeftIcn'
 import TxtAlignRightIcn from '../../Icons/TxtAlignRightIcn'
-import ut from '../../styles/2.utilities'
-import sizeControlStyle from '../../styles/sizeControl.style'
 import { addToBuilderHistory, deleteNestedObj, generateHistoryData, getLatestState } from '../../Utils/FormBuilderHelper'
 import { ucFirst } from '../../Utils/Helpers'
 import { staticFontStyleVariants, staticFontweightVariants, staticWhiteSpaceVariants, staticWordWrapVariants } from '../../Utils/StaticData/fontvariant'
+import ut from '../../styles/2.utilities'
+import sizeControlStyle from '../../styles/sizeControl.style'
 import CustomInputControl from '../CompSettings/StyleCustomize/ChildComp/CustomInputControl'
 import Grow from '../CompSettings/StyleCustomize/ChildComp/Grow'
 import SizeControl from '../CompSettings/StyleCustomize/ChildComp/SizeControl'
@@ -36,13 +36,13 @@ import ResetStyle from './ResetStyle'
 import SimpleColorPicker from './SimpleColorPicker'
 import SizeControler from './SizeControler'
 import SpacingControl from './SpacingControl'
-import {
-  addableCssPropsByField, addableCssPropsObj, arrayToObject, assignNestedObj, getActualElementKey, getNumFromStr, getStrFromStr, getValueByObjPath, getValueFromStateVar, unitConverter,
-} from './styleHelpers'
 import StylePropertyBlock from './StylePropertyBlock'
 import TextDecorationControl from './TextDecorationControl'
 import TransformControl from './TransformControl'
 import TransitionControl from './TransitionControl'
+import {
+  addableCssPropsByField, addableCssPropsObj, arrayToObject, assignNestedObj, getActualElementKey, getNumFromStr, getStrFromStr, getValueByObjPath, getValueFromStateVar, unitConverter,
+} from './styleHelpers'
 
 export default function IndividualCustomStyle({ elementKey: elmKey, fldKey }) {
   const [styles, setStyles] = useAtom($styles)
@@ -78,7 +78,7 @@ export default function IndividualCustomStyle({ elementKey: elmKey, fldKey }) {
     //   }
     // }
     // console.log('pseudoPahtObj', pseudoPahtObj?.[elementKey]?.[state] || '')
-    console.log('elementKey', elementKey)
+
     switch (elementKey) {
       case 'dpd-fld-wrp':
       case 'currency-fld-wrp':
@@ -126,6 +126,17 @@ export default function IndividualCustomStyle({ elementKey: elmKey, fldKey }) {
 
       case 'stripe-btn':
       case 'stripe-wrp .stripe-pay-btn':
+        if (state === 'active') {
+          state = ':active'
+        }
+        if (state === 'hover') {
+          state = ':hover'
+        }
+        if (state === 'focus') {
+          state = ':focus-visible'
+        }
+        break
+      case 'mollie-btn':
         if (state === 'active') {
           state = ':active'
         }
@@ -462,6 +473,54 @@ export default function IndividualCustomStyle({ elementKey: elmKey, fldKey }) {
             deleteable
             delPropertyHandler={() => delPropertyHandler('color', state)}
             clearHandler={() => clearHandler('color', state)}
+            allowImportant
+            canSetVariable
+          />
+        )
+      case 'accent-color':
+        return (
+          <SimpleColorPicker
+            title="Accent Color"
+            subtitle={fldTitle}
+            value={existCssPropsObj?.['accent-color']}
+            modalId="fld-accnt-color"
+            stateObjName="styles"
+            propertyPath={objPaths.paths?.['accent-color']}
+            deleteable
+            delPropertyHandler={() => delPropertyHandler('accent-color', state)}
+            clearHandler={() => clearHandler('accent-color', state)}
+            allowImportant
+            canSetVariable
+          />
+        )
+      case '--bfv-upper-track-clr':
+        return (
+          <SimpleColorPicker
+            title="Track Color"
+            subtitle={fldTitle}
+            value={existCssPropsObj?.['--bfv-upper-track-clr']}
+            modalId="fld-trk-clr"
+            stateObjName="styles"
+            propertyPath={objPaths.paths?.['--bfv-upper-track-clr']}
+            deleteable
+            delPropertyHandler={() => delPropertyHandler('--bfv-upper-track-clr', state)}
+            clearHandler={() => clearHandler('--bfv-upper-track-clr', state)}
+            allowImportant
+            canSetVariable
+          />
+        )
+      case '--bfv-lower-track-clr':
+        return (
+          <SimpleColorPicker
+            title="Progress Fill Color"
+            subtitle={fldTitle}
+            value={existCssPropsObj?.['--bfv-lower-track-clr']}
+            modalId="fld-trk-fill-color"
+            stateObjName="styles"
+            propertyPath={objPaths.paths?.['--bfv-lower-track-clr']}
+            deleteable
+            delPropertyHandler={() => delPropertyHandler('--bfv-lower-track-clr', state)}
+            clearHandler={() => clearHandler('--bfv-lower-track-clr', state)}
             allowImportant
             canSetVariable
           />

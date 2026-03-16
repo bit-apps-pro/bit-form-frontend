@@ -52,4 +52,4 @@ const fontList = [
   { name: 'ocrb10', fonts: ['ocrb10.ttf'], fontFamily: 'ocrb10' },
 ]
 
-const getFontName = fontList.map(font => font.name)
+// const getFontName = fontList.map(font => font.name)

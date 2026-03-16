@@ -1,20 +1,26 @@
 /* eslint-disable no-unused-expressions */
-import { useState } from 'react'
+import { create } from 'mutative'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import 'react-multiple-select-dropdown-lite/dist/index.css'
 import { useNavigate } from 'react-router-dom'
+import { __ } from '../../../Utils/i18nwrap'
+import Modal from '../../Utilities/Modal'
 import SnackMsg from '../../Utilities/SnackMsg'
 import Steps from '../../Utilities/Steps'
+import ConnectedAppsList from '../ConnectedAppsList'
+import { getConnectedAppList } from '../integrationHelper'
 import { saveIntegConfig } from '../IntegrationHelpers/IntegrationHelpers'
 import IntegrationStepThree from '../IntegrationHelpers/IntegrationStepThree'
 import NextBtn from '../NextBtn'
 import RapidmailAuthorization from './RapidmailAuthorization'
-import { checkMappedFields, handleInput } from './RapidmailCommonFunc'
+import { checkMappedFields, getAllRecipient, handleInput } from './RapidmailCommonFunc'
 import RapidmailIntegLayout from './RapidmailIntegLayout'
 
 function Rapidmail({ formFields, setIntegration, integrations, allIntegURL }) {
   const history = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
+  const [showMdl, setShowMdl] = useState(false)
   const [step, setstep] = useState(1)
   const [snack, setSnackbar] = useState({ show: false })
 
@@ -50,6 +56,37 @@ function Rapidmail({ formFields, setIntegration, integrations, allIntegURL }) {
     actions: {},
   })
 
+  const rapidMailApps = getConnectedAppList([rapidmailConf.type])
+
+  const authorizedAction = () => {
+    setTimeout(() => { history(`${allIntegURL}/new/${rapidmailConf.type}`) }, 1000)
+    setShowMdl(false)
+  }
+
+  const authAppCardClickAction = (app, i) => {
+    if (app.integration_type === rapidmailConf.type) {
+      const appDetails = JSON.parse(app.integration_details)
+      setRapidmailConf(draftMailConf => create(draftMailConf, tempMailConf => {
+        tempMailConf.parentAppId = app.id
+        tempMailConf.username = appDetails.username
+        tempMailConf.password = appDetails.password
+      }))
+      setstep(2)
+    }
+  }
+
+  useEffect(() => {
+    setRapidmailConf(draftMailConf => create(draftMailConf, tempMailConf => {
+      const selectedApp = rapidMailApps.find(app => app.id === rapidmailConf.parentAppId)
+      if (selectedApp) {
+        const appDetails = JSON.parse(selectedApp.integration_details)
+        tempMailConf.username = appDetails.username
+        tempMailConf.password = appDetails.password
+      }
+    }))
+    if (rapidmailConf?.parentAppId) getAllRecipient(rapidmailConf, setRapidmailConf, setIsLoading, setSnackbar)
+  }, [rapidmailConf.parentAppId])
+
   const saveConfig = () => {
     saveIntegConfig(integrations, setIntegration, allIntegURL, rapidmailConf, history)
   }
@@ -64,20 +101,45 @@ function Rapidmail({ formFields, setIntegration, integrations, allIntegURL }) {
 
   return (
     <div>
+      <Modal
+        title={__('Authorize New Rapidmail Account')}
+        show={showMdl}
+        setModal={(() => setShowMdl(false))}
+      >
+        <RapidmailAuthorization
+          rapidmailConf={rapidmailConf}
+          setRapidmailConf={setRapidmailConf}
+          step={step}
+          setstep={setstep}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          setSnackbar={setSnackbar}
+          authorizedAction={authorizedAction}
+        />
+      </Modal>
       <SnackMsg snack={snack} setSnackbar={setSnackbar} />
       <div className="txt-center w-9 mt-2 cal-width"><Steps step={3} active={step} /></div>
 
       {/* STEP 1 */}
-
-      <RapidmailAuthorization
-        rapidmailConf={rapidmailConf}
-        setRapidmailConf={setRapidmailConf}
-        step={step}
-        setstep={setstep}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
-        setSnackbar={setSnackbar}
-      />
+      {
+        (rapidMailApps.length > 0 && step === 1) && (
+          <ConnectedAppsList allIntegURL={allIntegURL} specificTypes={[rapidmailConf.type]} onClickAction={authAppCardClickAction} allowAddNew addNewAction={() => setShowMdl(true)} />
+        )
+      }
+      {
+        step === 1 && rapidMailApps.length === 0 && (
+          <RapidmailAuthorization
+            rapidmailConf={rapidmailConf}
+            setRapidmailConf={setRapidmailConf}
+            step={step}
+            setstep={setstep}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+            setSnackbar={setSnackbar}
+            authorizedAction={authorizedAction}
+          />
+        )
+      }
 
       {/* STEP 2 */}
       <div className="btcd-stp-page" style={{ ...(step === 2 && { width: 900, height: 'auto', overflow: 'visible' }) }}>

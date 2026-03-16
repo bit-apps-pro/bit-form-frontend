@@ -69,7 +69,9 @@ export default function ImageSelectField({ attr, onBlurHandler, resetFieldValue,
                   id={`${fieldKey}-img-wrp-${i}`}
                   name={fieldKey}
                   value={itm.val || itm.lbl}
+                  {...attr.valid.req && { required: true }}
                   checked={(value === itm.val) || checkBoxes.checked.includes(i) || itm?.check}
+                  disabled={attr.valid.disabled}
                   onChange={(e) => onChangeHandler(e, i)}
                   {...getCustomAttributes(fieldKey, 'img-inp')}
                   data-dev-img-inp={fieldKey}

@@ -19,12 +19,12 @@ import 'ace-builds/src-min-noconflict/ext-searchbox'
 // import 'ace-builds/src-min-noconflict/ext-beautify'
 // import 'ace-builds/webpack-resolver'
 
+import { useAtom, useSetAtom } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import AceEditor from 'react-ace'
 import { useFela } from 'react-fela'
 import toast from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
-import { useAtom, useSetAtom } from 'jotai'
 import { $customCodes, $proModal } from '../../GlobalStates/GlobalStates'
 import BdrDottedIcn from '../../Icons/BdrDottedIcn'
 import ut from '../../styles/2.utilities'
@@ -135,7 +135,7 @@ function CustomCodeEditor() {
     onChange: (newValue) => { handleEditorValue(newValue) },
     height: '330px',
     width: '100%',
-    placeholder: 'Write your code here...',
+    placeholder: 'Write your code here...(Note: Do not use single line"//" comment)',
     setOptions: editorOptions,
     ref: addToRefs,
   }
@@ -201,7 +201,11 @@ function CustomCodeEditor() {
             <AceEditor
               {...editorProps}
               onLoad={(editor) => {
-                editor.session.$worker.send('changeOptions', [{ asi: true }])
+                if (editor?.session?.$worker) {
+                  editor.session.$worker.send('changeOptions', [{ asi: true }])
+                } else {
+                  console.warn('worker not found')
+                }
               }}
             />
           ) : (

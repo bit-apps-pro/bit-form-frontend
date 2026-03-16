@@ -24,6 +24,7 @@ const bitformDefaultThemeDirStyle = (style, fieldKey, dir) => {
   switch (fieldType) {
     case 'check':
     case 'radio':
+    case 'gdpr':
     case 'decision-box': {
       const checkBx = classes?.[`.${fieldKey}-bx`]
       if (checkBx) checkBx.margin = switchXSpacing(checkBx.margin)
@@ -73,6 +74,7 @@ const atlassianThemeDirStyle = (style, fieldKey, dir) => {
   switch (fieldType) {
     case 'check':
     case 'radio':
+    case 'gdpr':
     case 'decision-box': {
       const checkBx = classes?.[`.${fieldKey}-bx`]
       if (checkBx) checkBx.margin = switchXSpacing(checkBx.margin)

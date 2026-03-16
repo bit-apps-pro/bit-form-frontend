@@ -6,6 +6,7 @@ import { getAtom } from '../GlobalStates/BitStore'
 import { $fields } from '../GlobalStates/GlobalStates'
 import { deepCopy, isObject, isObjectEmpty } from './Helpers'
 import { __ } from './i18nwrap'
+import { pdfFontList } from './StaticData/pdfConfigurationData'
 
 export function observeElement(element, property, callback, delay = 0) {
   const elementPrototype = Object.getPrototypeOf(element)
@@ -299,4 +300,63 @@ export const removeEmptyObjectValues = (stylesObj = {}) => {
     }
   })
   return newStyles
+}
+
+export const addDomainName = (objData) => {
+  const jsonString = JSON.stringify(objData)
+  const currentDomain = window.location.origin
+  // eslint-disable-next-line no-template-curly-in-string
+  const replaceAllDomain = jsonString.replace(/\$\{bf_main_domain\}\//g, `${currentDomain}/`)
+  return JSON.parse(replaceAllDomain)
+}
+
+export const removeDomainName = (objData) => {
+  const jsonString = JSON.stringify(objData)
+  const currentDomain = window.location.origin
+  const domainRegex = new RegExp(`${currentDomain}`, 'g')
+  // eslint-disable-next-line no-template-curly-in-string
+  const parseString = jsonString.replace(domainRegex, '${bf_main_domain}')
+  return JSON.parse(parseString)
+}
+
+export const getPdfFontObj = (searchName) => {
+  for (const fonts of Object.values(pdfFontList)) {
+    const foundFont = fonts.find(
+      (font) => font.name.toLowerCase() === searchName.toLowerCase(),
+    )
+    if (foundFont) {
+      return foundFont
+    }
+  }
+  return {}
+}
+
+export function sanitizeHTML(rawHTML) {
+  const inlineEvents = [
+    'onerror', 'onload', 'onclick', 'onmouseover',
+    'onfocus', 'onmouseenter', 'onmouseleave',
+    'onkeydown', 'onkeyup',
+  ]
+
+  // Build a regex for the inline event attributes
+  const inlineEventsRegex = new RegExp(
+    `\\s+(${inlineEvents.join('|')})\\s*=\\s*(['"])[\\s\\S]*?\\2`,
+    'gi',
+  )
+
+  return rawHTML
+    // Remove <script>...</script> blocks
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+
+    // Remove javascript: from src, href, xlink:href
+    .replace(/\b(?:src|href|xlink:href)\s*=\s*(['"])\s*javascript:[^'"]*\1/gi, '')
+
+    // Remove srcdoc attributes (used in iframes for injecting HTML)
+    .replace(/\s+srcdoc\s*=\s*(['"])[\s\S]*?\1/gi, '')
+
+    // Remove data URI that could inject HTML
+    .replace(/\b(?:src|href)\s*=\s*(['"])\s*data:text\/html[^'"]*\1/gi, '')
+
+    // Remove selected inline event handlers
+    .replace(inlineEventsRegex, '')
 }

@@ -3,14 +3,12 @@ import bitsFetch from '../../../Utils/bitsFetch'
 import { __ } from '../../../Utils/i18nwrap'
 
 export const saveIntegConfig = (allintegs, setIntegration, allIntegURL, confTmp, history, index, edit) => {
-  console.log({ allIntegURL })
   const integs = [...allintegs]
   if (edit) {
     integs[index] = { ...allintegs[index], ...confTmp }
     integs.push({ editItegration: true })
     setIntegration([...integs])
     history(allIntegURL)
-    console.log(allIntegURL)
   } else {
     const newInteg = [...integs]
     newInteg.push(confTmp)
@@ -20,11 +18,45 @@ export const saveIntegConfig = (allintegs, setIntegration, allIntegURL, confTmp,
   }
 }
 
+export const saveConnectedIntegConfig = (allintegs, setIntegration, allIntegURL, confTmp, history, index, edit) => {
+  const integs = [...allintegs]
+  if (edit) {
+    integs[index] = { ...allintegs[index], ...confTmp }
+    integs.push({ editItegration: true })
+    setIntegration([...integs])
+    history(allIntegURL)
+  } else {
+    const newInteg = [...integs]
+    newInteg.push(confTmp)
+    newInteg.push({ newItegration: true })
+    setIntegration(newInteg)
+    history(allIntegURL)
+  }
+  bitsFetch({ paySetting }, 'bitforms_save_payment_setting')
+    .then(res => {
+      if (res !== undefined && res.success) {
+        if (res.data && res.data.id) {
+          tmpSetting.id = res.data.id
+        }
+        setPaySetting(tmpSetting)
+        const tmpPayments = deepCopy(payments)
+        if (!indx) tmpPayments.push(tmpSetting)
+        else tmpPayments[indx] = tmpSetting
+        setPayments(tmpPayments)
+        setSnackbar({ show: true, msg: __(res.data.message) })
+        navigate('/app-settings/payments')
+      } else {
+        setSnackbar({ show: true, msg: __(res.data) })
+      }
+      setisLoading(false)
+    })
+}
+
 export const setGrantTokenResponse = (integ) => {
-  console.log('called')
   const grantTokenResponse = {}
   const authWindowLocation = window.location.href
-  const queryParams = authWindowLocation.replace(`${window.opener.location.href}/redirect`, '').split('&')
+  const openerLocation = window.opener.location.href
+  const queryParams = authWindowLocation.replace(`${openerLocation}/redirect`, '').split('&')
   if (queryParams) {
     queryParams.forEach(element => {
       const gtKeyValue = element.split('=')

@@ -1,22 +1,22 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { __ } from '@wordpress/i18n'
 import { useEffect, useState } from 'react'
-import { toast } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
-import bitsFetch from '../../../Utils/bitsFetch'
 import { postFields } from '../../../Utils/StaticData/postField'
 import tutorialLinks from '../../../Utils/StaticData/tutorialLinks'
+import bitsFetch from '../../../Utils/bitsFetch'
 import SnackMsg from '../../Utilities/SnackMsg'
 import TutorialLink from '../../Utilities/TutorialLink'
 import { saveIntegConfig } from '../IntegrationHelpers/IntegrationHelpers'
-import SaveIntergrationBrn from '../SaveIntergrationBrn'
-import PodsFieldMap from './FieldMap'
+import SaveIntegrationBtn from '../SaveIntegrationBtn'
 import { addFieldMap, checkMappedPodFields, checkMappedPostFields } from './PodHelperFunction'
+import PodsFieldMap from './PodsFieldMap'
 
 function Pods({ formFields, setIntegration, integrations, allIntegURL }) {
   const [types, setTypes] = useState([])
   const [pods, setPods] = useState([])
   const [users, setUsers] = useState([])
+
   const history = useNavigate()
   const [data, setData] = useState({
     name: 'Pods',
@@ -93,7 +93,7 @@ function Pods({ formFields, setIntegration, integrations, allIntegURL }) {
         title={tutorialLinks.pods.title}
         youTubeLink={tutorialLinks.pods.link}
       />
-      <div className="mt-3"><b>{__('Integration Name ')}</b></div>
+      <div className="mt-3"><b>{__('Integration Name')}</b></div>
       <input
         className="btcd-paper-inp w-5 mt-1"
         onChange={(e) => handleInput(e.target.name, e.target.value)}
@@ -251,7 +251,7 @@ function Pods({ formFields, setIntegration, integrations, allIntegURL }) {
         {' '}
       </button> */}
 
-      <SaveIntergrationBrn onClick={() => saveConfig()} />
+      <SaveIntegrationBtn onClick={() => saveConfig()} />
     </div>
   )
 }

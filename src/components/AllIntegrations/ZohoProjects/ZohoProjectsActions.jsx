@@ -4,13 +4,14 @@
 import { useState } from 'react'
 import MultiSelect from 'react-multiple-select-dropdown-lite'
 
-import { sprintf, __ } from '../../../Utils/i18nwrap'
+import TrashIcn from '../../../Icons/TrashIcn'
+import { __, sprintf } from '../../../Utils/i18nwrap'
+import { fileUpOrMappableImageFieldTypes } from '../../../Utils/StaticData/allStaticArrays'
+import Loader from '../../Loaders/Loader'
+import CheckBox from '../../Utilities/CheckBox'
 import ConfirmModal from '../../Utilities/ConfirmModal'
 import TableCheckBox from '../../Utilities/TableCheckBox'
-import CheckBox from '../../Utilities/CheckBox'
-import Loader from '../../Loaders/Loader'
-import { refreshUsers, refreshTaskLays, refreshTags, refreshGroups } from './ZohoProjectsCommonFunc'
-import TrashIcn from '../../../Icons/TrashIcn'
+import { refreshGroups, refreshTags, refreshTaskLays, refreshUsers } from './ZohoProjectsCommonFunc'
 
 export default function ZohoProjectsActions({ event, projectsConf, setProjectsConf, formID, formFields, setSnackbar }) {
   const [isLoading, setisLoading] = useState(false)
@@ -617,7 +618,7 @@ export default function ZohoProjectsActions({ event, projectsConf, setProjectsCo
                 defaultValue={projectsConf.actions[event].attachments}
                 className="mt-2 w-9"
                 onChange={(val) => actionHandler(val, 'attachments')}
-                options={formFields.filter(itm => (itm.type === 'file-up')).map(itm => ({ label: itm.name, value: itm.key }))}
+                options={formFields.filter(itm => (fileUpOrMappableImageFieldTypes.includes(itm.type))).map(itm => ({ label: itm.name, value: itm.key }))}
               />
             </ConfirmModal>
             <ConfirmModal

@@ -15,6 +15,7 @@ import Modal from '../../Utilities/Modal'
 import TableCheckBox from '../../Utilities/TableCheckBox'
 import TitleModal from '../../Utilities/TitleModal'
 import { refreshAssigmentRules, refreshOwners, refreshTags } from './ZohoCRMCommonFunc'
+import { fileUpOrMappableImageFieldTypes } from '../../../Utils/StaticData/allStaticArrays'
 
 export default function ZohoCRMActions({ crmConf, setCrmConf, formFields, tab, formID, setSnackbar }) {
   const [upsertMdl, setUpsertMdl] = useState(false)
@@ -334,7 +335,7 @@ export default function ZohoCRMActions({ crmConf, setCrmConf, formFields, tab, f
           defaultValue={tab === 0 ? crmConf.actions.attachment : crmConf.relatedlists[tab - 1].actions.attachment}
           className="mt-2 w-9"
           onChange={(val) => actionHandler(val, 'attachment')}
-          options={formFields.filter(itm => (itm.type === 'file-up')).map(itm => ({ label: itm.name, value: itm.key }))}
+          options={formFields.filter(itm => (fileUpOrMappableImageFieldTypes.includes(itm.type))).map(itm => ({ label: itm.name, value: itm.key }))}
         />
       </ConfirmModal>
 

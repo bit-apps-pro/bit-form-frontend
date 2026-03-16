@@ -1,15 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { useEffect, useState } from 'react'
-import { useFela } from 'react-fela'
 import { useNavigate, useParams } from 'react-router-dom'
-import app from '../../../styles/app.style'
 import bitsFetch from '../../../Utils/bitsFetch'
 import { __ } from '../../../Utils/i18nwrap'
 import { postFields } from '../../../Utils/StaticData/postField'
 import Cooltip from '../../Utilities/Cooltip'
 import SnackMsg from '../../Utilities/SnackMsg'
 import { saveIntegConfig } from '../IntegrationHelpers/IntegrationHelpers'
-import SaveIntergrationBrn from '../SaveIntergrationBrn'
+import SaveIntegrationBtn from '../SaveIntegrationBtn'
 import FieldMap from './FieldMap'
 import { addFieldMap, checkMappedAcfFields, checkMappedPostFields, refreshMetaboxFields, refreshPostTypes } from './MetaboxHelperFunction'
 
@@ -22,7 +20,6 @@ function EdtiMetabox({ formFields, setIntegration, integrations, allIntegURL }) 
   const [users, setUsers] = useState([])
   const [data, setData] = useState({ ...integrations[id] })
   const [snack, setSnackbar] = useState({ show: false })
-  const { css } = useFela()
 
   useEffect(() => {
     bitsFetch({}, 'bitforms_get_post_type').then((res) => {
@@ -88,7 +85,7 @@ function EdtiMetabox({ formFields, setIntegration, integrations, allIntegURL }) 
   return (
     <div style={{ width: 900 }}>
       <SnackMsg snack={snack} setSnackbar={setSnackbar} />
-      <div className="mt-3"><b>{__('Integration Name ')}</b></div>
+      <div className="mt-3"><b>{__('Integration Name')}</b></div>
       <input
         className="btcd-paper-inp w-5 mt-1"
         onChange={(e) => handleInput(e.target.name, e.target.value)}
@@ -168,6 +165,7 @@ function EdtiMetabox({ formFields, setIntegration, integrations, allIntegURL }) 
           className="btcd-paper-inp w-5 mt-2"
         >
           <option disabled selected>{__('Select Author')}</option>
+          <option value="logged_in_user">Logged In User</option>
           {users.map((user, i) => (
             <option key={`pa-${i * 2}`} value={user.ID}>{user.display_name}</option>
           ))}
@@ -324,7 +322,7 @@ function EdtiMetabox({ formFields, setIntegration, integrations, allIntegURL }) 
         </div>
       </div>
 
-      <SaveIntergrationBrn onClick={() => saveConfig()} />
+      <SaveIntegrationBtn onClick={() => saveConfig()} />
 
       {/* <button
         className={`${css(app.btn)} f-left btcd-btn-lg green sh-sm flx`}

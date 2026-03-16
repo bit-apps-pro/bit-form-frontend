@@ -5,6 +5,7 @@ import { $allLayouts } from '../../../../GlobalStates/GlobalStates'
 import { msgDefaultConfig } from '../../../../Utils/StaticData/form-templates/defaultConfirmation'
 import { cleanObj, mergeNestedObj } from '../../../../Utils/globalHelpers'
 import confirmMsgCssStyles from '../../../ConfirmMessage/confirmMsgCssStyles'
+import advancedDateTimeStyle_1_bitformDefault from './advancedDatetimeStyle_1_bitformDefault'
 import advancedFileUp_1_bitformDefault from './advancedFileUp_1_bitformDefault'
 import buttonStyle_1_bitformDefault from './buttonStyle_1_bitformDefault'
 import checkboxNradioStyle_1_bitformDefault from './checkboxNradioStyle_1_bitformDefault'
@@ -14,9 +15,13 @@ import decisionBoxStyle_1_bitformDefault from './decisionBoxStyle_1_bitformDefau
 import dividerStyle_1_bitformDefault from './dividerStyle_1_bitformDefault'
 import dropdownStyle_1_BitformDefault from './dropdownStyle_1_bitformDefault'
 import fileUploadStyle_1_BitformDefault from './fileUpload_1_bitformDefault'
+import gdprStyle_1_bitformDefault from './gdprStyle_1_bitformDefault '
+import hcaptchaStyle_1_bitformDefault from './hcaptchaStyle_1_bitformDefault'
+import hiddenStyle_1_bitformDefault from './hiddenStyle_1_bitformDefault'
 import htmlStyle_1_bitformDefault from './htmlStyle_1_bitformDefault'
 import imageSelectStyle_1_bitformDefault from './imageSelectStyle_1_bitformDefault'
 import imageStyle_1_bitformDefault from './imageStyle_1_bitformDefault'
+import mollieStyle_1_BitformDefault from './mollieStyle_1_BitformDefault'
 import multiStepStyle_1_bitformDefault from './multiStepStyle_1_bitformDefaullt'
 import paypalStyle_1_BitformDefault from './paypalStyle_1_BitformDefault'
 import phoneNumberStyle_1_bitformDefault from './phoneNumberStyle_1_bitformDefault'
@@ -26,7 +31,10 @@ import recaptchaStyle_1_bitformDefault from './recaptchaStyle_1_bitformDefault'
 import repeaterStyle_1_bitformDefault from './repeaterStyle_1_bitformDefault'
 import sectionStyle_1_bitformDefault from './sectionStyle_1_bitformDefault'
 import selectStyle_1_BitformDefault from './selectStyle_1_bitformDefault'
+import shortcodeStyle_1_bitformDefault from './shortcodeStyle_1_bitformDefault'
 import signatureStyle_1_bitformDefault from './signatureStyle_1_bitformDefault'
+import sliderStyle_1_bitformDefault from './sliderStyle_1_bitformDefault'
+import spacerStyle_1_bitformDefault from './spacerStyle_1_bitformDefault'
 import stripeStyle_1_BitformDefault from './stripeStyle_1_BitformDefault'
 import textStyle_1_bitformDefault from './textStyle_1_bitformDefault'
 import titleStyle_1_bitformDefault from './titleStyle_1_bitformDefault'
@@ -73,12 +81,20 @@ export default function bitformDefaultTheme({
       const { fldPrefix, fldSuffix } = textOptions
       return text({ type, fk, breakpoint, colorScheme, fldPrefix, fldSuffix })
     }
+    case 'range': {
+      const { fldPrefix, fldSuffix } = textOptions
+      return slider({
+        type, fk, direction, breakpoint, colorScheme, fldPrefix, fldSuffix,
+      })
+    }
     case 'signature': {
       const { fldPrefix, fldSuffix } = textOptions
       return signature({ type, fk, breakpoint, colorScheme, fldPrefix, fldSuffix })
     }
     case 'decision-box':
       return decisionBox({ type, fk, direction, breakpoint, colorScheme })
+    case 'gdpr':
+      return gdprAgreement({ type, fk, direction, breakpoint, colorScheme })
     case 'check':
     case 'radio':
       return checkNradioBox({ type, fk, direction, breakpoint, colorScheme })
@@ -88,6 +104,8 @@ export default function bitformDefaultTheme({
       return image({ type, fk, breakpoint, colorScheme })
     case 'divider':
       return divider({ type, fk, breakpoint, colorScheme })
+    case 'spacer':
+      return spacer({ type, fk, breakpoint, colorScheme })
     case 'button': {
       const { align, txtAlign, btnTyp, fulW } = buttonOptions
       return button({
@@ -98,6 +116,8 @@ export default function bitformDefaultTheme({
       return advancedFileUP({ type, fk, breakpoint, colorScheme })
     case 'html':
       return html({ type, fk, breakpoint, colorScheme })
+    case 'shortcode':
+      return shortcode({ type, fk, breakpoint, colorScheme })
     case 'currency':
       return currency({ type, fk, direction, breakpoint, colorScheme })
     case 'country':
@@ -106,6 +126,8 @@ export default function bitformDefaultTheme({
       return recaptcha({ type, fk, breakpoint, colorScheme })
     case 'turnstile':
       return turnstile({ type, fk, breakpoint, colorScheme })
+    case 'hcaptcha':
+      return hcaptcha({ type, fk, breakpoint, colorScheme })
     case 'file-up':
       return fileUp({ type, fk, breakpoint, colorScheme })
     case 'html-select':
@@ -114,10 +136,14 @@ export default function bitformDefaultTheme({
       return select({ type, fk, direction, breakpoint, colorScheme })
     case 'phone-number':
       return phoneNumber({ type, fk, direction, breakpoint, colorScheme })
+    case 'hidden':
+      return hidden({ type, fk, breakpoint, colorScheme })
     case 'paypal':
       return paypal({ type, fk, breakpoint, colorScheme })
     case 'stripe':
       return stripe({ type, fk, breakpoint, colorScheme })
+    case 'mollie':
+      return mollie({ type, fk, breakpoint, colorScheme })
     case 'razorpay':
       return razorpay({ type, fk, breakpoint, colorScheme })
     case 'section':
@@ -128,6 +154,8 @@ export default function bitformDefaultTheme({
       return rating({ type, fk, breakpoint, colorScheme })
     case 'image-select':
       return imageSelect({ type, fk, direction, breakpoint, colorScheme })
+    case 'advanced-datetime':
+      return advancedDateTime({ type, fk, direction, breakpoint, colorScheme })
     default: {
       fieldsArr?.map(([fieldKey, fieldData]) => {
         lgLightFieldStyles[fieldKey] = bitformDefaultTheme({ fieldKey, type: fieldData.typ, breakpoint: 'lg', colorScheme: 'light', textOptions: { fldPrefix: !!fieldData.prefixIcn, fldSuffix: !!fieldData.suffixIcn }, buttonOptions: { align: fieldData.align, txtAlign: fieldData.txtAlign, btnTyp: fieldData.btnTyp, fulW: fieldData.fulW } })
@@ -249,7 +277,7 @@ export const defaultLgLightThemeVars = {
   '--pre-i-p': '', // fld prefix icon padding
   '--pre-i-bdr': '', // prefix icon border
   '--pre-i-bdr-width': '', // fld prefix icon border width
-  '--pre-i-bdr-rad': '8px', // fld prefix icon message border radius
+  '--pre-i-bdr-rad': '0px', // fld prefix icon message border radius
 
   '--suf-i-h': '25px', // fld suffix icon height
   '--suf-i-w': '25px', // fld suffix icon width
@@ -257,7 +285,7 @@ export const defaultLgLightThemeVars = {
   '--suf-i-p': '', // fld suffix icon padding
   '--suf-i-bdr': '', // suffix icon border
   '--suf-i-bdr-width': '', // fld suffix icon border width
-  '--suf-i-bdr-rad': '8px', // fld suffix icon border radius
+  '--suf-i-bdr-rad': '0px', // fld suffix icon border radius
 
   '--lbl-pre-i-h': '20px', // label prefix icon height
   '--lbl-pre-i-w': '20px', // label prefix icon width
@@ -265,7 +293,7 @@ export const defaultLgLightThemeVars = {
   '--lbl-pre-i-p': '', // label prefix icon padding
   '--lbl-pre-i-bdr': '', // label prefix icon border
   '--lbl-pre-i-bdr-width': '', // label prefix icon border width
-  '--lbl-pre-i-bdr-rad': '8px', // label prefix icon message border radius
+  '--lbl-pre-i-bdr-rad': '0px', // label prefix icon message border radius
 
   '--lbl-suf-i-h': '20px', // Label suffix icon height
   '--lbl-suf-i-w': '20px', // Label suffix icon width
@@ -273,7 +301,7 @@ export const defaultLgLightThemeVars = {
   '--lbl-suf-i-p': '', // Label suffix icon padding
   '--lbl-suf-i-bdr': '', // label suffix icon border
   '--lbl-suf-i-bdr-width': '', // Label suffix icon border width
-  '--lbl-suf-i-bdr-rad': '8px', // Label suffix icon border radius
+  '--lbl-suf-i-bdr-rad': '0px', // Label suffix icon border radius
 
   '--sub-titl-pre-i-h': '15px', // sub title prefix icon height
   '--sub-titl-pre-i-w': '15px', // sub title prefix icon width
@@ -281,7 +309,7 @@ export const defaultLgLightThemeVars = {
   '--sub-titl-pre-i-p': '', // sub title prefix icon padding
   '--sub-titl-pre-i-bdr': '', // sub title prefix icon border
   '--sub-titl-pre-i-bdr-width': '', // sub title prefix icon border width
-  '--sub-titl-pre-i-bdr-rad': '8px', // sub title prefix icon message border radius
+  '--sub-titl-pre-i-bdr-rad': '0px', // sub title prefix icon message border radius
 
   '--sub-titl-suf-i-h': '15px', // sub title suffix icon height
   '--sub-titl-suf-i-w': '15px', // sub title suffix icon width
@@ -289,7 +317,7 @@ export const defaultLgLightThemeVars = {
   '--sub-titl-suf-i-p': '', // sub title suffix icon padding
   '--sub-titl-suf-i-bdr': '', // sub title suffix icon border
   '--sub-titl-suf-i-bdr-width': '', // sub title suffix icon border width
-  '--sub-titl-suf-i-bdr-rad': '8px', // sub title suffix icon border radius
+  '--sub-titl-suf-i-bdr-rad': '0px', // sub title suffix icon border radius
 
   '--hlp-txt-pre-i-h': '15px', // helper txt prefix icon height
   '--hlp-txt-pre-i-w': '15px', // helper txt prefix icon width
@@ -297,7 +325,7 @@ export const defaultLgLightThemeVars = {
   '--hlp-txt-pre-i-p': '', // helper txt prefix icon padding
   '--hlp-txt-pre-i-bdr': '', // helper txt prefix icon border
   '--hlp-txt-pre-i-bdr-width': '', // helper txt prefix icon border width
-  '--hlp-txt-pre-i-bdr-rad': '8px', // helper txt prefix icon message border radius
+  '--hlp-txt-pre-i-bdr-rad': '0px', // helper txt prefix icon message border radius
 
   '--hlp-txt-suf-i-h': '15px', // helper txt suffix icon height
   '--hlp-txt-suf-i-w': '15px', // helper txt suffix icon width
@@ -305,7 +333,7 @@ export const defaultLgLightThemeVars = {
   '--hlp-txt-suf-i-p': '', // helper txt suffix icon padding
   '--hlp-txt-suf-i-bdr': '', // helper txt suffix icon border
   '--hlp-txt-suf-i-bdr-width': '', // helper txt suffix icon border width
-  '--hlp-txt-suf-i-bdr-rad': '8px', // helper txt suffix icon border radius
+  '--hlp-txt-suf-i-bdr-rad': '0px', // helper txt suffix icon border radius
 
   '--err-txt-pre-i-h': '15px', // error txt prefix icon height
   '--err-txt-pre-i-w': '15px', // error txt prefix icon width
@@ -313,7 +341,7 @@ export const defaultLgLightThemeVars = {
   '--err-txt-pre-i-p': '', // error txt prefix icon padding
   '--err-txt-pre-i-bdr': '', // helper txt prefix icon border
   '--err-txt-pre-i-bdr-width': '', // error txt prefix icon border width
-  '--err-txt-pre-i-bdr-rad': '8px', // error txt prefix icon message border radius
+  '--err-txt-pre-i-bdr-rad': '0px', // error txt prefix icon message border radius
 
   '--err-txt-suf-i-h': '15px', // error txt suffix icon height
   '--err-txt-suf-i-w': '15px', // error txt suffix icon width
@@ -321,7 +349,7 @@ export const defaultLgLightThemeVars = {
   '--err-txt-suf-i-p': '', // error txt suffix icon padding
   '--err-txt-suf-i-bdr': '', // helper txt suffix icon border
   '--err-txt-suf-i-bdr-width': '', // error txt suffix icon border width
-  '--err-txt-suf-i-bdr-rad': '8px', // error txt suffix icon border radius
+  '--err-txt-suf-i-bdr-rad': '0px', // error txt suffix icon border radius
 
   '--btn-fs': 'var(--fld-fs)', // button txt font size
   '--btn-p': '13px 20px', // button padding
@@ -338,6 +366,7 @@ export const defaultLgLightThemeVars = {
   '--g-o-offset': '1px', // outline offset
   '--g-o-w': '1px', // outline width
   '--g-o-s': 'solid', // outline style
+
 }
 
 export const defaultLightThemeColors = {
@@ -382,7 +411,7 @@ export const defaultLightThemeColors = {
   '--fld-lbl-sh': '', // field label box shadow
   '--fld-lbl-bdr-clr': '', // field label border color
 
-  '--req-smbl-c': 'var(--global-font-color)', // Required Symbol Color
+  '--req-smbl-c': 'hsla(0, 100%, 50%, 100%)', // Required Symbol Color
 
   '--sub-titl-bg': '', // sub title background color
   '--sub-titl-c': 'hsla(var(--gfh), var(--gfs), var(--gfl), 0.7)', // sub title color
@@ -460,6 +489,10 @@ export const defaultLightThemeColors = {
   '--ck-bdr-c': 'hsla(210, 78%, 96%, 100%)',
 
   '--g-o-c': 'hsla(217, 100%, 50%, 100%)', // outline color for testing purposes
+
+  // slider field variables
+  '--bf-lower-track-clr': 'var(--global-accent-color)',
+  '--bf-upper-track-clr': '#ffffff',
 
   '--bg-0': 'hsl(0, 0%, 100%)',
   '--bg-5': 'hsl(0, 0%, 95%)',
@@ -583,6 +616,19 @@ const text = ({ type, fk, breakpoint, colorScheme, fldPrefix, fldSuffix }) => {
   return {}
 }
 
+const hidden = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'bitformDefault',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: hiddenStyle_1_bitformDefault({ fk, type, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
 const signature = ({ type, fk, breakpoint, colorScheme, fldPrefix, fldSuffix }) => {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return {
@@ -660,6 +706,19 @@ const decisionBox = ({ type, fk, direction, breakpoint, colorScheme }) => {
   return {}
 }
 
+const gdprAgreement = ({ type, fk, direction, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'bitformDefault',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: gdprStyle_1_bitformDefault({ fk, direction, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
 const checkNradioBox = ({ type, fk, direction, breakpoint, colorScheme }) => {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return {
@@ -686,6 +745,23 @@ const title = ({ type, fk, breakpoint, colorScheme }) => {
   return {}
 }
 
+const slider = ({
+  type, fk, direction, breakpoint, colorScheme, fldPrefix, fldSuffix,
+}) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'bitformDefault',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: sliderStyle_1_bitformDefault({
+        fk, type, direction, breakpoint, colorScheme, fldPrefix, fldSuffix,
+      }),
+    }
+  }
+  return {}
+}
+
 const image = ({ type, fk, breakpoint, colorScheme }) => {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return {
@@ -707,6 +783,19 @@ const divider = ({ type, fk, breakpoint, colorScheme }) => {
       overrideGlobalTheme: [],
       fieldSize: 'medium',
       classes: dividerStyle_1_bitformDefault({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
+const spacer = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'bitformDefault',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: spacerStyle_1_bitformDefault({ fk, breakpoint, colorScheme }),
     }
   }
   return {}
@@ -750,6 +839,19 @@ const html = ({ type, fk, breakpoint, colorScheme }) => {
       overrideGlobalTheme: [],
       fieldSize: 'medium',
       classes: htmlStyle_1_bitformDefault({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
+const shortcode = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'bitformDefault',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: shortcodeStyle_1_bitformDefault({ fk, breakpoint, colorScheme }),
     }
   }
   return {}
@@ -805,7 +907,18 @@ const turnstile = ({ type, fk, breakpoint, colorScheme }) => {
   }
   return {}
 }
-
+const hcaptcha = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'bitformDefault',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: hcaptchaStyle_1_bitformDefault({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
 const fileUp = ({ type, fk, breakpoint, colorScheme }) => {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return {
@@ -884,6 +997,19 @@ const stripe = ({ type, fk, breakpoint, colorScheme }) => {
   return {}
 }
 
+const mollie = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'bitformDefault',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: mollieStyle_1_BitformDefault({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
 const razorpay = ({ type, fk, breakpoint, colorScheme }) => {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return {
@@ -892,6 +1018,18 @@ const razorpay = ({ type, fk, breakpoint, colorScheme }) => {
       overrideGlobalTheme: [],
       fieldSize: 'medium',
       classes: razorpayStyle_1_BitformDefault({ fk, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+const advancedDateTime = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'bitformDefault',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: advancedDateTimeStyle_1_bitformDefault({ fk, breakpoint, colorScheme }),
     }
   }
   return {}

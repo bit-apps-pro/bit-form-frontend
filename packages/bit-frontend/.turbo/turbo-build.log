@@ -1,0 +1,43 @@
+
+> bit-frontend@1.0.0 build /home/maruf/Local Sites/bit-formorg/app/public/wp-content/plugins/bitform/frontend-dev/packages/bit-frontend
+> rollup -c
+
+[36m
+[1msrc/hidden-token-field.js[22m → [1mdist/hidden-token-field.min.js[22m...[39m
+Browserslist: browsers data (caniuse-lite) is 11 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[32mcreated [1mdist/hidden-token-field.min.js[22m in [1m1.5s[22m[39m
+[36m
+[1msrc/bitsFetchFront.js[22m → [1mdist/bitsFetchFront.min.js[22m...[39m
+[32mcreated [1mdist/bitsFetchFront.min.js[22m in [1m308ms[22m[39m
+[36m
+[1msrc/submit-form.js[22m → [1mdist/submit-form.min.js[22m...[39m
+[32mcreated [1mdist/submit-form.min.js[22m in [1m795ms[22m[39m
+[36m
+[1msrc/customFieldsReset.js[22m → [1mdist/customFieldsReset.min.js[22m...[39m
+[32mcreated [1mdist/customFieldsReset.min.js[22m in [1m311ms[22m[39m
+[36m
+[1msrc/advancedFileHandle.js[22m → [1mdist/advancedFileHandle.min.js[22m...[39m
+[32mcreated [1mdist/advancedFileHandle.min.js[22m in [1m421ms[22m[39m
+[36m
+[1msrc/hideChildFldHandle.js[22m → [1mdist/hideChildFldHandle.min.js[22m...[39m
+[32mcreated [1mdist/hideChildFldHandle.min.js[22m in [1m262ms[22m[39m
+[36m
+[1msrc/decisionFldHandle.js[22m → [1mdist/decisionFldHandle.min.js[22m...[39m
+[32mcreated [1mdist/decisionFldHandle.min.js[22m in [1m249ms[22m[39m
+[36m
+[1msrc/validate-focus.js[22m → [1mdist/validate-focus.min.js[22m...[39m
+[32mcreated [1mdist/validate-focus.min.js[22m in [1m407ms[22m[39m
+[36m
+[1msrc/bitform-init.js[22m → [1mdist/bitform-init.min.js[22m...[39m
+[32mcreated [1mdist/bitform-init.min.js[22m in [1m372ms[22m[39m
+[36m
+[1msrc/bitform-elementor.js[22m → [1mdist/bitform-elementor.min.js[22m...[39m
+[32mcreated [1mdist/bitform-elementor.min.js[22m in [1m270ms[22m[39m
+[36m
+[1msrc/resetPlaceholders.js[22m → [1mdist/resetPlaceholders.min.js[22m...[39m
+[32mcreated [1mdist/resetPlaceholders.min.js[22m in [1m310ms[22m[39m
+[36m
+[1msrc/bfResetDefaultValue.js[22m → [1mdist/bfResetDefaultValue.min.js[22m...[39m
+[32mcreated [1mdist/bfResetDefaultValue.min.js[22m in [1m363ms[22m[39m

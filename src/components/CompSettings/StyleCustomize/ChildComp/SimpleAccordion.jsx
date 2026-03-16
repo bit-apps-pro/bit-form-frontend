@@ -1,8 +1,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import { useSetAtom } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import { useFela } from 'react-fela'
 import { CSSTransition } from 'react-transition-group'
-import { useSetAtom } from 'jotai'
 import { $proModal } from '../../../../GlobalStates/GlobalStates'
 import ChevronDownIcn from '../../../../Icons/ChevronDownIcn'
 import ut from '../../../../styles/2.utilities'
@@ -152,8 +152,10 @@ export default function SimpleAccordion({
           unmountOnExit
         >
           <div
+            role="button"
+            tabIndex={0}
             ref={nodeRef}
-            className="body pos-rel"
+            className={`body ${(isPro && !IS_PRO) ? 'pos-rel' : ''}`}
             onClick={cancelBubble}
             onKeyDown={cancelBubble}
           >

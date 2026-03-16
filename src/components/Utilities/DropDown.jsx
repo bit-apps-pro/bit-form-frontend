@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useFela } from 'react-fela'
-import 'react-multiple-select-dropdown-lite/dist/index.css'
 import MultiSelect from 'react-multiple-select-dropdown-lite'
+import 'react-multiple-select-dropdown-lite/dist/index.css'
+import Cooltip from './Cooltip'
 
 function DropDown({
-  options, placeholder, action, className, isMultiple, allowCustomOpt, value, addable, titleClassName, title, jsonValue, disabled = false,
+  options, placeholder, action, className, isMultiple, allowCustomOpt, value, addable, titleClassName, title, jsonValue, disabled = false, tip,
 }) {
   const { css } = useFela()
   const [val, setVal] = useState(value)
@@ -19,6 +20,11 @@ function DropDown({
   return (
     <div className={titleClassName}>
       <span>{title}</span>
+      {tip ? (
+        <Cooltip icnSize={14}>
+          {tip}
+        </Cooltip>
+      ) : ''}
       <MultiSelect
         width="100%"
         defaultValue={val}

@@ -40,10 +40,10 @@ export default function PaypalFieldSettings() {
       addFormUpdateError({
         fieldKey: fldKey,
         errorKey: 'paypalAmountFldMissing',
-        errorMsg: __('PayPal Dyanmic Amount Field is not Selected'),
+        errorMsg: __('PayPal Dynamic Amount Field is not Selected'),
         errorUrl: `field-settings/${fldKey}`,
       })
-    } else if (!isDynamicAmount && (!fieldData.amount || fieldData.amount <= 0)) {
+    } else if (!isDynamicAmount && (!fieldData.amount || fieldData.amount <= 0) && !isSubscription) {
       addFormUpdateError({
         fieldKey: fldKey,
         errorKey: 'paypalAmountMissing',
@@ -51,12 +51,25 @@ export default function PaypalFieldSettings() {
         errorUrl: `field-settings/${fldKey}`,
       })
     }
+    if (fieldData.isSubscription) {
+      if (fieldData.planId) {
+        removeFormUpdateError(fldKey, 'paypalAmountFldMissing')
+        removeFormUpdateError(fldKey, 'paypalAmountMissing')
+      } else {
+        addFormUpdateError({
+          fieldKey: fldKey,
+          errorKey: 'paypalPlanIdMissing',
+          errorMsg: __('PayPal Plan Id missing'),
+          errorUrl: `field-settings/${fldKey}`,
+        })
+      }
+    }
   }, [fieldData?.amountType, fieldData?.amount, fieldData?.amountFld])
 
   const handleInput = (name, value) => {
     if (value) {
       fieldData[name] = value
-
+      if (name === 'planId') removeFormUpdateError(fldKey, 'paypalPlanIdMissing')
       if (name === 'locale') {
         const localeArr = value.split(' - ')
         fieldData.locale = localeArr[localeArr.length - 1]
@@ -75,11 +88,19 @@ export default function PaypalFieldSettings() {
     if (e.target.checked) {
       fieldData.payType = 'subscription'
       delete fieldData.currency
+      addFormUpdateError({
+        fieldKey: fldKey,
+        errorKey: 'paypalPlanIdMissing',
+        errorMsg: __('PayPal Plan Id missing'),
+        errorUrl: `field-settings/${fldKey}`,
+      })
       removeFormUpdateError(fldKey, 'paypalAmountMissing')
+      removeFormUpdateError(fldKey, 'paypalAmountFldMissing')
     } else {
       fieldData.currency = 'USD'
       delete fieldData.payType
       delete fieldData.planId
+      removeFormUpdateError(fldKey, 'paypalPlanIdMissing')
       addFormUpdateError({
         fieldKey: fldKey,
         errorKey: 'paypalAmountMissing',
@@ -192,11 +213,18 @@ export default function PaypalFieldSettings() {
 
       <SimpleAccordion
         id="slct-cnfg-stng"
-        title="Select Config"
+        title="PayPal Accounts"
         className={css(FieldStyle.fieldSection)}
       >
-        <select data-testid="slct-cnfg-slct" name="payIntegID" id="payIntegID" onChange={e => handleInput(e.target.name, e.target.value)} className={css(FieldStyle.input)} value={fieldData.payIntegID}>
-          <option value="">Select Config</option>
+        <select
+          data-testid="slct-cnfg-slct"
+          name="payIntegID"
+          id="payIntegID"
+          onChange={e => handleInput(e.target.name, e.target.value)}
+          className={css(FieldStyle.input)}
+          value={fieldData.payIntegID}
+        >
+          <option value="">Select Account</option>
           {getPaypalConfigs()}
         </select>
       </SimpleAccordion>
@@ -472,5 +500,4 @@ const propNameLabel = {
   currency: 'Currency Selected',
   description: 'Other Description',
   descFld: 'Description Field Selected',
-
 }

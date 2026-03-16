@@ -1,10 +1,24 @@
+import { useFela } from 'react-fela'
+import { Link } from 'react-router-dom'
+import BackIcn from '../Icons/BackIcn'
+import app from '../styles/app.style'
 import { __ } from '../Utils/i18nwrap'
 import CheckBox from './Utilities/CheckBox'
 
 export default function PaypalSettings({ paySetting, handleInput }) {
+  const { css } = useFela()
   return (
     <div>
-      <h2>{__('Paypal Settings')}</h2>
+      <div className={css({ fd: 'row', flx: 'align-center' })}>
+        <Link
+          to="/app-settings/payments"
+          className={`${css(app.btn)} btcd-btn-o-gray`}
+        >
+          <BackIcn className="mr-1" />
+          Back
+        </Link>
+        <h2 className={css({ w: '100%', ta: 'center' })}>{__('PayPal Settings')}</h2>
+      </div>
       <div className="btcd-hr" />
       <div className="flx mt-3">
         <b className="wdt-200">{__('Integration Name:')}</b>

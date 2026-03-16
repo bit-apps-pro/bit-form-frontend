@@ -85,10 +85,15 @@ function AdvanceFileUpSettings() {
 
   function setFileFilter(value, typ) {
     const val = value.map(itm => itm.value)
+    const mimeType = value?.map(itm => (itm.mimeType ? itm.mimeType : itm.value))
+
     if (!Array.isArray(fieldData.config[typ])) {
       fieldData.config[typ] = []
     }
-    fieldData.config[typ] = val
+
+    fieldData.config[typ] = (mimeType.length === 1 && typeof mimeType[0]) === 'undefined' ? val : mimeType.flat()
+
+    fieldData.config.fileTypesAll = val
     // eslint-disable-next-line no-param-reassign
     const allFields = create(fields, draft => { draft[fldKey] = fieldData })
     setFields(allFields)
@@ -412,7 +417,7 @@ function AdvanceFileUpSettings() {
             placeholder={__('Select File Type')}
             jsonValue
             action={(e) => setFileFilter(e, 'acceptedFileTypes')}
-            value={fieldData?.config?.acceptedFileTypes}
+            value={fieldData?.config?.fileTypesAll || fieldData?.config?.acceptedFileTypes}
           // tip="Select the fill types that will be accepted."
           // tipProps={{ width: 200, icnSize: 17 }}
           />

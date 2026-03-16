@@ -1,10 +1,12 @@
 import { useSetAtom } from 'jotai'
 import { create } from 'mutative'
 import { useState } from 'react'
+import { useFela } from 'react-fela'
 import { $updateBtn } from '../../../GlobalStates/GlobalStates'
 import EditIcn from '../../../Icons/EditIcn'
 import { userFields } from '../../../Utils/StaticData/userField'
 import { __ } from '../../../Utils/i18nwrap'
+import app from '../../../styles/app.style'
 import Cooltip from '../../Utilities/Cooltip'
 import SnackMsg from '../../Utilities/SnackMsg'
 import TableCheckBox from '../../Utilities/TableCheckBox'
@@ -18,6 +20,7 @@ export default function UserFieldMap({ formFields, userConf, setUserConf, pages,
   const [showMdl, setshowMdl] = useState(false)
   const [customRedirectMdl, setCustomRedirectMdl] = useState(false)
   const setUpdateBtn = useSetAtom($updateBtn)
+  const { css } = useFela()
 
   const handleInput = e => {
     setUserConf(tmpConf => create(tmpConf, draft => {
@@ -155,7 +158,7 @@ export default function UserFieldMap({ formFields, userConf, setUserConf, pages,
           <div className="w-5">
             <div className="f-m fw-500">{__('User Approval  Method:')}</div>
             <select className="btcd-paper-inp mt-1" name="activation" value={userConf[type]?.activation} onChange={handleInput}>
-              <option disabled selected value="">{__('select approval method')}</option>
+              <option disabled selected value="">{__('Select approval method')}</option>
               <option value="auto_approve">Auto Approve</option>
               <option value="admin_review">Require Admin Review</option>
               <option value="email_verify">Require Email Activation</option>
@@ -173,60 +176,40 @@ export default function UserFieldMap({ formFields, userConf, setUserConf, pages,
               </Cooltip>
             </div>
           )}
-          <EmailNotification
-            dataConf={userConf}
-            setDataConf={setUserConf}
-            type={type}
-            showMdl={showMdl}
-            setshowMdl={setshowMdl}
-            title="Customize  Activation Email template"
-          />
         </div>
-        {userConf[type]?.activation === 'email_verify' && (
+        {userConf[type]?.activation !== 'auto_approve' && (
           <div className="flx  integ-fld-wrp">
-            {/* <div className="flx w-5  mt-4">
-              <span
-                role="button"
-                tabIndex="-1"
-                className="cp"
-                onClick={() => setshowMdl(true)}
-                onKeyDown={() => setshowMdl(true)}
-              >
-                <EditIcn size={21} />
-              </span>
-              <div className="f-m ml-1">{__('Customize  Activation Email template')}</div>
-            </div>
-
-            <div className="flx w-5 ml-2 mt-4">
-              <span
-                role="button"
-                tabIndex="-1"
-                className="cp"
-                onClick={() => setCustomRedirectMdl(true)}
-                onKeyDown={() => setCustomRedirectMdl(true)}
-              >
-                <EditIcn size={21} />
-              </span>
-              <div className="f-m ml-1">{__('Redirect after verification')}</div>
-              <RedirectEmailVerified dataConf={userConf} setDataConf={setUserConf} showMdl={customRedirectMdl} setCustomRedirectMdl={setCustomRedirectMdl} pages={pages} type={type} title="Redirect after verification" />
-
-            </div> */}
 
             <div className="w-5 mt-4">
-              <button type="button" className="btn" onClick={() => setshowMdl(true)}>
+              <button type="button" className={css(app.btn)} onClick={() => setshowMdl(true)}>
                 <EditIcn size={18} />
                 &nbsp;
-                {__('Customize Email template')}
+                {__('Customize Email templates')}
               </button>
-
+              <EmailNotification
+                dataConf={userConf}
+                setDataConf={setUserConf}
+                type={type}
+                showMdl={showMdl}
+                setshowMdl={setshowMdl}
+                title="Customize Email templates"
+              />
             </div>
             <div className="ml-2 mt-4">
-              <button type="button" className="btn" onClick={() => setCustomRedirectMdl(true)}>
+              <button type="button" className={css(app.btn)} onClick={() => setCustomRedirectMdl(true)}>
                 <EditIcn size={18} />
                 &nbsp;
-                {__('Edit verification messages')}
+                {__('Edit verification Messages/Redirect URL')}
               </button>
-              <RedirectEmailVerified dataConf={userConf} setDataConf={setUserConf} showMdl={customRedirectMdl} setCustomRedirectMdl={setCustomRedirectMdl} pages={pages} type={type} title="Edit verification messages" />
+              <RedirectEmailVerified
+                dataConf={userConf}
+                setDataConf={setUserConf}
+                showMdl={customRedirectMdl}
+                setCustomRedirectMdl={setCustomRedirectMdl}
+                pages={pages}
+                type={type}
+                title="Edit verification messages"
+              />
             </div>
           </div>
         )}

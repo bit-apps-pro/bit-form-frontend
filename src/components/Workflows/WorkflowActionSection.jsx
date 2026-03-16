@@ -1,6 +1,6 @@
+import { useAtom, useSetAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
-import { useAtom, useSetAtom } from 'jotai'
 import { $updateBtn, $workflows } from '../../GlobalStates/GlobalStates'
 import ut from '../../styles/2.utilities'
 import { __ } from '../../Utils/i18nwrap'
@@ -71,7 +71,7 @@ export default function WorkflowActionSection({ lgcGrp, lgcGrpInd, condGrp, cond
       )}
       {(lgcGrp.action_type === 'onsubmit' || lgcGrp.action_run === 'delete') && (
         <>
-          <div className={css(ut.mt3, ut.mb1)}><b className="txt-dp">Additional Actions</b></div>
+          <div className={css(ut.mt3, ut.mb1)}><b className="txt-dp">{__('Additional Actions')}</b></div>
           <div className={(condGrp.cond_type === 'always' ? 'ml-4' : '')}>
             {lgcGrp.action_run !== 'delete' && (
               <SuccessMsgWorkflowAction
@@ -132,7 +132,7 @@ export default function WorkflowActionSection({ lgcGrp, lgcGrpInd, condGrp, cond
         <CheckBox
           className={css({ mt: 5, ml: condGrp.cond_type === 'always' ? 12 : -8 })}
           onChange={e => preventDelete(e.target.checked)}
-          checked={workflows[lgcGrpInd].avoid_delete}
+          checked={workflows[lgcGrpInd]?.conditions[condGrpInd]?.actions?.avoid_delete}
           title={<small className="txt-dp">Prevent Delete</small>}
         />
       )}

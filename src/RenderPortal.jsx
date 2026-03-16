@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable no-unused-expressions */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { handleUndoRedoShortcut } from './components/FormBuilderHistory'
 import { searchKey } from './components/style-new/styleHelpers'
@@ -23,6 +23,16 @@ export const RenderPortal = ({ children, title, ...props }) => {
     contentRef.contentDocument.insertBefore(newDoctype, contentRef.contentDocument.childNodes[0])
   }
 
+  useEffect(() => {
+    contentRef?.contentDocument?.querySelectorAll('a').forEach((a) => {
+      if (a.bfClickPrevented) return
+      a.addEventListener('click', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+      })
+      a.bfClickPrevented = true
+    })
+  }, [children])
   return (
     <iframe
       title={title}
@@ -30,6 +40,7 @@ export const RenderPortal = ({ children, title, ...props }) => {
       // {...isFirefox() && { onLoad: e => setContentRef(e.target) }}
       // {...isFirefox() && { ref: setContentRef }}
       ref={setContentRef}
+      referrerPolicy="no-referrer"
     >
       {mountNode && hasDoctype(contentRef.contentDocument) && createPortal(children, mountNode)}
     </iframe>

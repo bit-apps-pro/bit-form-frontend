@@ -39,7 +39,7 @@ const customProperties = {
   }),
   bpf: $ => ({
     backdropFilter: $ || 'none',
-    '-webkit-backdrop-filter': $ || 'none'
+    '-webkit-backdrop-filter': $ || 'none',
   }),
   fr: $ => ({ filter: $ }),
   bs: $ => ({ boxShadow: $ }),
@@ -51,6 +51,7 @@ const customProperties = {
   tdn: $ => ({ transitionDuration: $ }),
   ttf: $ => ({ transitionTimingFunction: $ }),
   tm: $ => ({ transform: $ }),
+  an: $ => ({ animation: $ }),
 
   re: $ => ({ resize: $ }),
   ow: $ => ({ overflow: $ }),
@@ -155,5 +156,13 @@ const customProperties = {
 
   focusShadow: () => ({ boxShadow: '0 0 0 2px var(--b-50) !important' }),
   focusOutline: () => ({ tn: 'outline .2s', outline: '3px solid var(--b-50)!important', outlineOffset: '3px' }),
+
+  // for gird
+  grdGp: $ => ({ gridGap: $ }),
+  grdTm: $ => ({ gridTemplateAreas: $ }),
+  grdTmClm: $ => ({ gridTemplateColumns: $ }),
+  grdTr: $ => ({ gridTemplateRows: $ }),
+  grdClm: $ => ({ gridColumn: $ }),
+  grdRw: $ => ({ gridRow: $ }),
 }
 export default customProperties

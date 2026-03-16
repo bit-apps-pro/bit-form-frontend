@@ -2,6 +2,7 @@
 import toast from 'react-hot-toast'
 import bitsFetch from '../../../Utils/bitsFetch'
 import { __ } from '../../../Utils/i18nwrap'
+import { saveConnectedIntegrationApp } from '../integrationHelper'
 
 export const handleInput = (e, dropboxConf, setDropboxConf, setIsLoading, setSnackbar, isNew, error, setError) => {
   const newConf = { ...dropboxConf }
@@ -63,6 +64,7 @@ export const handleAuthorize = (confTmp, setConf, setIsAuthorized, setIsLoading)
         const newConf = { ...confTmp }
         newConf.tokenDetails = result.data
         setConf(newConf)
+        saveConnectedIntegrationApp(newConf)
         setIsAuthorized(true)
         toast.success(__('Authorized Successfully'))
       } else if ((result && result.data && result.data.data) || (!result.success && typeof result.data === 'string')) {

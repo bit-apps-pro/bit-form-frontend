@@ -1,15 +1,16 @@
 /* eslint-disable no-shadow */
-import { useState } from 'react'
-import { useFela } from 'react-fela'
-import { useNavigate, useParams } from 'react-router-dom'
 import { useAtom, useAtomValue } from 'jotai'
+import { useState } from 'react'
+import toast from 'react-hot-toast'
+import { useNavigate, useParams } from 'react-router-dom'
 import { $payments } from '../GlobalStates/AppSettingsStates'
 import { $bits } from '../GlobalStates/GlobalStates'
 import { deepCopy } from '../Utils/Helpers'
 import bitsFetch from '../Utils/bitsFetch'
 import { __ } from '../Utils/i18nwrap'
-import ut from '../styles/2.utilities'
 import LoaderSm from './Loaders/LoaderSm'
+import MollieSetting from './MollieSetting'
+import UserGuide from './PaymentSetting/UserGuide'
 import PaypalSettings from './PaypalSettings'
 import RazorpaySettings from './RazorpaySettings'
 import StripeSettings from './StripeSettings'
@@ -24,7 +25,6 @@ export default function Payment({ allIntegURL }) {
   const navigate = useNavigate()
   const [isLoading, setisLoading] = useState(false)
   const [snack, setSnackbar] = useState({ show: false })
-  const { css } = useFela()
   const [paySetting, setPaySetting] = useState(
     (indx && payments?.[indx])
       ? { ...payments[indx] }
@@ -41,11 +41,11 @@ export default function Payment({ allIntegURL }) {
     tmpSetting[name] = value
     setPaySetting(tmpSetting)
   }
-  console.log('paySetting', paySetting)
+
   const validation = () => {
     let validation = false
     const tmpSetting = { ...paySetting }
-    console.log('type', type)
+
     switch (type) {
       case 'PayPal':
         if (!tmpSetting.name || !tmpSetting.clientID || !tmpSetting.clientSecret || !tmpSetting.mode) {
@@ -61,6 +61,12 @@ export default function Payment({ allIntegURL }) {
         if (!tmpSetting.name || !tmpSetting.publishableKey || !tmpSetting.clientSecret) {
           validation = true
         }
+        break
+      case 'Mollie':
+        if (!tmpSetting.name || !tmpSetting.apiKey) {
+          validation = true
+        }
+        break
       // eslint-disable-next-line no-fallthrough
       default:
         console.log('not found')
@@ -71,13 +77,14 @@ export default function Payment({ allIntegURL }) {
   }
 
   const handleSubmit = () => {
-    const tmpSetting = { ...paySetting }
+    if (!bits.isPro) return
     if (validation()) {
       setSnackbar({ show: true, msg: __('All fields are required') })
       return
     }
     setisLoading(true)
-    bitsFetch({ paySetting }, 'bitforms_save_payment_setting')
+    const tmpSetting = { ...paySetting }
+    const paymentSavePromise = bitsFetch({ paySetting }, 'bitforms_save_payment_setting')
       .then(res => {
         if (res !== undefined && res.success) {
           if (res.data && res.data.id) {
@@ -88,11 +95,18 @@ export default function Payment({ allIntegURL }) {
           if (!indx) tmpPayments.push(tmpSetting)
           else tmpPayments[indx] = tmpSetting
           setPayments(tmpPayments)
+          // setSnackbar({ show: true, msg: __(res.data.message) })
+          navigate('/app-settings/payments')
+          return __(res.data.message)
         }
-        setSnackbar({ show: true, msg: `${res.data.message}` })
         setisLoading(false)
-        navigate('/app-settings/payments')
+        return Promise.reject(__(res.data || 'Error Occured'))
       })
+    toast.promise(paymentSavePromise, {
+      success: data => data,
+      error: data => data,
+      loading: __('Saving Payment Setting...'),
+    })
   }
 
   return (
@@ -127,17 +141,25 @@ export default function Payment({ allIntegURL }) {
             setPaySetting={setPaySetting}
             handleInput={handleInput}
           />,
+          Mollie: <MollieSetting
+            paySetting={paySetting}
+            setPaySetting={setPaySetting}
+            handleInput={handleInput}
+          />,
         }[type]
       }
       <Btn
         onClick={handleSubmit}
         disabled={isLoading}
-        className={css(ut.ftRight)}
+        className="f-left mt-2"
         shadow
       >
         {__('Save')}
         {isLoading && <LoaderSm size={20} clr="#fff" className="ml-2" />}
       </Btn>
+
+      <UserGuide type={type} />
+
     </div>
   )
 }

@@ -41,7 +41,7 @@ export default function GetgistIntegLayout({
         className="btcd-paper-inp w-5"
         defaultValue="0"
       >
-        <option selected disabled value="0">{__('Select User Type')}</option>
+        <option selected value="0">{__('Select User Type')}</option>
         {
           contactTypes.map(({ key, label }) => (
             <option key={key} value={key}>

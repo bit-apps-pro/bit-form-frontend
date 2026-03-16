@@ -69,6 +69,7 @@ export default function ColorPickerUtil({ id, value, onChangeHandler, allowImpor
               allowGradient={allowGradient}
               allowImage={allowImage}
               allowVariable={allowVariable}
+              colorProp={colorProp}
             />
           </Downmenu>
 

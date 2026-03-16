@@ -1,24 +1,25 @@
 /* eslint-disable no-console */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useState } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom, useAtomValue } from 'jotai'
 import { $fields, $selectedFieldId } from '../../../GlobalStates/GlobalStates'
 import { $styles } from '../../../GlobalStates/StylesState'
-import FieldStyle from '../../../styles/FieldStyle.style'
 import { addToBuilderHistory, reCalculateFldHeights } from '../../../Utils/FormBuilderHelper'
 import { deepCopy } from '../../../Utils/Helpers'
-import { __ } from '../../../Utils/i18nwrap'
 import tippyHelperMsg from '../../../Utils/StaticData/tippyHelperMsg'
-import { addDefaultStyleClasses, isStyleExist, setIconFilterValue, styleClasses } from '../../style-new/styleHelpers'
+import { sanitizeHTML } from '../../../Utils/globalHelpers'
+import { __ } from '../../../Utils/i18nwrap'
+import FieldStyle from '../../../styles/FieldStyle.style'
 import Modal from '../../Utilities/Modal'
+import { addDefaultStyleClasses, isStyleExist, setIconFilterValue, styleClasses } from '../../style-new/styleHelpers'
 import Icons from '../Icons'
 import FieldIconSettings from '../StyleCustomize/ChildComp/FieldIconSettings'
 import SimpleAccordion from '../StyleCustomize/ChildComp/SimpleAccordion'
 import AutoResizeInput from './AutoResizeInput'
 
-export default function HelperTxtSettings() {
+export default function HelperTxtSettings({ defaultText }) {
   const { fieldKey: fldKey } = useParams()
   const [fields, setFields] = useAtom($fields)
   const fieldData = deepCopy(fields[fldKey])
@@ -33,7 +34,7 @@ export default function HelperTxtSettings() {
 
   const hideHelperTxt = ({ target: { checked } }) => {
     if (checked) {
-      fieldData.helperTxt = 'Helper Text'
+      fieldData.helperTxt = defaultText || 'Helper Text'
       fieldData.hlpTxtHide = true
       addDefaultStyleClasses(selectedFieldId, 'hlpTxt')
     } else {
@@ -58,7 +59,10 @@ export default function HelperTxtSettings() {
       delete fieldData.helperTxt
       // recalculate builder field height
       reCalculateFldHeights(fldKey)
-    } else fieldData.helperTxt = value
+    } else {
+      const val = sanitizeHTML(value)
+      fieldData.helperTxt = val
+    }
 
     const allFields = create(fields, draft => { draft[fldKey] = fieldData })
     setFields(allFields)

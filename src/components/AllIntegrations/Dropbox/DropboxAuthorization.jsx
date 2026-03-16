@@ -1,15 +1,14 @@
 /* eslint-disable no-unused-expressions */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { __ } from '../../../Utils/i18nwrap'
 import tutorialLinks from '../../../Utils/StaticData/tutorialLinks'
 import TutorialLink from '../../Utilities/TutorialLink'
 import AuthorizeBtn from '../AuthorizeBtn'
-import NextBtn from '../NextBtn'
 import { getAllDropboxFolders, handleAuthorize } from './DropboxCommonFunc'
 
 export default function DropboxAuthorization({
-  formID, dropboxConf, setDropboxConf, step, setStep, isLoading, setIsLoading, isInfo,
+  formID, dropboxConf, setDropboxConf, step, setStep, isLoading, setIsLoading, isInfo, authorizedAction,
 }) {
   const [isAuthorized, setIsAuthorized] = useState(false)
   const [error, setError] = useState({ apiKey: '', apiSecret: '' })
@@ -37,17 +36,23 @@ export default function DropboxAuthorization({
     window.open(`https://www.dropbox.com/oauth2/authorize?client_id=${dropboxConf.apiKey}&token_access_type=offline&response_type=code`, '_blank')
   }
 
+  useEffect(() => {
+    if (isAuthorized) {
+      authorizedAction()
+    }
+  }, [isAuthorized])
+
   return (
     <div
       className="btcd-stp-page"
-      style={{ ...{ width: step === 1 && 900 }, ...{ height: step === 1 && `${220}%` } }}
+      style={{ width: 900, height: `${100}%` }}
     >
       <TutorialLink
         title={tutorialLinks.dropbox.title}
         youTubeLink={tutorialLinks.dropbox.link}
       />
       <div className="mt-3">
-        <b>{__('Integration Name:', 'bitform')}</b>
+        <b>{__('Integration Name:', 'bit-form')}</b>
       </div>
       <input
         className="btcd-paper-inp w-6 mt-1"
@@ -133,10 +138,10 @@ export default function DropboxAuthorization({
             handleAuthorize={() => handleAuthorize(dropboxConf, setDropboxConf, setIsAuthorized, setIsLoading)}
           />
           <br />
-          <NextBtn
+          {/* <NextBtn
             nextPageHandler={() => nextPage()}
             disabled={!isAuthorized}
-          />
+          /> */}
         </>
       )}
     </div>

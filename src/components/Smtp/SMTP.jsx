@@ -23,7 +23,7 @@ export default function SMTP() {
         <Tabs
           selectedTabClassName="s-t-l-active"
         >
-          <TabList className="flx">
+          <TabList className="flx mt-0">
             <Tab className="btcd-s-tab-link">
               <b>{__('Configuration')}</b>
             </Tab>

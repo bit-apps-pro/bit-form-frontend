@@ -1,6 +1,7 @@
 import TrashIcn from '../../../Icons/TrashIcn'
 import { sortByField } from '../../../Utils/Helpers'
 import { __ } from '../../../Utils/i18nwrap'
+import { fileUpOrMappableImageFieldTypes } from '../../../Utils/StaticData/allStaticArrays'
 import { addFieldMap, delFieldMap } from './IntegrationHelpers'
 
 export default function DropboxFieldMap({ i, formFields, field, dropboxConf, setDropboxConf }) {
@@ -22,7 +23,7 @@ export default function DropboxFieldMap({ i, formFields, field, dropboxConf, set
           >
             <option value="">{__('Select Field')}</option>
             {
-              formFields?.filter(fld => fld.type === 'file-up').map(f => (
+              formFields?.filter(fld => fileUpOrMappableImageFieldTypes.includes(fld.type)).map(f => (
                 <option key={`ff-rm-${f.key}`} value={f.key}>
                   {f.name}
                 </option>
@@ -38,9 +39,9 @@ export default function DropboxFieldMap({ i, formFields, field, dropboxConf, set
           >
             <option value="">{__('Select Folder')}</option>
             {
-              sortByField(dropboxConf.foldersList, 'lowerPath', 'ASC').map(({ name, lowerPath }) => (
-                <option key={lowerPath} value={lowerPath}>
-                  {lowerPath.substring(1).split('/').map(f => f.replace('/', '>')).join(' > ')}
+              sortByField(dropboxConf.foldersList, 'lower_path', 'ASC').map(({ name, lower_path }) => (
+                <option key={lower_path} value={lower_path}>
+                  {lower_path?.substring(1).split('/').map(f => f.replace('/', '>')).join(' > ')}
                 </option>
               ))
             }

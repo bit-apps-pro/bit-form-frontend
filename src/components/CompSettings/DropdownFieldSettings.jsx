@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { useAtom, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { create } from 'mutative'
 import { Fragment, useState } from 'react'
 import { useFela } from 'react-fela'
@@ -33,9 +33,11 @@ import RequiredSettings from './CompSettingsUtils/RequiredSettings'
 import SubTitleSettings from './CompSettingsUtils/SubTitleSettings'
 import UniqFieldSettings from './CompSettingsUtils/UniqFieldSettings'
 import EditOptions from './EditOptions/EditOptions'
+import OptionList from './OptionList'
 import SimpleAccordion from './StyleCustomize/ChildComp/SimpleAccordion'
 import FieldSettingTitle from './StyleCustomize/FieldSettingTitle'
 import SizeAndPosition from './StyleCustomize/StyleComponents/SizeAndPosition'
+import { $globalMessages } from '../../GlobalStates/AppSettingsStates'
 
 export default function DropdownFieldSettings() {
   const { fieldKey: fldKey } = useParams()
@@ -43,11 +45,13 @@ export default function DropdownFieldSettings() {
   if (!fldKey) return <>No field exist with this field key</>
   const { css } = useFela()
   const [fields, setFields] = useAtom($fields)
+  const globalMessages = useAtomValue($globalMessages)
   const [optionMdl, setOptionMdl] = useState(false)
   const [duplicateListName, setDuplicateListName] = useState(false)
   const [currentOptList, setCurrentOptList] = useState(0)
   const fieldData = deepCopy(fields[fldKey])
   const adminLabel = fieldData.adminLbl || ''
+  const globalErrMsg = globalMessages?.err || {}
 
   const openOptionModal = () => {
     setOptionMdl(true)
@@ -188,13 +192,13 @@ export default function DropdownFieldSettings() {
       if (!fieldData.err.mx && propName === 'mx') fieldData.err.mx = { show: true }
       if (propName === 'mx' && mn && value < mn && mn) {
         fieldData.mn = value
-        fieldData.err.mn.dflt = `Minimum ${value} Option Required`
+        fieldData.err.mn.dflt = globalErrMsg?.[fieldData.typ]?.mn || `Minimum ${value} Option Required`
       } else if (propName === 'mn' && value > mx && mx) {
         fieldData.mx = value
-        fieldData.err.mx.dflt = `Maximum ${value} Option can select.`
+        fieldData.err.mx.dflt = globalErrMsg?.[fieldData.typ]?.mx || `Maximum ${value} Option can select.`
       }
-      if (propName === 'mn') fieldData.err.mn.dflt = `Minimum ${value} Option Required`
-      else if (propName === 'mx') fieldData.err.mx.dflt = `Maximum ${value} Option can select.`
+      if (propName === 'mn') fieldData.err.mn.dflt = globalErrMsg?.[fieldData.typ]?.mn || `Minimum ${value} Option Required`
+      else if (propName === 'mx') fieldData.err.mx.dflt = globalErrMsg?.[fieldData.typ]?.mx || `Maximum ${value} Option can select.`
 
       fieldData[propName] = value
       const allFields = create(fields, draft => { draft[fldKey] = fieldData })
@@ -219,6 +223,9 @@ export default function DropdownFieldSettings() {
   if (isDev) {
     window.selectedFieldData = fieldData
   }
+
+  const activeListOptions = optionsList[activeList][Object.keys(optionsList[activeList])[0]]
+
   return (
     <>
       <FieldSettingTitle
@@ -237,6 +244,19 @@ export default function DropdownFieldSettings() {
 
       <AdminLabelSettings />
 
+      <FieldSettingsDivider />
+      <div className={css(FieldStyle.fieldSection)}>
+        <div className={css(FieldStyle.fieldSectionTitle)}>
+          {__('Active Options')}
+        </div>
+        <OptionList
+          options={activeListOptions}
+          onClick={() => {
+            setCurrentOptList(activeList)
+            openOptionModal()
+          }}
+        />
+      </div>
       <FieldSettingsDivider />
 
       <SizeAndPosition />
@@ -450,8 +470,8 @@ export default function DropdownFieldSettings() {
 
       <UniqFieldSettings
         type="entryUnique"
-        title="Validate as Entry Unique"
-        tipTitle="Enabling this option will check from the entry database whether its value is duplicate."
+        title={__('Validate as Entry Unique')}
+        tipTitle={__('Enabling this option will check from the entry database whether its value is duplicate.')}
         className={css(FieldStyle.fieldSection, FieldStyle.hover_tip)}
         isUnique="show"
       />

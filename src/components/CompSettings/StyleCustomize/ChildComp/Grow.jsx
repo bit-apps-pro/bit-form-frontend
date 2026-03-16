@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CSSTransition } from 'react-transition-group'
 
-export default function Grow({ children, open, overflw = 'auto' }) {
+export default function Grow({ children, open, overflw = 'auto', classNames = '' }) {
   const [H, setH] = useState(open ? 'auto' : 0)
   const [tgl, setTgl] = useState(open || false)
   const nodeRef = useRef(null)
@@ -32,7 +32,7 @@ export default function Grow({ children, open, overflw = 'auto' }) {
         unmountOnExit
         style={{ overflow: tgl ? overflw : 'hidden' }}
       >
-        <div ref={nodeRef} className="body">
+        <div ref={nodeRef} className={`body ${classNames}`}>
           {children}
         </div>
       </CSSTransition>

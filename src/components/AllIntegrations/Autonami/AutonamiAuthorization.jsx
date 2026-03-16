@@ -49,7 +49,7 @@ export default function AutonamiAuthorization({ autonamiConf, setAutonamiConf, s
           youTubeLink={tutorialLinks.autonami.link}
         />
         <div className="mt-3">
-          <b>{__('Integration Name:', 'bitform')}</b>
+          <b>{__('Integration Name:', 'bit-form')}</b>
         </div>
         <input
           className="btcd-paper-inp w-5 mt-1"

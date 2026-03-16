@@ -11,7 +11,6 @@ const getInitPropertyName = (fldKey, props) => {
 }
 
 const setFieldValue = (props, field, val) => {
-  // setFieldValue(props.contentId, props.fields[actionDetail.field], actionValue)
   const { contentId } = props
   const fldData = props.fields[field]
   const { fieldName, typ } = fldData
@@ -19,27 +18,18 @@ const setFieldValue = (props, field, val) => {
 
   if (typ === 'radio' || inpType === 'radio') {
     select(contentId, `input[name^="${fieldName}"][value="${val}"]`).checked = true
-    return
-  }
-
-  if (typ === 'check' || inpType === 'checkbox') {
+  } else if (typ === 'check' || inpType === 'checkbox') {
     const regex = new RegExp(`,|${props.configs.bf_separator}`, 'g')
     const vals = val.split(regex)
     selectAll(contentId, `input[name^="${fieldName}"][name$="[]"]`).forEach((el) => {
       el.checked = vals.includes(el.value)
     })
-    return
-  }
-
-  if (typ === 'decision-box') {
+  } else if (['decision-box', 'gdpr'].includes(typ)) {
     const fld = select(contentId, `input[name="${fieldName}"]`)
     if (fld) {
       fld.checked = val === fldData.msg.checked
     }
-    return
-  }
-
-  if (typ === 'rating') {
+  } else if (typ === 'rating') {
     const fldKey = getInitPropertyName(field, props)
     if (props.inits && props.inits[fldKey]) {
       props.inits[fldKey].value = val
@@ -47,6 +37,14 @@ const setFieldValue = (props, field, val) => {
     return
   }
 
+  // Trigger input event to execute conditional logic
+  if (['radio', 'check', 'decision-box', 'gdpr'].includes(typ) || ['radio', 'checkbox'].includes(inpType)) {
+    const fld = select(contentId, `input[name="${fieldName}"]`) || select(contentId, `input[name^="${fieldName}"][name$="[]"]`)
+    triggerEvent(fld, 'input')
+    return
+  }
+
+  // Change value attribute to execute conditional logic
   const fld = select(contentId, `[name^='${fieldName}']`)
   if (fld.value === val) return
   fld.value = val
@@ -61,10 +59,20 @@ const setActiveList = (actionDetail, props, fieldValues) => {
   }
 }
 
-const handleFormSaveDraft = (actionDetail, props) => {
-  if (typeof saveFormProgress !== 'undefined') {
-    saveFormProgress(props.contentId)
+function debounce(func, delay) {
+  let timeoutId
+  return function (...args) {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => {
+      func.apply(this, args)
+    }, delay)
   }
+}
+
+const debouncedSaveFormProgress = debounce((contentId) => typeof saveFormProgress !== 'undefined' && saveFormProgress(contentId), 2500)
+
+const handleFormSaveDraft = (actionDetail, props) => {
+  debouncedSaveFormProgress(props.contentId)
 }
 
 const setDisabled = (fldKey, props, val) => {
@@ -87,7 +95,7 @@ const setDisabled = (fldKey, props, val) => {
       })
       return
     }
-    if (typ === 'decision-box') {
+    if (['decision-box', 'gdpr'].includes(typ)) {
       const fld = select(props.contentId, `input[name="${fieldName}"]`)
       if (fld) {
         fld.disabled = val
@@ -107,18 +115,27 @@ const setReadonly = (fldKey, props, val) => {
   if (props.inits && props.inits[initPropKey]) {
     props.inits[initPropKey].readonly = val
   } else {
-    select(props.contentId, `.${fldKey}-fld`).readOnly = val
+    const fld = select(props.contentId, `.${fldKey}-fld`)
+    if (!fld) return
+    fld.readOnly = val
+    if (val) fld.classList.add('readonly')
+    else fld.classList.remove('readonly')
   }
+}
+
+const triggerEvent = (elm, eventType) => {
+  const event = new Event(eventType)
+  elm?.dispatchEvent(event)
 }
 
 const setActionValue = (actionDetail, props, fieldValues) => {
   const actionValue = actionDetail.val ? replaceWithField(actionDetail.val, fieldValues, props, rowIndex) : ''
-  if (actionDetail.val !== undefined && props.fields[actionDetail.field]) {
+  if (actionDetail.val !== undefined && actionDetail.field === '_bf_step_no') {
+    if (props?.inits?.multi_step_form) props.inits.multi_step_form.step = actionValue
+  } else if (actionDetail.val !== undefined && props.fields[actionDetail.field]) {
     // setFieldValue(props.contentId, props.fields[actionDetail.field], actionValue)
     const actionDetlsFld = actionDetail.field
     setFieldValue(props, actionDetlsFld, actionValue)
-  } else if (actionDetail.val !== undefined && actionDetail.field === '_bf_step_no') {
-    if (props?.inits?.multi_step_form) props.inits.multi_step_form.step = actionValue
   }
 }
 
@@ -149,6 +166,7 @@ const setPlaceholder = (actionDetail, props, fieldValues) => {
 }
 
 const getHeight = (selector) => {
+  if (selector === null) return 0
   const fld = window.getComputedStyle(selector)
   let heightCount = 0
   if (fld.boxSizing === 'border-box') {
@@ -202,6 +220,13 @@ const setTextContent = (actionDetail, props, fieldValues) => {
     })
     if (actionDetail.action === 'ct') selector.textContent = actionValue
     // selector.innerText = actionValue
+  }
+}
+
+const handleSetConfigOption = (actionDetail, props, fieldValues) => {
+  if (typeof bfSetDateTimeConfigOption !== 'undefined') {
+    const actionValue = actionDetail.val ? replaceWithField(actionDetail.val, fieldValues, props, rowIndex) : ''
+    bfSetDateTimeConfigOption(actionDetail, actionValue, props, fieldValues, rowIndex)
   }
 }
 
@@ -270,6 +295,9 @@ export const setActions = (actionDetail, fldKey, props, fieldValues, rowIndx) =>
         break
       case 'placeholder':
         return setPlaceholder(actionDetail, props, fieldValues)
+      case 'config-option':
+        handleSetConfigOption(actionDetail, props, fieldValues)
+        break
       default:
         break
     }

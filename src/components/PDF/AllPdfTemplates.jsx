@@ -1,22 +1,23 @@
 /* eslint-disable react/no-unstable-nested-components */
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { create } from 'mutative'
 import { useState } from 'react'
 import { useFela } from 'react-fela'
 import toast from 'react-hot-toast'
-import { Link, NavLink, useLocation } from 'react-router-dom'
-import { $pdfTemplates } from '../../GlobalStates/GlobalStates'
+import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { $bits, $pdfTemplates, $proModal } from '../../GlobalStates/GlobalStates'
 import CopyIcn from '../../Icons/CopyIcn'
 import EditIcn from '../../Icons/EditIcn'
 import LayoutIcn from '../../Icons/LayoutIcn'
 import StackIcn from '../../Icons/StackIcn'
 import TrashIcn from '../../Icons/TrashIcn'
-import { deepCopy } from '../../Utils/Helpers'
+import { deepCopy, IS_PRO } from '../../Utils/Helpers'
+import proHelperData from '../../Utils/StaticData/proHelperData'
 import tutorialLinks from '../../Utils/StaticData/tutorialLinks'
 import bitsFetch from '../../Utils/bitsFetch'
 import { __ } from '../../Utils/i18nwrap'
 import ut from '../../styles/2.utilities'
-import app from '../../styles/app.style'
+import Btn from '../Utilities/Btn'
 import Button from '../Utilities/Button'
 import ConfirmModal from '../Utilities/ConfirmModal'
 import Table from '../Utilities/Table'
@@ -24,7 +25,31 @@ import Table from '../Utilities/Table'
 export default function AllPdfTemplates({ formID }) {
   const [pdfTem, setPdfTem] = useAtom($pdfTemplates)
   const [confMdl, setconfMdl] = useState({ show: false })
+  // const [checkGlobalPdfConfMdl, setCheckGlobalPdfConfMdl] = useState({ show: false })
   const { css } = useFela()
+  const navigate = useNavigate()
+  const { formType } = useParams()
+  const setProModal = useSetAtom($proModal)
+
+  const bits = useAtomValue($bits)
+  let { pdf } = bits.allFormSettings
+
+  if (pdf === undefined) {
+    pdf = {
+      direction: 'ltr',
+      font: {
+        name: 'DejaVuSansCondensed',
+        fontFamily: 'dejavusanscondensed',
+      },
+      fontColor: '#000000',
+      fontFamily: 'dejavusanscondensed',
+      fontSize: 10,
+      orientation: 'p',
+      paperSize: 'a4',
+      pdfFileName: '',
+      watermark: {},
+    }
+  }
 
   const { pathname: url } = useLocation()
 
@@ -81,6 +106,52 @@ export default function AllPdfTemplates({ formID }) {
     confMdl.show = true
     setconfMdl({ ...confMdl })
   }
+
+  // const gotoPDFSetting = () => {
+  //   confMdl.show = false
+  //   setCheckGlobalPdfConfMdl({ ...confMdl })
+  //   navigate('/app-settings/pdf')
+  // }
+
+  // const alertConfig = () => {
+  //   checkGlobalPdfConfMdl.btnTxt = __('Go to PDF Settings')
+  //   checkGlobalPdfConfMdl.body = __('Please configure PDF settings first.')
+  //   checkGlobalPdfConfMdl.btnClass = 'blue'
+  //   checkGlobalPdfConfMdl.action = () => { gotoPDFSetting() }
+  //   checkGlobalPdfConfMdl.show = true
+  //   checkGlobalPdfConfMdl.btn2Txt = __('Back')
+  //   setCheckGlobalPdfConfMdl({ ...checkGlobalPdfConfMdl })
+  // }
+
+  // const closePDFConfMdl = () => {
+  //   checkGlobalPdfConfMdl.show = false
+  //   setCheckGlobalPdfConfMdl({ ...checkGlobalPdfConfMdl })
+  // }
+
+  const defaultTemplate = {
+    title: 'Untitled PDF Template',
+    setting: { ...pdf, password: { static: true, pass: '' } },
+    body: '${bf_all_data}',
+  }
+
+  const createNewTemplate = () => {
+    if (!IS_PRO) {
+      setProModal({ show: true, ...proHelperData.pdfProInstalledAlert })
+      return
+    }
+    // if (undefined === pdf) {
+    //   alertConfig()
+    //   return
+    // }
+    const lastIndex = pdfTem.length
+    const newPdfTem = create(pdfTem, draft => {
+      draft.push(defaultTemplate)
+      draft.push({ updateTem: 1 })
+    })
+    setPdfTem(newPdfTem)
+    navigate(`/form/settings/${formType}/${formID}/pdf-templates/${lastIndex}`)
+  }
+
   const col = [
     {
       Header: __('Template Name'),
@@ -132,31 +203,41 @@ export default function AllPdfTemplates({ formID }) {
         body={confMdl.body}
         action={confMdl.action}
       />
+      {/* <ConfirmModal
+        show={checkGlobalPdfConfMdl.show}
+        close={closePDFConfMdl}
+        btnTxt={checkGlobalPdfConfMdl.btnTxt}
+        btnClass={checkGlobalPdfConfMdl.btnClass}
+        body={checkGlobalPdfConfMdl.body}
+        action={checkGlobalPdfConfMdl.action}
+        btn2Txt={__('Close')}
+        btn2Action={closePDFConfMdl}
+      /> */}
       <h2>{__('PDF Templates')}</h2>
       <h5 className="mt-3">
-        How to setup PDF Templates:
+        {__('How to setup PDF Templates:')}
         <a href={tutorialLinks.pdfTemplate.link} target="_blank" rel="noreferrer" className="yt-txt ml-1 mr-1">
-          YouTube
+          {__('YouTube')}
         </a>
         <a href={tutorialLinks.pdfTemplateDoc.link} target="_blank" rel="noreferrer" className="doc-txt">
-          Documentation
+          {__('Documentation')}
         </a>
       </h5>
       <div className="">
-        <Link
-          to={`${url}/new`}
-          className={`${css(app.btn)} blue`}
+        <Btn
+          size="sm"
+          onClick={createNewTemplate}
         >
           <LayoutIcn size="20" />
           &nbsp;
           {__('Add New Template')}
-        </Link>
+        </Btn>
         {pdfTem.length > 0 ? (
           <Table
             height="60vh"
             className="btcd-neu-table mr-1"
             columns={col}
-            data={pdfTem}
+            data={pdfTem.sort((a, b) => b.id - a.id)}
           />
         )
           : (

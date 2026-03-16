@@ -13,6 +13,7 @@ export default function decisionBoxStyle_2_atlassian({ fk, direction, breakpoint
           'border-width': '3px',
           'border-color': 'hsla(var(--gfh), var(--gfs), var(--gfl), 0.3)',
           'border-radius': '4px',
+          'flex-shrink': 0,
         },
         [`.${fk}-ci:hover ~ [data-cl] [data-bx]`]: {
           'border-color': 'hsla(var(--gfh), var(--gfs), var(--gfl), 0.4)',

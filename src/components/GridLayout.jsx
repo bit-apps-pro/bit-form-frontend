@@ -14,9 +14,10 @@ import {
 import { Scrollbars } from 'react-custom-scrollbars-2'
 import { default as ReactGridLayout } from 'react-grid-layout'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { $isDraggable } from '../GlobalStates/FormBuilderStates'
+import { $activeBuilderStep, $isDraggable } from '../GlobalStates/FormBuilderStates'
 import {
   $breakpoint,
+  $builderHelperStates,
   $builderHookStates,
   $contextMenu,
   $contextMenuRef,
@@ -40,6 +41,7 @@ import {
   filterNumber,
   fitAllLayoutItems, fitSpecificLayoutItem,
   getLatestState,
+  getNestedFieldKeysFromNestedLayouts,
   getParentFieldKey,
   getTotalLayoutHeight,
   handleFieldExtraAttr,
@@ -88,10 +90,12 @@ function GridLayout({ newData, setNewData, style: v1Styles, gridWidth, setAlertM
   const [gridContentMargin, setgridContentMargin] = useState([0, 0])
   const [resizingFld, setResizingFld] = useAtom($resizingFld)
   const [rowHeight, setRowHeight] = useState(1)
+  const [builderHelperStates, setBuilderHelperStates] = useAtom($builderHelperStates)
   const isDraggableAtomVal = useAtomValue($isDraggable)
   const isDraggable = useDeferredValue(isDraggableAtomVal)
   const [contextMenu, setContextMenu] = useAtom($contextMenu)
   const setContextMenuRef = useSetAtom($contextMenuRef)
+  const activeBuilderStep = useAtomValue($activeBuilderStep)
   const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(false)
   const navigate = useNavigate()
   const { reRenderGridLayoutByRootLay, reCalculateFieldHeights, reCalculateSpecificFldHeight } = builderHookStates
@@ -110,18 +114,43 @@ function GridLayout({ newData, setNewData, style: v1Styles, gridWidth, setAlertM
   // calculate fieldheight every time layout and field changes && stop layout transition when stylemode changes
   useEffect(() => {
     const fieldsCount = Object.keys(fields).length
-    const layoutLgFieldsCount = getLayoutItemCount(layouts)
+    const latestLayouts = getLatestState('layouts')
+    const layoutLgFieldsCount = getLayoutItemCount(latestLayouts)
     if (fieldsCount === layoutLgFieldsCount) {
       startTransition(() => {
-        setNestedLayouts(prevNestedLayouts => create(prevNestedLayouts, draft => {
-          Object.entries(draft).forEach(([fldKey, lay]) => {
-            draft[fldKey] = fitAllLayoutItems(lay)
+        const nestedFields = getNestedFieldKeysFromNestedLayouts()
+        const fieldsExistInLayouts = latestLayouts.lg.reduce((acc, lay) => {
+          if (nestedFields.includes(lay.i)) {
+            acc.push(lay.i)
+          }
+          return acc
+        }, [])
+        if (fieldsExistInLayouts.length) {
+          let isLayoutChanged = false
+          const newNestedLayouts = create(getLatestState('nestedLayouts'), draft => {
+            fieldsExistInLayouts.forEach(fldKey => {
+              if (!draft[fldKey]) return
+              const tempFitLayout = fitAllLayoutItems(draft[fldKey])
+              const tempCompactLayout = compactResponsiveLayouts(tempFitLayout, cols)
+              if (!isLayoutSame(draft[fldKey], tempCompactLayout)) {
+                draft[fldKey] = tempCompactLayout
+                isLayoutChanged = true
+              }
+            })
           })
-        }))
+          if (isLayoutChanged) {
+            setNestedLayouts(newNestedLayouts)
+          }
+        }
+        // setNestedLayouts(prevNestedLayouts => create(prevNestedLayouts, draft => {
+        //   Object.entries(draft).forEach(([fldKey, lay]) => {
+        //     draft[fldKey] = fitAllLayoutItems(lay)
+        //   })
+        // }))
       })
-      const nl = fitAllLayoutItems(layouts)
+      const nl = fitAllLayoutItems(latestLayouts)
       const nl2 = compactResponsiveLayouts(nl, cols)
-      if (!isLayoutSame(layouts, nl2)) {
+      if (!isLayoutSame(latestLayouts, nl2)) {
         setLayouts(nl2)
         startTransition(() => {
           setRootLayouts(nl2)
@@ -134,11 +163,11 @@ function GridLayout({ newData, setNewData, style: v1Styles, gridWidth, setAlertM
     } else {
       setTimeout(() => { stopGridTransition.current = false }, 1)
     }
-  }, [styleMode, reCalculateFieldHeights, breakpoint, fields, layouts])
+  }, [styleMode, reCalculateFieldHeights, breakpoint, fields, layouts, nestedLayouts])
 
   useEffect(() => {
     if (fieldKey) {
-      const nl = fitSpecificLayoutItem(layouts, fieldKey)
+      const nl = fitSpecificLayoutItem(getLatestState('layouts'), fieldKey)
       setLayouts(nl)
       startTransition(() => {
         setRootLayouts(nl)
@@ -149,18 +178,19 @@ function GridLayout({ newData, setNewData, style: v1Styles, gridWidth, setAlertM
   useEffect(() => { if (newData !== null) margeNewData() }, [newData])
 
   useEffect(() => {
-    const lgLength = layouts.lg.length
-    const mdLength = layouts.md.length
-    const smLength = layouts.sm.length
+    const latestLayouts = getLatestState('layouts')
+    const lgLength = latestLayouts.lg.length
+    const mdLength = latestLayouts.md.length
+    const smLength = latestLayouts.sm.length
     if (breakpoint === 'md' && lgLength !== mdLength) {
-      const newLayouts = produceNewLayouts(layouts, ['md'], cols)
+      const newLayouts = produceNewLayouts(latestLayouts, ['md'], cols)
       setLayouts(newLayouts)
       startTransition(() => {
         setRootLayouts(newLayouts)
       })
     }
     if (breakpoint === 'sm' && lgLength !== smLength) {
-      const newLayouts = produceNewLayouts(layouts, ['sm'], cols)
+      const newLayouts = produceNewLayouts(latestLayouts, ['sm'], cols)
       setLayouts(newLayouts)
       startTransition(() => {
         setRootLayouts(newLayouts)
@@ -198,8 +228,19 @@ function GridLayout({ newData, setNewData, style: v1Styles, gridWidth, setAlertM
     // set row height in local
   }, [v1Styles, gridWidth, formID, styles])
 
+  const getYPositionOfSubmitBtn = () => {
+    const paymentFieldList = ['stripe', 'paypal', 'razorpay', 'mollie']
+    const submitBtnFieldKey = Object.keys(fields).find(fldKey => (fields[fldKey].typ === 'button' && fields[fldKey].btnTyp === 'submit') || paymentFieldList.includes(fields[fldKey].typ))
+    if (submitBtnFieldKey) {
+      const submitBtnLayout = layouts?.lg?.find(lay => lay.i === submitBtnFieldKey)
+      const yPos = submitBtnLayout ? submitBtnLayout.y : Infinity
+      return yPos === 0 ? -1 : yPos
+    }
+    return Infinity
+  }
+
   const margeNewData = () => {
-    addNewField(newData.fieldData, newData.fieldSize, { x: 0, y: Infinity })
+    addNewField(newData.fieldData, newData.fieldSize, { x: newData.fieldSize?.x || 0, y: getYPositionOfSubmitBtn() })
     setNewData(null)
   }
 
@@ -281,10 +322,21 @@ function GridLayout({ newData, setNewData, style: v1Styles, gridWidth, setAlertM
     navigate(`/form/builder/${formType}/${formID}/fields-list`, { replace: true })
 
     // add to history
-    const event = `${generateFieldLblForHistory(fldData)} removed`
-    const type = 'remove_fld'
-    const state = { fldKey, breakpoint, layout: removedLay, fldData, layouts: nwLay, fields: tmpFields }
-    addToBuilderHistory({ event, type, state })
+    startTransition(() => {
+      const event = `${generateFieldLblForHistory(fldData)} removed`
+      const type = 'remove_fld'
+      const state = {
+        fldKey,
+        breakpoint,
+        fldData,
+        // layouts: nwLay,
+        fields: tmpFields,
+        allLayouts: getLatestState('allLayouts'),
+        nestedLayouts: getLatestState('nestedLayouts'),
+        styles: getLatestState('styles'),
+      }
+      addToBuilderHistory({ event, type, state })
+    })
 
     //  remove if it has any update button errors
     removeFormUpdateError(fldKey)
@@ -292,11 +344,13 @@ function GridLayout({ newData, setNewData, style: v1Styles, gridWidth, setAlertM
 
   function addNewField(fieldData, fieldSize, addPosition) {
     if (!handleFieldExtraAttr(fieldData)) return
-    const { newLayouts } = addNewFieldToGridLayout(layouts, fieldData, fieldSize, addPosition)
+    const { newLayouts, historyData } = addNewFieldToGridLayout(layouts, fieldData, fieldSize, addPosition)
 
     setLayouts(newLayouts)
     startTransition(() => {
       setRootLayouts(newLayouts)
+      historyData.state.allLayouts = getLatestState('allLayouts')
+      addToBuilderHistory(historyData)
     })
   }
 
@@ -344,7 +398,7 @@ function GridLayout({ newData, setNewData, style: v1Styles, gridWidth, setAlertM
         draftStyle.fields[newBlk] = { ...fldStyle }
         draftStyle.fields[newBlk].classes = {}
         Object.keys(fldClasses).forEach(cls => {
-          const newClassName = cls.replace(fldKeyToClone, newBlk)
+          const newClassName = cls.replaceAll(fldKeyToClone, newBlk)
           draftStyle.fields[newBlk].classes[newClassName] = fldClasses[cls]
         })
       })
@@ -406,12 +460,21 @@ function GridLayout({ newData, setNewData, style: v1Styles, gridWidth, setAlertM
     }, 500)
 
     // add to history
-    const event = `${generateFieldLblForHistory(fieldData)} cloned`
-    const type = 'clone_fld'
-    const state = {
-      fldKey: newBlk, breakpoint, layout: newLayItem, fieldData, layouts: tmpLayouts, fields: oldFields, styles: getLatestState('styles'),
-    }
-    addToBuilderHistory({ event, type, state })
+    startTransition(() => {
+      const event = `${generateFieldLblForHistory(fieldData)} cloned`
+      const type = 'clone_fld'
+      const state = {
+        fldKey: newBlk,
+        breakpoint,
+        fieldData,
+        // layouts: tmpLayouts,
+        fields: oldFields,
+        allLayouts: getLatestState('allLayouts'),
+        nestedLayouts: getLatestState('nestedLayouts'),
+        styles: getLatestState('styles'),
+      }
+      addToBuilderHistory({ event, type, state })
+    })
 
     resetContextMenu()
   }
@@ -424,7 +487,15 @@ function GridLayout({ newData, setNewData, style: v1Styles, gridWidth, setAlertM
     if (lay.findIndex(itm => itm.i === 'shadow_block') < 0) {
       setLayouts(prevLayouts => ({ ...prevLayouts, [breakpoint]: lay }))
       startTransition(() => {
-        setRootLayouts(prevLayouts => ({ ...prevLayouts, [breakpoint]: lay }))
+        setRootLayouts(prevLayouts => {
+          if (prevLayouts[breakpoint].length === lay.length) {
+            return { ...prevLayouts, [breakpoint]: lay }
+          }
+          return prevLayouts
+        })
+        if (breakpoint !== 'lg') {
+          setBuilderHelperStates(prv => ({ ...prv, respectLGLayoutOrder: false }))
+        }
       })
       // addToBuilderHistory(setBuilderHistory, { event: `Layout changed`, state: { layouts: layoutsFromGrid, fldKey: layoutsFromGrid.lg[0].i } }, setUpdateBtn)
     }

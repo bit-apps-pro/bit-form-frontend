@@ -33,7 +33,6 @@ import HoneypotIcn from '../Icons/HoneypotIcn'
 import IpBlockIcn from '../Icons/IpBlockIcn'
 import LockIcn from '../Icons/LockIcn'
 import LoginIcn from '../Icons/LoginIcn'
-import NoneIcn from '../Icons/NoneIcn'
 import ReCaptchaIcn from '../Icons/ReCaptchaIcn'
 import TrashIcn from '../Icons/TrashIcn'
 import { deleteNestedObj } from '../Utils/FormBuilderHelper'
@@ -41,12 +40,16 @@ import { IS_PRO, dateTimeFormatter, deepCopy } from '../Utils/Helpers'
 import proHelperData from '../Utils/StaticData/proHelperData'
 import tutorialLinks from '../Utils/StaticData/tutorialLinks'
 import { __ } from '../Utils/i18nwrap'
+import ut from '../styles/2.utilities'
+import Grow from './CompSettings/StyleCustomize/ChildComp/Grow'
 import Accordions from './Utilities/Accordions'
 import CheckBox from './Utilities/CheckBox'
 import ConfirmModal from './Utilities/ConfirmModal'
 import Downmenu from './Utilities/Downmenu'
 import ProBadge from './Utilities/ProBadge'
+import Select from './Utilities/Select'
 import SingleToggle2 from './Utilities/SingleToggle2'
+import TableCheckBox from './Utilities/TableCheckBox'
 import LearnmoreTip from './Utilities/Tip/LearnmoreTip'
 import { assignNestedObj } from './style-new/styleHelpers'
 
@@ -117,23 +120,24 @@ export default function SingleFormSettings() {
     setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
   }
 
-  const setEntryLimit = e => {
+  const setEntryLimitSettings = e => {
     if (!IS_PRO) {
       setProModal({ show: true, ...proHelperData.entryLimit })
       return
     }
+    if (e.target.type === 'number' && e.target.value <= 0) return
     const additional = deepCopy(additionalSetting)
-    if (e.target.value > 0) {
-      additional.settings.entry_limit = e.target.value
-      setadditional({ ...additional })
-      setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
-    }
+    const propertyName = e.target.name
+    additional.settings[propertyName] = e.target.value
+    setadditional({ ...additional })
+    setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
   }
   useEffect(() => {
     const isTrue = additionalSetting.enabled?.onePerIp
       || additionalSetting.enabled?.restrict_form
       || additionalSetting.enabled?.is_login
       || additionalSetting.enabled?.entry_limit
+      || additionalSetting.enabled?.entry_limit_by_user
       || additionalSetting.settings?.blocked_ip?.[0]?.ip
       || additionalSetting.settings?.blocked_ip?.[0]?.ip
     setStyles(prevStyle => create(prevStyle, draft => {
@@ -211,6 +215,18 @@ export default function SingleFormSettings() {
     if (!IS_PRO) return
     const additionalSettings = deepCopy(additionalSetting)
     additionalSettings.settings[typ][e.target.name] = e.target.value
+    setadditional(additionalSettings)
+    setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
+  }
+
+  const setSettingsMessages = (e, typ) => {
+    if (!IS_PRO) {
+      setProModal({ show: true, ...proHelperData.customMessages })
+      return
+    }
+    const additionalSettings = deepCopy(additionalSetting)
+    if (!additionalSettings.settings.messages) additionalSettings.settings.messages = {}
+    additionalSettings.settings.messages[typ] = e.target.value
     setadditional(additionalSettings)
     setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
   }
@@ -295,16 +311,47 @@ export default function SingleFormSettings() {
       setProModal({ show: true, ...proHelperData.entryLimit })
       return
     }
-    // const additional = deepCopy(additionalSetting)
-    // if (e.target.checked) {
-    //   additional.enabled.entry_limit = true
-    // } else {
-    //   delete additional.enabled.entry_limit
-    // }
-    // additional.updateForm = 1
-    // setadditional({ ...additional })
-    // setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
-    setAdditionalSettingsStyle(e, 'entry_limit')
+    const propertyName = e.target.name
+    const additionalSettings = deepCopy(additionalSetting)
+    if (e.target.checked) {
+      additionalSettings.enabled[propertyName] = true
+      if (propertyName === 'entry_limit') {
+        if (!additionalSettings.settings?.entry_limit) {
+          additionalSettings.settings.entry_limit = 1
+        }
+        if (!additionalSettings.settings?.entry_limit_count_type) {
+          additionalSettings.settings.entry_limit_count_type = 'total'
+        }
+        if (!additionalSettings.settings?.messages) {
+          additionalSettings.settings.messages = {}
+        }
+        if (!additionalSettings.settings?.messages?.entry_limit_message) {
+          additionalSettings.settings.messages.entry_limit_message = __('The form has reached its maximum number of submissions.')
+        }
+      } else if (propertyName === 'entry_limit_by_user') {
+        if (!additionalSettings.settings?.entry_limit_by_user) {
+          additionalSettings.settings.entry_limit_by_user = 1
+        }
+        if (!additionalSettings.settings?.entry_limit_by_user_type) {
+          additionalSettings.settings.entry_limit_by_user_type = 'per_user_ip'
+        }
+        if (!additionalSettings.settings?.entry_limit_by_user_count_type) {
+          additionalSettings.settings.entry_limit_by_user_count_type = 'total'
+        }
+        if (!additionalSettings.settings?.messages) {
+          additionalSettings.settings.messages = {}
+        }
+        if (!additionalSettings.settings?.messages?.entry_limit_per_user_message) {
+          additionalSettings.settings.messages.entry_limit_per_user_message = __('You have reached the maximum number of submissions allowed.')
+        }
+      }
+    } else {
+      delete additionalSettings.enabled[propertyName]
+    }
+    additionalSettings.updateForm = 1
+    setadditional(additionalSettings)
+    setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
+    // setAdditionalSettingsStyle(e, e.target.name)
   }
 
   const hideReCaptchaBadge = e => {
@@ -627,8 +674,8 @@ export default function SingleFormSettings() {
     const additional = deepCopy(additionalSetting)
 
     let msg = ''
-    if (type === 'is_login') msg = 'You must be logged in.'
-    else msg = 'Empty form cannot be submitted.'
+    if (type === 'is_login') msg = __('You must be logged in.')
+    else msg = __('Empty form cannot be submitted.')
 
     if (e.target.checked) {
       if (!additional.settings[type]) {
@@ -679,6 +726,7 @@ export default function SingleFormSettings() {
           />
         </div>
       </div>
+
       <Accordions
         customTitle={(
           <span className={css({ dy: 'flex' })}>
@@ -846,7 +894,7 @@ export default function SingleFormSettings() {
         </div>
       </div>
 
-      <div className="w-6 mt-3">
+      {/* <div className="w-6 mt-3">
         <div className="flx flx-between sh-sm br-10 btcd-setting-opt">
           <div className={css({ dy: 'flex' })}>
             <b>
@@ -857,11 +905,165 @@ export default function SingleFormSettings() {
             {!IS_PRO && (<ProBadge proProperty="entryLimit" />)}
           </div>
           <div className="flx">
-            <input aria-label="Disable this form after limited entry" onChange={setEntryLimit} value={additionalSetting.settings.entry_limit} disabled={!('entry_limit' in additionalSetting.enabled)} className="btcd-paper-inp mr-2 wdt-200" placeholder="Limit" type="number" min="1" />
+            <input name="entry_limit" aria-label="Disable this form after limited entry" onChange={setEntryLimitSettings} value={additionalSetting.settings.entry_limit} disabled={!('entry_limit' in additionalSetting.enabled)} className="btcd-paper-inp mr-2 wdt-200" placeholder="Limit" type="number" min="1" />
             <SingleToggle2 action={handleEntryLimit} checked={'entry_limit' in additionalSetting.enabled} className="flx" />
           </div>
         </div>
-      </div>
+      </div> */}
+
+      <Accordions
+        customTitle={(
+          <span className={css({ dy: 'flex' })}>
+            <b>
+              <span className="mr-2">
+                <DateIcn w="15" />
+              </span>
+              {__('Manage Submission Limits (by count, time, or user)')}
+            </b>
+            <LearnmoreTip {...tutorialLinks.limitEntry} />
+          </span>
+        )}
+        cls="w-6 mt-3"
+        isPro
+        proProperty="restrict_form"
+        // toggle
+        // checked={'entry_limit' in additionalSetting.enabled || false}
+        action={handleEntryLimit}
+      >
+        <div className="mb-4">
+          <TableCheckBox
+            name="entry_limit"
+            onChange={e => handleEntryLimit(e)}
+            title={__('Limit By Submission Count')}
+            checked={'entry_limit' in additionalSetting.enabled}
+            className={css(ut.flxc, ut.mb1)}
+          />
+          <Grow
+            open={'entry_limit' in additionalSetting.enabled}
+            classNames="wrapper-left-border"
+          >
+            <input
+              title={__('Submission Limit')}
+              aria-label="Disable this form after limited entry"
+              name="entry_limit"
+              onChange={setEntryLimitSettings}
+              value={additionalSetting.settings.entry_limit}
+              disabled={!('entry_limit' in additionalSetting.enabled)}
+              className="btcd-paper-inp mr-2 wdt-150"
+              placeholder="Limit Total Entry"
+              type="number"
+              min="1"
+            />
+
+            <Select
+              title={__('Limit period type')}
+              className="btcd-paper-inp "
+              value={additionalSetting.settings.entry_limit_count_type}
+              inputName="entry_limit_count_type"
+              onChange={(val, e) => setEntryLimitSettings(e)}
+              options={[
+                { label: 'Total Entries', value: 'total' },
+                { label: 'Per Minute', value: 'per_minute' },
+                { label: 'Per hour', value: 'per_hour' },
+                { label: 'Per Day', value: 'per_day' },
+                { label: 'Per Week', value: 'per_week' },
+                { label: 'Per Month', value: 'per_month' },
+                { label: 'Per Year', value: 'per_year' },
+              ]}
+              w={'200px !important'}
+            />
+
+            <div className="mt-2 d-flx flx-col">
+              <label htmlFor="limit-message-input">Limit message</label>
+
+              <textarea
+                id="limit-message-input"
+                aria-label="Error messages"
+                type="textarea"
+                placeholder="Form Limit message"
+                name="entry_limit_message"
+                className="btcd-paper-inp w-9 mt-1"
+                onChange={(e) => setSettingsMessages(e, 'entry_limit_message')}
+                value={additionalSetting.settings?.messages?.entry_limit_message}
+              />
+            </div>
+          </Grow>
+        </div>
+
+        <div>
+          <TableCheckBox
+            name="entry_limit_by_user"
+            onChange={e => handleEntryLimit(e)}
+            title={__('Limit By Per User')}
+            checked={'entry_limit_by_user' in additionalSetting.enabled}
+            className={css(ut.flxc, ut.mt2, ut.mb1)}
+          />
+          <Grow
+            open={'entry_limit_by_user' in additionalSetting.enabled}
+            classNames="wrapper-left-border"
+          >
+
+            <input
+              aria-label="Disable this form after limited entry"
+              name="entry_limit_by_user"
+              onChange={setEntryLimitSettings}
+              value={additionalSetting.settings.entry_limit_by_user}
+              disabled={!('entry_limit_by_user' in additionalSetting.enabled)}
+              className="btcd-paper-inp mr-2 wdt-150"
+              placeholder="Limit User Entry"
+              type="number"
+              min="1"
+            />
+
+            <Select
+              title={__('User verify type')}
+              className="btcd-paper-inp"
+              inputName="entry_limit_by_user_type"
+              value={additionalSetting.settings.entry_limit_by_user_type}
+              onChange={(val, e) => setEntryLimitSettings(e)}
+              options={[
+                { label: 'Per User (IP Address)', value: 'per_user_ip' },
+                { label: 'Per User (Logged in ID)', value: 'per_user_id' },
+              ]}
+              w={'200px !important'}
+            />
+            {/* {
+            ['per_user_ip', 'per_user_id'].includes(additionalSetting.settings.entry_limit) && ( */}
+            <Select
+              title={__('Limit period type')}
+              className="btcd-paper-inp w-2 ml-2"
+              value={additionalSetting.settings.entry_limit_by_user_count_type}
+              inputName="entry_limit_by_user_count_type"
+              onChange={(val, e) => setEntryLimitSettings(e)}
+              options={[
+                { label: 'Total Per User Entries', value: 'total' },
+                { label: 'Per Minute', value: 'per_minute' },
+                { label: 'Per hour', value: 'per_hour' },
+                { label: 'Per Day', value: 'per_day' },
+                { label: 'Per Week', value: 'per_week' },
+                { label: 'Per Month', value: 'per_month' },
+                { label: 'Per Year', value: 'per_year' },
+              ]}
+              w={150}
+            />
+
+            <div className="mt-2 d-flx flx-col">
+              <label htmlFor="limit-per-user-message-input">Limit message</label>
+              <textarea
+                id="limit-per-user-message-input"
+                aria-label="Error messages"
+                type="textarea"
+                placeholder="Form Limit message"
+                name="entry_limit_per_user_message"
+                className="btcd-paper-inp w-9 mt-1"
+                onChange={(e) => setSettingsMessages(e, 'entry_limit_per_user_message')}
+                value={additionalSetting.settings?.messages?.entry_limit_per_user_message}
+              />
+            </div>
+          </Grow>
+        </div>
+
+      </Accordions>
       {/* // temproray block for Date/Time library issue */}
       <Accordions
         customTitle={(
@@ -878,11 +1080,14 @@ export default function SingleFormSettings() {
         cls="w-6 mt-3"
         isPro
         proProperty="restrict_form"
+        toggle
+        checked={'restrict_form' in additionalSetting.enabled || false}
+        action={handleRestrictFrom}
       >
-        <div className="flx mb-2 ml-2">
+        {/* <div className="flx mb-2 ml-2">
           <SingleToggle2 cls="flx" action={handleRestrictFrom} checked={'restrict_form' in additionalSetting.enabled} />
           {__('Enable / Disable')}
-        </div>
+        </div> */}
         <CheckBox onChange={setRestrictForm} checked={checkRestrictFromExist('Everyday')} value="Everyday" title={__('Every Day')} />
         <CheckBox onChange={setRestrictForm} checked={checkRestrictFromExist('Friday')} value="Friday" title={__('Friday')} />
         <CheckBox onChange={setRestrictForm} checked={checkRestrictFromExist('Saturday')} value="Saturday" title={__('Saturday')} />
@@ -1128,6 +1333,23 @@ export default function SingleFormSettings() {
           <SingleToggle2 action={toggleCaptureGCLID} checked={'captureGCLID' in additionalSetting.enabled} className="flx" />
         </div>
       </div>
+
+      {/* <div className="w-6 mt-3">
+        <div className="flx flx-between sh-sm br-10 btcd-setting-opt">
+          <div className="flx">
+            <span className="mr-2">
+              <IpBlockIcn size="22" />
+            </span>
+            <b>{__('Form Entry Edit (for logged in users only)')}</b>
+            {!IS_PRO && <ProBadge proProperty="formEntryEdit" />}
+          </div>
+          <SingleToggle2
+            action={setFormEntryEdit}
+            checked={'form_entry_edit' in additionalSetting.enabled}
+            className="flx"
+          />
+        </div>
+      </div> */}
 
       {/* <div>
         <Modal

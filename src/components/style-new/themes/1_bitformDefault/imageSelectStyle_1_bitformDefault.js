@@ -42,7 +42,7 @@ export default function imageSelectStyle_1_bitformDefault({ fk, breakpoint, colo
 
       [`.${fk}-select-img`]: {
         width: '100%',
-        height: '100px',
+        height: 'auto',
         'object-fit': 'fill',
         // transition: '0.3s all ease',
         'max-width': '100%',
@@ -113,8 +113,8 @@ export default function imageSelectStyle_1_bitformDefault({ fk, breakpoint, colo
       },
 
       [`.${fk}-img-inp:hover~.${fk}-img-wrp .${fk}-img-card-wrp`]: {
-        outline: '3px solid hsla(223, 92%, 85%, 100%)',
-        // 'box-shadow': '0 0 0 2px hsla(209, 100%, 50%, 100%)',
+        outline: '3px solid hsla(var(--gah, 217), var(--gas, 100%), var(--gal, 50%), 50%)',
+        // 'box-shadow': '0 0 0 2px var(--global-accent-color)',
         // transition: 'all 0.2s',
         'border-color': 'var(--global-accent-color)',
       },
@@ -143,7 +143,7 @@ export default function imageSelectStyle_1_bitformDefault({ fk, breakpoint, colo
 
       [`.${fk}-img-inp:focus-visible~.${fk}-img-wrp .${fk}-img-card-wrp`]: {
         // outline: 'none',
-        'box-shadow': '0 0 0 2px hsla(209, 100%, 50%, 100%)',
+        'box-shadow': '0 0 0 2px hsla(var(--gah, 217), var(--gas, 100%), var(--gal, 50%), var(--gaa, 100%))',
         outline: '2px solid var(--global-accent-color)',
         'outline-offset': '2px',
         transition: 'outline-offset 0.2s ease',

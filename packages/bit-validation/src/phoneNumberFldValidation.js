@@ -1,7 +1,7 @@
 const phoneNumberFldValidation = (fldInstance, fldData) => {
-  const isValid = fldInstance.isValidated()
-  if (isValid === 'invalid') return 'invalid'
-  if (isValid === 'required' && fldData?.valid?.req) return 'req'
-  return ''
+  const errorKey = fldInstance.isValidated()
+  if (errorKey === 'invalid') return 'invalid'
+  if (errorKey === 'required' && fldData?.valid?.req) return 'req'
+  return errorKey
 }
 export default phoneNumberFldValidation

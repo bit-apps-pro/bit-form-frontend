@@ -263,7 +263,7 @@ const SortableElm = ({
                   />
                 </Tip>
               )}
-              {type === 'check' && (
+              {(type === 'check' || type === 'image-select') && (
                 <Tip msg="Required">
                   <CheckBox
                     checked={value.req !== undefined}
@@ -272,7 +272,7 @@ const SortableElm = ({
                   />
                 </Tip>
               )}
-              {(type === 'check' || type === 'radio') && !(type === 'rating') && (
+              {(type === 'check' || type === 'radio' || type === 'image-select') && !(type === 'rating') && (
                 <Tip msg="Disabled">
                   <CheckBox
                     checked={value.disabled !== undefined}
@@ -379,7 +379,7 @@ export default function VisualOptionsTab({
 
   const bits = useAtomValue($bits)
   const addOption = () => {
-    const { img } = option[0]
+    const { img } = option[0] || {}
     const tmpOption = [...option]
     const id = newOptKey(optKey)
     const newTempOption = (isRating || type === 'image-select') ? { id, [lblKey]: `Option ${id}`, [valKey]: id, [imgKey]: img } : { id, [lblKey]: `Option ${id}` }
@@ -456,8 +456,8 @@ export default function VisualOptionsTab({
           <span className={css(optionStyle.propLabel, { ml: 10 })}>Value</span>
           <div className={css({ flxi: 'align-center', ml: 5 })}>
             {checkByDefault && <span className={css(optionStyle.checkLabel)}>Check</span>}
-            {type === 'check' && <span className={css(optionStyle.checkLabel)}>Require</span>}
-            {(type === 'check' || type === 'radio') && <span className={css(optionStyle.checkLabel)}>Disable</span>}
+            {(type === 'check' || type === 'image-select') && <span className={css(optionStyle.checkLabel)}>Require</span>}
+            {(type === 'check' || type === 'image-select' || type === 'radio') && <span className={css(optionStyle.checkLabel)}>Disable</span>}
           </div>
         </div>
         <div className={css(optionStyle.scroll)}>

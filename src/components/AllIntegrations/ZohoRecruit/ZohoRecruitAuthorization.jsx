@@ -1,16 +1,15 @@
-import { useState } from 'react'
 import { useAtomValue } from 'jotai'
+import { useEffect, useState } from 'react'
 import { $bits } from '../../../GlobalStates/GlobalStates'
 import { __ } from '../../../Utils/i18nwrap'
 import tutorialLinks from '../../../Utils/StaticData/tutorialLinks'
 import CopyText from '../../Utilities/CopyText'
 import TutorialLink from '../../Utilities/TutorialLink'
 import AuthorizeBtn from '../AuthorizeBtn'
-import NextBtn from '../NextBtn'
 import { handleAuthorize, refreshModules } from './ZohoRecruitCommonFunc'
 
 export default function ZohoRecruitAuthorization({
-  formID, recruitConf, setRecruitConf, step, setstep, isLoading, setisLoading, setSnackbar, redirectLocation, isInfo,
+  formID, recruitConf, setRecruitConf, step, setstep, isLoading, setisLoading, setSnackbar, redirectLocation, isInfo, authorizedAction,
 }) {
   const bits = useAtomValue($bits)
   const { siteURL } = bits
@@ -33,13 +32,19 @@ export default function ZohoRecruitAuthorization({
     setRecruitConf(newConf)
   }
 
+  useEffect(() => {
+    if (isAuthorized) {
+      authorizedAction()
+    }
+  }, [isAuthorized])
+
   return (
     <>
       <TutorialLink
         title={tutorialLinks.zohoRecruit.title}
         youTubeLink={tutorialLinks.zohoRecruit.link}
       />
-      <div className="btcd-stp-page" style={{ ...{ width: step === 1 && 900 }, ...{ height: step === 1 && `${100}%` } }}>
+      <div className="btcd-stp-page" style={{ width: 900, height: `${100}%` }}>
         <div className="mt-3"><b>{__('Integration Name:')}</b></div>
         <input
           className="btcd-paper-inp w-6 mt-1"
@@ -71,7 +76,7 @@ export default function ZohoRecruitAuthorization({
         <div className="mt-3"><b>{__('Homepage URL:')}</b></div>
         <CopyText value={siteURL} className="field-key-cpy w-6 ml-0" readOnly={isInfo} />
 
-        <div className="mt-3"><b>{__('Authorized Redirect URIs:', 'bitform')}</b></div>
+        <div className="mt-3"><b>{__('Authorized Redirect URIs:', 'bit-form')}</b></div>
         <CopyText value={redirectLocation || `${bits.zohoRedirectURL}`} className="field-key-cpy w-6 ml-0" readOnly={isInfo} />
 
         <small className="d-blk mt-5">
@@ -119,10 +124,10 @@ export default function ZohoRecruitAuthorization({
               handleAuthorize={() => handleAuthorize(recruitConf, setRecruitConf, setError, setisAuthorized, setisLoading, setSnackbar)}
             />
             <br />
-            <NextBtn
+            {/* <NextBtn
               nextPageHandler={() => nextPage()}
               disabled={!isAuthorized}
-            />
+            /> */}
           </>
         )}
       </div>

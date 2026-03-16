@@ -3,7 +3,7 @@ import { setActions } from './setActions'
 
 const getFieldKeyByFldName = (fldName, fields) => Object.keys(fields).find(key => fields[key].fieldName === fldName)
 
-const generateFieldName = fldName => fldName.replace(/\[\d*\]/g, '')
+const generateFieldName = fldName => fldName?.replace(/\[\d*\]/g, '')
 
 const getAllFieldsValueFromForm = (form, props) => {
   const formData = new FormData(form)
@@ -20,7 +20,21 @@ const getAllFieldsValueFromForm = (form, props) => {
       formEntries[entriesKey].push(value)
     } else formEntries[entriesKey] = value
   })
-  Object.keys(fields).filter(key => fields[key].typ === 'button').forEach(fldKey => { formEntries[fldKey] = '' })
+  // Add empty values for unselected radio and checkbox fields
+  Object.keys(fields).forEach(fldKey => {
+    const fieldType = fields[fldKey].typ
+    if (['radio', 'check', 'rating', 'image-select'].includes(fieldType)) {
+      // Check if this field (or any indexed version) exists in formEntries
+      const hasEntry = Object.keys(formEntries).some(key => key === fldKey || key.startsWith(`${fldKey}[`))
+      if (!hasEntry) {
+        formEntries[fldKey] = ''
+      }
+    } else if (fieldType === 'button') {
+      // For button fields, we can set an empty string or a default value
+      formEntries[fldKey] = ''
+    }
+  })
+  if (fields._bf_step_no) formEntries._bf_step_no = String(props.inits.multi_step_form.step || 1)
 
   return Object.entries(formEntries).reduce((acc, [key, value]) => ({ ...acc, [key]: { value, type: fields[key.replace(/\[\d*\]/g, '')].typ, multiple: Array.isArray(value) } }), {})
 }
@@ -43,7 +57,6 @@ function getIndexesByFieldKey(fieldKey, props) {
 
 export default function onBlurHandler(event) {
   if (!event?.target?.form) return
-
   const element = event.target
   const { form } = event.target
   const contentId = form.id.replace('form-', '')
@@ -51,26 +64,36 @@ export default function onBlurHandler(event) {
 
   if (!props) return
 
+  // STEP 1: Merge extraFields into fields
+  const mergedFields = {
+    ...props.fields,
+    ...(props.extraFields || {}), // Safely handle missing extraFields
+  }
+
+  // STEP 2: Create new props object with merged fields
+  const newProps = {
+    ...props,
+    fields: mergedFields, // Override fields with merged version
+  }
   const elementIndex = element.name.match(/\[(\d+)\]/)?.[1]
 
-  const targetFieldName = generateFieldName(element.name)
+  const targetFieldName = generateFieldName(element.name || element.dataset.parentFieldName)
+  const targetFldKey = getFieldKeyByFldName(targetFieldName, newProps.fields)
 
-  const fldKey = getFieldKeyByFldName(targetFieldName, props.fields)
+  if (!targetFldKey) return
 
-  if (!fldKey) return
-
-  const fieldValues = getAllFieldsValueFromForm(form, props)
+  const fieldValues = getAllFieldsValueFromForm(form, newProps)
 
   // Logics Part
   const condsStatus = []
 
-  const { onfieldCondition } = props
+  const { onfieldCondition } = newProps
 
   if (!onfieldCondition) return
 
   const oninputConds = onfieldCondition.filter(cond => cond.event_type === 'on_input')
 
-  const oninputCondsForTargetField = oninputConds.filter(cond => cond.conditions.some(c => isFieldExistInLogics(c?.logics, fldKey)))
+  const oninputCondsForTargetField = oninputConds.filter(cond => cond.conditions.some(c => isFieldExistInLogics(c?.logics, targetFldKey)))
 
   if (!oninputCondsForTargetField.length) return
 
@@ -79,7 +102,7 @@ export default function onBlurHandler(event) {
     const { length } = conditions
     let logicStatus = false
     let rowIndexes = elementIndex ? [elementIndex] : false
-    if (!elementIndex && typeof getIndexesBaseOnConditions !== 'undefined') rowIndexes = getIndexesBaseOnConditions(conditions, props)
+    if (!elementIndex && typeof getIndexesBaseOnConditions !== 'undefined') rowIndexes = getIndexesBaseOnConditions(conditions, newProps)
     let rowIndex = rowIndexes ? rowIndexes.pop() : false
     do {
       let condIndx = 0
@@ -87,9 +110,9 @@ export default function onBlurHandler(event) {
         const condition = conditions[condIndx]
         if (['if', 'else-if'].includes(condition.cond_type)) {
           const { logics } = condition
-          const clickLogics = logics.filter(logic => logic.logic === 'on_click')
-          if (clickLogics.length && fldKey !== clickLogics[0].field) return false /* check is target equal to button click of logic */
-          logicStatus = checkLogic(logics, fieldValues, props, rowIndex)
+          logicStatus = checkLogic(targetFldKey, logics, fieldValues, newProps, rowIndex)
+          // call custom defined function to modify logic status
+          if (typeof bf_modify_workflow_logic_status !== 'undefined') logicStatus = bf_modify_workflow_logic_status(logicStatus, logics, fieldValues, rowIndex, condIndx, newProps)
           if (logicStatus) break
         }
       }
@@ -109,7 +132,7 @@ export default function onBlurHandler(event) {
     const condActions = logicStatus ? conditions[condIndx].actions : elseActions.actions
     condActions?.fields?.forEach(actionDetail => {
       let indexes = [rowIndex]
-      if (!rowIndex) indexes = getIndexesByFieldKey(actionDetail.field, props)
+      if (!rowIndex) indexes = getIndexesByFieldKey(actionDetail.field, newProps)
       if (!indexes) indexes = ['']
       indexes.forEach(index => {
         const propertyKey = `${actionDetail.field}[${index}]`
@@ -118,8 +141,8 @@ export default function onBlurHandler(event) {
         }
         if (!alreadySetActions[propertyKey].includes(actionDetail.action)) {
           alreadySetActions[propertyKey].push(actionDetail.action)
-          const smartFields = Object.entries(props.smartTags).reduce((acc, [key, value]) => ({ ...acc, [`\${${key}}`]: { value, type: 'text', multiple: false } }), {})
-          setActions(actionDetail, fldKey, props, { ...fieldValues, ...smartFields }, index)
+          const smartFields = Object.entries(newProps.smartTags).reduce((acc, [key, value]) => ({ ...acc, [`\${${key}}`]: { value, type: 'text', multiple: false } }), {})
+          setActions(actionDetail, targetFldKey, newProps, { ...fieldValues, ...smartFields }, index)
         }
       })
     })

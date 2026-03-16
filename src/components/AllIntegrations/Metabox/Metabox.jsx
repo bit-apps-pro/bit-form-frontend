@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react'
-import { useFela } from 'react-fela'
 import { useNavigate } from 'react-router-dom'
-import app from '../../../styles/app.style'
-import bitsFetch from '../../../Utils/bitsFetch'
-import { __ } from '../../../Utils/i18nwrap'
 import { postFields } from '../../../Utils/StaticData/postField'
 import tutorialLinks from '../../../Utils/StaticData/tutorialLinks'
+import bitsFetch from '../../../Utils/bitsFetch'
+import { __ } from '../../../Utils/i18nwrap'
 import Cooltip from '../../Utilities/Cooltip'
 import SnackMsg from '../../Utilities/SnackMsg'
 import TutorialLink from '../../Utilities/TutorialLink'
 import { saveIntegConfig } from '../IntegrationHelpers/IntegrationHelpers'
-import SaveIntergrationBrn from '../SaveIntergrationBrn'
+import SaveIntegrationBtn from '../SaveIntegrationBtn'
 import FieldMap from './FieldMap'
 import { addFieldMap, checkMappedAcfFields, checkMappedPostFields, refreshMetaboxFields, refreshPostTypes } from './MetaboxHelperFunction'
 
@@ -19,7 +17,6 @@ function Metabox({ formFields, setIntegration, integrations, allIntegURL }) {
   const [users, setUsers] = useState([])
   const [snack, setSnackbar] = useState({ show: false })
   const history = useNavigate()
-  const { css } = useFela()
   const [metaboxFields, setMetaboxFields] = useState([])
   const [metaboxFileFields, setMetaboxFileFields] = useState([])
 
@@ -347,7 +344,7 @@ function Metabox({ formFields, setIntegration, integrations, allIntegURL }) {
           </button>
         </div>
       </div>
-      <SaveIntergrationBrn onClick={() => saveConfig()} />
+      <SaveIntegrationBtn onClick={() => saveConfig()} />
     </div>
   )
 }

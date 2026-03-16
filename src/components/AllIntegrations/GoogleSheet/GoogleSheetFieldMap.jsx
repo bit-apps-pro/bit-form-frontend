@@ -5,6 +5,7 @@ import { __ } from '../../../Utils/i18nwrap'
 import { SmartTagField } from '../../../Utils/StaticData/SmartTagField'
 import MtInput from '../../Utilities/MtInput'
 import { addFieldMap, delFieldMap, handleCustomValue, handleFieldMapping } from '../IntegrationHelpers/GoogleIntegrationHelpers'
+import BitformFieldMapping from '../IntegrationHelpers/BitformFieldMapping'
 
 export default function GoogleSheetFieldMap({ i, formFields, field, sheetConf, setSheetConf }) {
   const bits = useAtomValue($bits)
@@ -22,11 +23,15 @@ export default function GoogleSheetFieldMap({ i, formFields, field, sheetConf, s
           onChange={(ev) => handleFieldMapping(ev, i, sheetConf, setSheetConf)}
         >
           <option value="">{__('Select Field')}</option>
-          <optgroup label="Form Fields">
+          {/* <optgroup label="Form Fields">
             {
               formFields.map(f => f.type !== 'file-up' && <option key={`ff-zhcrm-${f.key}`} value={f.key}>{f.name}</option>)
             }
-          </optgroup>
+          </optgroup> */}
+          <BitformFieldMapping
+            formFields={formFields}
+            notAllowFieldType={['file-up']}
+          />
           <option value="custom">{__('Custom...')}</option>
           <optgroup label={`General Smart Codes ${isPro ? '' : '(PRO)'}`}>
             {isPro && SmartTagField?.map(f => (

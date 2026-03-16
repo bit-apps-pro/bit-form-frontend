@@ -6,7 +6,8 @@ import { useFela } from 'react-fela'
 import toast from 'react-hot-toast'
 import { $fieldsArr, $formId, $updateBtn } from '../GlobalStates/GlobalStates'
 import { IS_PRO } from '../Utils/Helpers'
-import { activationTamplate, fogotPassTamplate } from '../Utils/StaticData/tamplate'
+import { activationTamplate, fogotPassTamplate, pendingUserActiveRejectTamplateForAdmin } from '../Utils/StaticData/tamplate'
+import tutorialLinks from '../Utils/StaticData/tutorialLinks'
 import bitsFetch from '../Utils/bitsFetch'
 import { __ } from '../Utils/i18nwrap'
 import useSWROnce from '../hooks/useSWROnce'
@@ -21,7 +22,7 @@ import Login from './WPAuth/Login'
 import Register from './WPAuth/Registration/Registration'
 import { checkMappedUserFields } from './WPAuth/Registration/UserHelperFunction'
 import ResetPassword from './WPAuth/ResetPassword'
-import tutorialLinks from '../Utils/StaticData/tutorialLinks'
+import { useResetAtom } from 'jotai/utils'
 
 export default function AuthSettings() {
   const [isLoading, setIsLoading] = useState(false)
@@ -29,25 +30,33 @@ export default function AuthSettings() {
   const [type, setType] = useState('register')
   const formID = useAtomValue($formId)
   const { css } = useFela()
+  const resetUpdateBtn = useResetAtom($updateBtn)
 
   const [dataConf, setDataConf] = useState({
     register: {
       user_map: [{}],
-      succ_msg: 'Registration successfully done.',
+      succ_msg: __('Registration successfully done.'),
       meta_map: [{}],
-      sub: 'Activate Your Account',
+      sub: __('Activate Your Account'),
       body: activationTamplate,
-      acti_succ_msg: 'Your account has been activated successfully.&nbsp;You can now login.',
-      already_activated_msg: 'Your account is already activated!',
-      invalid_key_msg: 'Sorry! Your URL Is Invalid!!',
+      acti_succ_msg: __('Your account has been activated successfully.&nbsp;You can now login.'),
+      already_activated_msg: __('Your account is already activated!'),
+      invalid_key_msg: __('Sorry! Your URL Is Invalid!!'),
+      reject_success_msg: __('This Requested account has been rejected successfully.'),
+      pendingUserSub: __('Your account is pending for admin approval.'),
+      pendingUserBody: __('Your account is pending for admin approval. Please wait for admin approval.'),
+      adminApprovalSub: __('New User Registration Request'),
+      adminApprovalBody: pendingUserActiveRejectTamplateForAdmin,
+      userRejectionSub: __('Your account has been rejected.'),
+      userRejectionBody: __('<p>Your account has been rejected by admin.</p>'),
     },
     login: {
       login_map: [{}],
-      succ_msg: 'You have been successfully logged in.',
+      succ_msg: __('You have been successfully logged in.'),
     },
     forgot: {
       forgot_map: [{}],
-      succ_msg: 'We have e-mailed your password reset link!',
+      succ_msg: __('We have e-mailed your password reset link!'),
       sub: 'Email Subject',
       body: fogotPassTamplate,
     },
@@ -140,6 +149,7 @@ export default function AuthSettings() {
         if (res !== undefined && res.success) {
           mutateAuthSettings(tmpConf)
           setIsLoading(false)
+          resetUpdateBtn()
         }
       })
     toast.promise(prom, {
@@ -204,13 +214,13 @@ export default function AuthSettings() {
       <SnackMsg snack={snack} setSnackbar={setSnackbar} />
       <h2 className="">{__('WP Authentication')}</h2>
       <h5>
-        How to setup WP Authentication:
+        {__('How to setup WP Authentication:')}
         &nbsp;
         <a href={tutorialLinks.authSettings.link} target="_blank" rel="noreferrer" className="yt-txt ml-1 mr-1">
-          YouTube
+          {__('YouTube')}
         </a>
         <a href={tutorialLinks.authSettingsDoc.link} target="_blank" rel="noreferrer" className="doc-txt">
-          Documentation
+          {__('Documentation')}
         </a>
       </h5>
       {!IS_PRO && (
@@ -264,15 +274,15 @@ export default function AuthSettings() {
                 className={css(app.btn, app.blueGrd, { px: 20 })}
                 disabled={isLoading}
               >
-                {__('Save ')}
+                {__('Save')}
                 {isLoading && <LoaderSm size={20} clr="#fff" className="ml-2" />}
               </button>
               <div>
                 {type !== 'register' && (
                   <p className="p-1 f-m">
-                    <strong>Note : </strong>
+                    <strong>{__('Note :')}</strong>
                     {' '}
-                    When the login, forgot password or reset password any of these feature enabled in the form, the entries will not be saved in the WP database.
+                    {__('When the login, forgot password or reset password any of these feature enabled in the form, the entries will not be saved in the WP database.')}
                   </p>
                 )}
               </div>

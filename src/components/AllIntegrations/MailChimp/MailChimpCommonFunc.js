@@ -1,6 +1,9 @@
+import { getAtom } from '../../../GlobalStates/BitStore'
+import { $bits } from '../../../GlobalStates/GlobalStates'
 import bitsFetch from '../../../Utils/bitsFetch'
 import { deepCopy } from '../../../Utils/Helpers'
-import { sprintf, __ } from '../../../Utils/i18nwrap'
+import { __, sprintf } from '../../../Utils/i18nwrap'
+import { saveConnectedIntegrationApp } from '../integrationHelper'
 
 export const handleInput = (e, sheetConf, setSheetConf, formID, setisLoading, setSnackbar, isNew, error, setError) => {
   let newConf = { ...sheetConf }
@@ -164,8 +167,8 @@ export const handleMailChimpAuthorize = (integ, ajaxInteg, confTmp, setConf, set
     return
   }
   setisLoading(true)
-
-  const apiEndpoint = `https://login.mailchimp.com/oauth2/authorize?client_id=${confTmp.clientId}&redirect_uri=${encodeURIComponent(window.location.href)}&response_type=code`
+  const bits = getAtom($bits)
+  const apiEndpoint = `https://login.mailchimp.com/oauth2/authorize?client_id=${confTmp.clientId}&state=${encodeURIComponent(window.location.href)}/redirect&redirect_uri=${encodeURIComponent(bits.oAuthRedirectURL)}&response_type=code`
   const authWindow = window.open(apiEndpoint, integ, 'width=400,height=609,toolbar=off')
   const popupURLCheckTimer = setInterval(() => {
     if (authWindow.closed) {
@@ -196,10 +199,11 @@ export const handleMailChimpAuthorize = (integ, ajaxInteg, confTmp, setConf, set
 }
 
 const tokenHelper = (ajaxInteg, grantToken, confTmp, setConf, setisAuthorized, setisLoading, setSnackbar) => {
+  const bits = getAtom($bits)
   const tokenRequestParams = { ...grantToken }
   tokenRequestParams.clientId = confTmp.clientId
   tokenRequestParams.clientSecret = confTmp.clientSecret
-  tokenRequestParams.redirectURI = window.location.href
+  tokenRequestParams.redirectURI = bits.oAuthRedirectURL
 
   bitsFetch(tokenRequestParams, `bitforms_${ajaxInteg}_generate_token`)
     .then(result => result)
@@ -208,6 +212,7 @@ const tokenHelper = (ajaxInteg, grantToken, confTmp, setConf, setisAuthorized, s
         const newConf = { ...confTmp }
         newConf.tokenDetails = result.data
         setConf(newConf)
+        saveConnectedIntegrationApp(newConf)
         setisAuthorized(true)
         setSnackbar({ show: true, msg: __('Authorized Successfully') })
       } else if ((result && result.data && result.data.data) || (!result.success && typeof result.data === 'string')) {

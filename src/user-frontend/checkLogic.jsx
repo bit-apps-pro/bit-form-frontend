@@ -42,6 +42,8 @@ export const checkLogic = (logics, fields) => {
     const targetFieldValue = value
 
     switch (logics.logic) {
+      case 'change':
+        return true
       case 'equal':
         if (!fields[logics.field].value) {
           return false

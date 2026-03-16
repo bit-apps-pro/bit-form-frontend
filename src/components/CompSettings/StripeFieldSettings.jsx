@@ -184,6 +184,17 @@ export default function StripeFieldSettings() {
     value: locale.code,
   }))
 
+  const currencyCodeOptions = () => availableCurrencies.map(currency => ({
+    label: (
+      <div className="flx flx-between">
+        <span className="btcd-ttl-ellipsis">{currency.currency}</span>
+        <code className="btcd-code" style={{ textTransform: 'uppercase' }}>{currency.code}</code>
+      </div>
+    ),
+    title: `${currency.currency} - ${currency.code}`,
+    value: currency.code,
+  }))
+
   const getStripeConfigs = () => {
     const stripeConfigs = payments.filter(pay => pay.type === 'Stripe')
     return stripeConfigs.map(stripe => (
@@ -218,6 +229,8 @@ export default function StripeFieldSettings() {
       pattern = /^(number|phone-number)$/
     } else if (type === 'country') {
       pattern = /^(text|country)$/
+    } else if (type === 'number-text') {
+      pattern = /^(number|text)$/
     }
     const filteredFields = formFields.filter(field => field[1].typ.match(pattern))
     return filteredFields.map(itm => (<option key={itm[0]} value={itm[0]}>{itm[1].adminLbl || itm[1].lbl}</option>))
@@ -230,6 +243,14 @@ export default function StripeFieldSettings() {
       fieldData.config[type].active = checked
       if (type === 'address') {
         fieldData.config.address.mode = 'billing'
+        if (!fieldData.config.address.display) {
+          fieldData.config.address.display = {}
+        }
+        fieldData.config.address.display.name = 'full'
+        if (!fieldData.config.address.defaultValues) {
+          fieldData.config.address.defaultValues = {}
+        }
+        fieldData.config.address.defaultValues.name = ''
       }
     } else delete fieldData.config[type]
     const allFields = create(fields, draft => { draft[fldKey] = fieldData })
@@ -248,7 +269,7 @@ export default function StripeFieldSettings() {
 
       <SimpleAccordion
         id="slct-cnfg-stng"
-        title="Select Config"
+        title="Stripe Accounts"
         className={css(FieldStyle.fieldSection)}
       >
         <select
@@ -259,7 +280,7 @@ export default function StripeFieldSettings() {
           className={css(FieldStyle.input)}
           value={fieldData.payIntegID}
         >
-          <option value="">Select Config</option>
+          <option value="">Select Account</option>
           {getStripeConfigs()}
         </select>
       </SimpleAccordion>
@@ -391,19 +412,15 @@ export default function StripeFieldSettings() {
                     {__('Currency')}
                     {' '}
                   </b>
-                  <select
-                    data-testid="crncy-fld-slct"
-                    onChange={e => handleInput('config->options->currency', e.target.value)}
-                    name="currency"
-                    value={fieldData.config.options?.currency}
-                    className={css(FieldStyle.input)}
-                  >
-                    {availableCurrencies.map(cn => (
-                      <option key={cn.code} value={cn.code}>
-                        {cn.currency}
-                      </option>
-                    ))}
-                  </select>
+
+                  <MultiSelect
+                    className="w-10 btcd-paper-drpdwn mt-1"
+                    options={currencyCodeOptions()}
+                    onChange={val => handleInput('config->options->currency', val)}
+                    defaultValue={fieldData.config.options?.currency}
+                    largeData
+                    singleSelect
+                  />
                 </label>
               </div>
 
@@ -717,7 +734,7 @@ export default function StripeFieldSettings() {
                 value={fieldData.config?.address?.defaultValues?.address?.postal_code || ''}
               >
                 <option value="">{__('Select Field')}</option>
-                {getSpecifiedFields('number')}
+                {getSpecifiedFields('number-text')}
               </select>
             </div>
             <div className={css(ut.mt2, { px: 1 })}>

@@ -2,6 +2,7 @@
 import toast from 'react-hot-toast'
 import bitsFetch from '../../../Utils/bitsFetch'
 import { __ } from '../../../Utils/i18nwrap'
+import { saveConnectedIntegrationApp } from '../integrationHelper'
 
 export const handleInput = (
   e,
@@ -120,6 +121,7 @@ export const handleAuthorize = (
         const newConf = { ...confTmp }
         newConf.tokenDetails = result.data
         setConf(newConf)
+        saveConnectedIntegrationApp(newConf)
         setisAuthorized(true)
         setSnackbar({
           show: true,

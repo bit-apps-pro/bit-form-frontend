@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import CloseIcn from '../../../Icons/CloseIcn'
 import bitsFetch from '../../../Utils/bitsFetch'
 import { __ } from '../../../Utils/i18nwrap'
@@ -6,12 +7,13 @@ import tutorialLinks from '../../../Utils/StaticData/tutorialLinks'
 import LoaderSm from '../../Loaders/LoaderSm'
 import TutorialLink from '../../Utilities/TutorialLink'
 import AuthorizeBtn from '../AuthorizeBtn'
-import NextBtn from '../NextBtn'
+import { saveConnectedIntegrationApp } from '../integrationHelper'
 import { refreshActiveCampaingHeader } from './ActiveCampaignCommonFunc'
 
 export default function ActiveCampaignAuthorization({
-  activeCampaingConf, setActiveCampaingConf, step, setstep, setSnackbar, isInfo, isLoading, setIsLoading,
+  activeCampaingConf, setActiveCampaingConf, step, setstep, setSnackbar, isInfo, isLoading, setIsLoading, allIntegURL, authorizedAction,
 }) {
+  const navigate = useNavigate()
   const [isAuthorized, setisAuthorized] = useState(false)
   const [error, setError] = useState({ name: '', api_key: '' })
   const [showAuthMsg, setShowAuthMsg] = useState(false)
@@ -37,6 +39,8 @@ export default function ActiveCampaignAuthorization({
         if (result?.success) {
           setisAuthorized(true)
           setSnackbar({ show: true, msg: __('Authorized Successfully', 'bitfrom') })
+          saveConnectedIntegrationApp(newConf)
+          setTimeout(() => { navigate(allIntegURL) }, 1000)
         }
         setShowAuthMsg(true)
         setIsLoading(false)
@@ -59,13 +63,19 @@ export default function ActiveCampaignAuthorization({
     setstep(2)
   }
 
+  useEffect(() => {
+    if (isAuthorized) {
+      authorizedAction()
+    }
+  }, [isAuthorized])
+
   return (
     <>
       <TutorialLink
         title={tutorialLinks.activeCampaign.title}
         youTubeLink={tutorialLinks.activeCampaign.link}
       />
-      <div className="btcd-stp-page" style={{ ...{ width: step === 1 && 900 }, ...{ height: step === 1 && `${100}%` } }}>
+      <div className="btcd-stp-page" style={{ width: 900, height: '100%' }}>
         <div className="mt-3 wdt-200"><b>{__('Integration Name:')}</b></div>
         <input
           aria-label="Integration name"
@@ -127,10 +137,10 @@ export default function ActiveCampaignAuthorization({
               isLoading={isLoading}
             />
             <br />
-            <NextBtn
+            {/* <NextBtn
               nextPageHandler={() => nextPage(2)}
               disabled={!isAuthorized}
-            />
+            /> */}
           </>
         )}
       </div>

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-undef */
 import { useState } from 'react'
+import { useFela } from 'react-fela'
 import CloseIcn from '../../../Icons/CloseIcn'
 import bitsFetch from '../../../Utils/bitsFetch'
 import { __ } from '../../../Utils/i18nwrap'
@@ -12,10 +13,11 @@ import NextBtn from '../NextBtn'
 import { getAllList } from './ElasticEmailCommonFunc'
 
 export default function ElasticEmailAuthorization({ elasticEmailConf, setElasticEmailConf, step, setstep, isInfo }) {
-  const [isAuthorized, setisAuthorized] = useState(false)
+  const [isAuthorized, setIsAuthorized] = useState({ authorized: false, errorMsg: '' })
   const [error, setError] = useState({ name: '', api_key: '' })
   const [showAuthMsg, setShowAuthMsg] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const { css } = useFela()
 
   const handleAuthorize = () => {
     const newConf = { ...elasticEmailConf }
@@ -31,7 +33,9 @@ export default function ElasticEmailAuthorization({ elasticEmailConf, setElastic
     bitsFetch(data, 'bitforms_elasticemail_authorize')
       .then(result => {
         if (result?.success) {
-          setisAuthorized(true)
+          setIsAuthorized({ authorized: true, errorMsg: '' })
+        } else {
+          setIsAuthorized({ authorized: false, errorMsg: result?.data || '' })
         }
         setShowAuthMsg(true)
         setIsLoading(false)
@@ -91,7 +95,7 @@ export default function ElasticEmailAuthorization({ elasticEmailConf, setElastic
         {' '}
         <a
           className="btcd-link"
-          href="https://elasticemail.com/account#/settings/new/manage-api"
+          href="https://app.elasticemail.com/marketing/settings/new/manage-api"
           target="_blank"
           rel="noreferrer"
         >
@@ -105,23 +109,24 @@ export default function ElasticEmailAuthorization({ elasticEmailConf, setElastic
         </div>
       )}
 
-      {(showAuthMsg && !isAuthorized && !isLoading) && (
+      {(showAuthMsg && !isAuthorized.authorized && !isLoading) && (
         <div className="flx mt-5" style={{ color: 'red' }}>
-          <CloseIcn size="30" />
-          Sorry, API key is invalid
+          <CloseIcn size="15" className={css({ mr: 10 })} />
+          {' '}
+          {isAuthorized.errorMsg || "Couldn't authorize, Please check API Key"}
         </div>
       )}
       {!isInfo && (
         <>
           <AuthorizeBtn
-            isAuthorized={isAuthorized}
+            isAuthorized={isAuthorized.authorized}
             isLoading={isLoading}
             handleAuthorize={() => handleAuthorize()}
           />
           <br />
           <NextBtn
             nextPageHandler={() => nextPage(2)}
-            disabled={!isAuthorized}
+            disabled={!isAuthorized.authorized}
           />
         </>
       )}

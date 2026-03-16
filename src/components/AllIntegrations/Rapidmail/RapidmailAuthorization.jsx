@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-expressions */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { __ } from '../../../Utils/i18nwrap'
 import AuthorizeBtn from '../AuthorizeBtn'
-import NextBtn from '../NextBtn'
 import { getAllRecipient, handleAuthorize } from './RapidmailCommonFunc'
 
 export default function RapidmailAuthorization({
@@ -14,6 +13,7 @@ export default function RapidmailAuthorization({
   setIsLoading,
   setSnackbar,
   isInfo,
+  authorizedAction,
 }) {
   const [isAuthorized, setisAuthorized] = useState(false)
   const [error, setError] = useState({ username: '', password: '' })
@@ -38,13 +38,16 @@ export default function RapidmailAuthorization({
     setRapidmailConf(newConf)
   }
 
+  useEffect(() => {
+    if (isAuthorized) {
+      authorizedAction()
+    }
+  }, [isAuthorized])
+
   return (
     <div
       className="btcd-stp-page"
-      style={{
-        ...{ width: step === 1 && 900 },
-        ...{ height: step === 1 && `${100}%` },
-      }}
+      style={{ width: 900, height: `${100}%` }}
     >
       <div className="mt-3">
         <b>{__('Integration Name:')}</b>
@@ -115,10 +118,10 @@ export default function RapidmailAuthorization({
             isLoading={isLoading}
           />
           <br />
-          <NextBtn
+          {/* <NextBtn
             nextPageHandler={() => nextPage()}
             disabled={!isAuthorized}
-          />
+          /> */}
         </div>
       )}
     </div>

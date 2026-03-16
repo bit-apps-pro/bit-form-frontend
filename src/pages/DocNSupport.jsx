@@ -7,8 +7,9 @@ import FacebookIcn from '../Icons/FacebookIcn'
 import MailIcn from '../Icons/MailIcn'
 import MessagesCircle from '../Icons/MessagesCircle'
 import ReviewStarIcn from '../Icons/ReviewStarIcn'
-import YoutubeIcn from '../Icons/YoutubeIcn'
+import YoutubeIcnOutline from '../Icons/YoutubeIcnOutline'
 import ut from '../styles/2.utilities'
+import { __ } from '../Utils/i18nwrap'
 
 export default function DocNSupport() {
   const { css } = useFela()
@@ -19,27 +20,26 @@ export default function DocNSupport() {
         <h2 className={css(style.title)}>Bit Form</h2> */}
       </div>
       <div className={css(style.container)}>
-        <h2 className={css(style.sbtitl)}>Professional & Easy To Use WordPress Form Builder</h2>
-        <p className={css(style.fs)}>Drag and Drop WordPress Form Builder will allow you to build any kind of forms for WordPress website that you can imagine. The Professional design of Bit Form keeps all the tools right where you want them! You can make integration among various CRM and application with no zero experience.</p>
-        <h2 className={css(style.sbtitl)}>Documentation</h2>
+        <h2 className={css(style.sbtitl)}>{__('Professional & Easy To Use WordPress Form Builder')}</h2>
+        <p className={css(style.fs)}>{__('Drag and Drop WordPress Form Builder will allow you to build any kind of forms for WordPress website that you can imagine. The Professional design of Bit Form keeps all the tools right where you want them! You can make integration among various CRM and application with no zero experience.')}</p>
+        <h2 className={css(style.sbtitl)}>{__('Documentation')}</h2>
         <p className={css(style.fs)}>
-          Explore our extensive documentation. From beginners to developers - everyone will get an answer
+          {__('Explore our extensive documentation. From beginners to developers - everyone will get an answer')}
           {' '}
-          <a target="_blank" href="https://docs.form.bitapps.pro/" rel="noreferrer" className={css(style.linkTxt)}>
-            here
-            {' '}
+          <a target="_blank" href="https://bitapps.pro/docs/bit-form/" rel="noreferrer" className={css(style.linkTxt)}>
+            {__('here')}
             <ExternalLinkIcn size="12" />
           </a>
         </p>
-        <h2 className={css(style.sbtitl)}>Support</h2>
-        <p className={css(style.fs)}>In Bit Apps, we provide all kind product support for any types of customer, it doesn't matter FREE or PRO user. We actively provide support through Email and Live Chat. Our support team is always ready to help you. We are here to answer your questions and help you with any issues you may have.</p>
+        <h2 className={css(style.sbtitl)}>{__('Support')}</h2>
+        <p className={css(style.fs)}>{__("In Bit Apps, we provide all kind product support for any types of customer, it doesn't matter FREE or PRO user. We actively provide support through Email and Live Chat. Our support team is always ready to help you. We are here to answer your questions and help you with any issues you may have.")}</p>
         <div className={css(style.suprt, { mt: 20 })}>
           <span className={css(ut.mr2, style.icnW)}>
             <DocIcn size="18" />
           </span>
           <span className={css(style.pb)}>
-            <a href="https://docs.form.bitapps.pro/" rel="noreferrer" target="_blank" className={css(style.linkTxt)}>
-              Documentation
+            <a href="https://bitapps.pro/docs/bit-form/" rel="noreferrer" target="_blank" className={css(style.linkTxt)}>
+              {__('Documentation')}
               {' '}
               <ExternalLinkIcn size="12" />
             </a>
@@ -47,11 +47,11 @@ export default function DocNSupport() {
         </div>
         <div className={css(style.suprt)}>
           <span className={css(ut.mr2, style.icnW)}>
-            <FacebookIcn size="15" />
+            <FacebookIcn size="18" />
           </span>
           <span className={css(style.pb)}>
             <a href="https://www.facebook.com/groups/3308027439209387" target="_blank" className={css(style.linkTxt)} rel="noreferrer">
-              Facebook support group
+              {__('Facebook support group')}
               {' '}
               <ExternalLinkIcn size="12" />
             </a>
@@ -59,11 +59,11 @@ export default function DocNSupport() {
         </div>
         <div className={css(style.suprt)}>
           <span className={css(ut.mr2, style.icnW)}>
-            <YoutubeIcn size="20" />
+            <YoutubeIcnOutline size="20" />
           </span>
           <span className={css(style.pb)}>
             <a href="https://www.youtube.com/channel/UCjUl8UGn-G6zXZ-Wpd7Sc3g" target="_blank" className={css(style.linkTxt)} rel="noreferrer">
-              You tube channel
+              {__('YouTube channel')}
               {' '}
               <ExternalLinkIcn size="12" />
             </a>
@@ -71,11 +71,11 @@ export default function DocNSupport() {
         </div>
         <div className={css(style.suprt)}>
           <span className={css(ut.mr2, style.icnW)}>
-            <MessagesCircle size="20" />
+            <MessagesCircle size="18" />
           </span>
           <span className={css(style.pb)}>
             <a href="https://tawk.to/chat/60eac4b6d6e7610a49aab375/1faah0r3e" target="_blank" className={css(style.linkTxt)} rel="noreferrer">
-              Chat here
+              {__('Chat here')}
               {' '}
               <ExternalLinkIcn size="12" />
             </a>
@@ -93,11 +93,11 @@ export default function DocNSupport() {
         </div>
         <div className={css(style.suprt)}>
           <span className={css(ut.mr2, style.icnW)}>
-            <ReviewStarIcn size="15" />
+            <ReviewStarIcn size="18" />
           </span>
           <span className={css(style.pb)}>
             <a href="https://wordpress.org/support/plugin/bit-form/reviews/#new-post" target="_blank" className={css(style.linkTxt)} rel="noreferrer">
-              Rate us on WordPress
+              {__('Rate us on WordPress')}
               {' '}
               <ExternalLinkIcn size="12" />
             </a>

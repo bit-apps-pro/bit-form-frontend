@@ -107,6 +107,7 @@ export default function DecisionBoxSettings() {
       <DecisionBoxLabelModal
         labelModal={labelModal}
         setLabelModal={setLabelModal}
+        title={__('Edit Decision Box Label')}
       />
 
       <AdminLabelSettings />

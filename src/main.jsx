@@ -1,13 +1,16 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-undef */
+import 'core-js/stable'
 import { createRenderer } from 'fela'
 import customProperty from 'fela-plugin-custom-property'
 import ReactDOM from 'react-dom/client'
 import { RendererProvider } from 'react-fela'
 import { HashRouter } from 'react-router-dom'
+import 'regenerator-runtime/runtime'
 import App from './App'
 import './resource/sass/app.scss'
 import './resource/sass/global.scss'
+import './resource/sass/responsive.scss'
 import customProperties from './styles/1.customProperties'
 
 const renderer = createRenderer({

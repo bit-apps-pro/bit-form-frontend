@@ -1,9 +1,13 @@
+import { create } from 'mutative'
 import { useEffect, useState } from 'react'
 import 'react-multiple-select-dropdown-lite/dist/index.css'
 import { useNavigate, useParams } from 'react-router-dom'
 import { __ } from '../../../Utils/i18nwrap'
+import Modal from '../../Utilities/Modal'
 import SnackMsg from '../../Utilities/SnackMsg'
 import Steps from '../../Utilities/Steps'
+import ConnectedAppsList from '../ConnectedAppsList'
+import { getConnectedAppList } from '../integrationHelper'
 import { saveIntegConfig, setGrantTokenResponse } from '../IntegrationHelpers/IntegrationHelpers'
 import IntegrationStepThree from '../IntegrationHelpers/IntegrationStepThree'
 import NextBtn from '../NextBtn'
@@ -16,13 +20,14 @@ function ZohoDesk({ formFields, setIntegration, integrations, allIntegURL }) {
 
   const { formID } = useParams()
   const [isLoading, setisLoading] = useState(false)
+  const [showMdl, setShowMdl] = useState(false)
   const [step, setstep] = useState(1)
   const [snack, setSnackbar] = useState({ show: false })
   const [deskConf, setDeskConf] = useState({
     name: 'Zoho Desk API',
     type: 'Zoho Desk',
-    clientId: process.env.NODE_ENV === 'development' ? '1000.3NJI1INPTI67F97ZTP6HXSBWAKJ8MG' : '',
-    clientSecret: process.env.NODE_ENV === 'development' ? '6c358da44a5c32f9c1ec7a1d2fa4439ba4f0c89832' : '',
+    clientId: process.env.NODE_ENV === 'development' ? '' : '',
+    clientSecret: process.env.NODE_ENV === 'development' ? '' : '',
     orgId: '',
     department: '',
     field_map: [
@@ -31,11 +36,48 @@ function ZohoDesk({ formFields, setIntegration, integrations, allIntegURL }) {
     actions: {},
   })
 
+  const connectedDeskApps = getConnectedAppList([deskConf.type])
+
+  const authorizedAction = () => {
+    setTimeout(() => { history(`${allIntegURL}/new/${deskConf.type}`) }, 1000)
+    setShowMdl(false)
+  }
+
+  const authAppCardClickAction = (app, i) => {
+    if (app.integration_type === deskConf.type) {
+      const appDetails = JSON.parse(app.integration_details)
+      setDeskConf(draftDeskConf => create(draftDeskConf, tempDeskConf => {
+        tempDeskConf.parentAppId = app.id
+        tempDeskConf.clientId = appDetails.clientId
+        tempDeskConf.clientSecret = appDetails.clientSecret
+        tempDeskConf.tokenDetails = appDetails.tokenDetails
+        tempDeskConf.dataCenter = appDetails.dataCenter
+        tempDeskConf.ownerEmail = appDetails.ownerEmail
+      }))
+      setstep(2)
+    }
+  }
+
+  useEffect(() => {
+    setDeskConf(draftDeskConf => create(draftDeskConf, tempDeskConf => {
+      const selectedApp = connectedDeskApps.find(app => app.id === deskConf.parentAppId)
+      if (selectedApp) {
+        const appDetails = JSON.parse(selectedApp.integration_details)
+        tempDeskConf.clientId = appDetails.clientId
+        tempDeskConf.clientSecret = appDetails.clientSecret
+        tempDeskConf.tokenDetails = appDetails.tokenDetails
+        tempDeskConf.dataCenter = appDetails.dataCenter
+        tempDeskConf.ownerEmail = appDetails.ownerEmail
+      }
+    }))
+    if (deskConf?.parentAppId) refreshOrganizations(formID, deskConf, setDeskConf, setisLoading, setSnackbar)
+  }, [deskConf.parentAppId])
+
   useEffect(() => {
     window.opener && setGrantTokenResponse('zohoDesk')
   }, [])
 
-  const nextPage = val => {
+  const nextPage = (val) => {
     if (val === 3) {
       if (!checkMappedFields(deskConf)) {
         setSnackbar({ show: true, msg: __('Please map mandatory fields') })
@@ -60,20 +102,48 @@ function ZohoDesk({ formFields, setIntegration, integrations, allIntegURL }) {
 
   return (
     <div>
+      <Modal
+        title={__('Authorize New Zoho Desk App')}
+        show={showMdl}
+        setModal={() => setShowMdl(false)}
+      >
+        <ZohoDeskAuthorization
+          formID={formID}
+          deskConf={deskConf}
+          setDeskConf={setDeskConf}
+          step={step}
+          setstep={setstep}
+          isLoading={isLoading}
+          setisLoading={setisLoading}
+          setSnackbar={setSnackbar}
+          authorizedAction={authorizedAction}
+        />
+      </Modal>
+
       <SnackMsg snack={snack} setSnackbar={setSnackbar} />
       <div className="txt-center w-9 mt-2 cal-width"><Steps step={3} active={step} /></div>
 
       {/* STEP 1 */}
-      <ZohoDeskAuthorization
-        formID={formID}
-        deskConf={deskConf}
-        setDeskConf={setDeskConf}
-        step={step}
-        setstep={setstep}
-        isLoading={isLoading}
-        setisLoading={setisLoading}
-        setSnackbar={setSnackbar}
-      />
+      {
+        (connectedDeskApps.length > 0 && step === 1) && (
+          <ConnectedAppsList allIntegURL={allIntegURL} specificTypes={[deskConf.type]} onClickAction={authAppCardClickAction} allowAddNew addNewAction={() => setShowMdl(true)} />
+        )
+      }
+      {
+        step === 1 && connectedDeskApps.length === 0 && (
+          <ZohoDeskAuthorization
+            formID={formID}
+            deskConf={deskConf}
+            setDeskConf={setDeskConf}
+            step={step}
+            setstep={setstep}
+            isLoading={isLoading}
+            setisLoading={setisLoading}
+            setSnackbar={setSnackbar}
+            authorizedAction={authorizedAction}
+          />
+        )
+      }
 
       {/* STEP 2 */}
       <div className="btcd-stp-page" style={{ width: step === 2 && 900, height: step === 2 && `${100}%` }}>
@@ -87,20 +157,11 @@ function ZohoDesk({ formFields, setIntegration, integrations, allIntegURL }) {
           setisLoading={setisLoading}
           setSnackbar={setSnackbar}
         />
+
         <NextBtn
           nextPageHandler={() => nextPage(3)}
           disabled={deskConf.department === '' || deskConf.table === '' || deskConf.field_map.length < 1}
         />
-        {/* <button
-          onClick={() => nextPage(3)}
-          disabled={deskConf.department === '' || deskConf.table === '' || deskConf.field_map.length < 1}
-          className={`${css(app.btn)} f-right btcd-btn-lg green sh-sm flx`}
-          type="button"
-        >
-          {__('Next')}
-          <BackIcn className="ml-1 rev-icn" />
-        </button> */}
-
       </div>
 
       {/* STEP 3 */}

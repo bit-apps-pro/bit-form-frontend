@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "bit-conditionals",
-  "packageManager": "pnpm@7.6.0",
+  "packageManager": "pnpm@9.4.0",
   "main": "dist/bit-conditionals.min.js",
   "version": "1.0.0",
   "scripts": {

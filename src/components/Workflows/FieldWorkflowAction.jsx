@@ -4,6 +4,7 @@ import { useFela } from 'react-fela'
 import { $updateBtn, $workflows } from '../../GlobalStates/GlobalStates'
 import CloseIcn from '../../Icons/CloseIcn'
 import ut from '../../styles/2.utilities'
+import { __ } from '../../Utils/i18nwrap'
 import Button from '../Utilities/Button'
 import Tip from '../Utilities/Tip'
 import ActionBlock from './ActionBlock'
@@ -30,8 +31,8 @@ export default function FieldWorkflowAction({ lgcGrp, lgcGrpInd, condGrp, condGr
 
   return (
     <div className={css(ut.mt2)}>
-      <div className={css(actionStyle.title)}><b className="txt-dp">Field Actions</b></div>
-      {fldActions.map((action, actionInd) => (
+      <div className={css(actionStyle.title)}><b className="txt-dp">{__('Field Actions')}</b></div>
+      {fldActions?.map((action, actionInd) => (
         <div key={`atn-${actionInd + 22}`} className={`mt-2 ${condGrp.cond_type === 'always' && 'ml-4'}`}>
           <ActionBlock
             lgcGrp={lgcGrp}

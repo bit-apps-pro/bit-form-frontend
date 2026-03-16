@@ -3,6 +3,7 @@ import { $bits } from '../../../GlobalStates/GlobalStates'
 import bitsFetch from '../../../Utils/bitsFetch'
 import { checkValidEmail } from '../../../Utils/Helpers'
 import { __ } from '../../../Utils/i18nwrap'
+import { saveConnectedIntegrationApp } from '../integrationHelper'
 
 export const setGrantTokenResponse = () => {
   const grantTokenResponse = {}
@@ -77,6 +78,7 @@ const tokenHelper = (grantToken, confTmp, setConf, setisAuthorized, setisLoading
         const newConf = { ...confTmp }
         newConf.tokenDetails = result.data
         setConf(newConf)
+        saveConnectedIntegrationApp(newConf)
         setisAuthorized(true)
         setSnackbar({ show: true, msg: __('Authorized Successfully') })
       } else if ((result && result.data && result.data.data) || (!result.success && typeof result.data === 'string')) {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useFela } from 'react-fela'
 import { Tab, TabList, Tabs } from 'react-tabs'
 import app from '../../styles/app.style'
+import { __ } from '../../Utils/i18nwrap'
 
 export default function ImportStepTwo({ fileResponses, fileColumns, tableColumns }) {
   const [mappingCount, setMappingCount] = useState(0)
@@ -102,7 +103,7 @@ export default function ImportStepTwo({ fileResponses, fileColumns, tableColumns
           Reset Field Mapping
         </span>
       </div>
-      <h5>Preview Data </h5>
+      <h5>{__('Preview Data')}</h5>
       <table className="f-table" style={{ overflowX: 'scroll', overflowY: 'scroll' }}>
         <tr className="tr">
           {fileColumns.map((value, index) => (

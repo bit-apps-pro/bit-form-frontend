@@ -7,6 +7,13 @@ export const activationTamplate = `<p>Hellow {customer_name}</p>
 <p>Please click on the button to complete the verification processs for {email}</p>
 <p><a style="background: linear-gradient(145deg, #0069ff, #097fe6) !important; text-decoration: none !important; font-weight: 500; margin-top: 10px; color: #fff; text-transform: uppercase; font-size: 14px; padding: 10px 24px; display: inline-block; border-radius: 50px; margin-left: 35%;" title="VERIFY EMAIL ADDRESS" href="{activation_url}" target="_blank" rel="noopener">VERIFY EMAIL ADDRESS</a></p>`
 
+export const pendingUserActiveRejectTamplateForAdmin = `<p>New user registration request from {customer_name}. User Email is {email}.</p>
+<p> Form Entries:</p>
+<p>\${bf_all_data}</p>
+<p>To approve or reject the request, please click on the button below:</p>
+<p style="display: flex;"><a style="background: linear-gradient(145deg, #0069ff, #097fe6) !important; text-decoration: none !important; font-weight: 500; margin-top: 10px; color: #fff; text-transform: uppercase; font-size: 14px; padding: 10px 24px; display: inline-block; border-radius: 50px; margin-left: 30%;" title="APPROVE" href="{activation_url}" target="_blank" rel="noopener">APPROVE</a>
+<a style="background: linear-gradient(145deg, #d63638, #b32d2e) !important; text-decoration: none !important; font-weight: 500; margin-top: 10px; color: #fff; text-transform: uppercase; font-size: 14px; padding: 10px 24px; display: inline-block; border-radius: 50px; margin-left: 5%;" title="REJECT" href="{reject_url}" target="_blank" rel="noopener">REJECT</a></p>`
+
 export const activationMessage = '<pre>Your account has been activated successfully.&nbsp;You can now login.</pre>'
 // export const dblOptinTamplate = `<h2 style="text-align:center">Please Confirm Your Submission !</h2>
 // <p <a style="background: linear-gradient(145deg, #0069ff, #097fe6) !important;text-decoration: none !important; font-weight: 500; margin-top: 10px; color: #fff; text-transform: uppercase; font-size: 14px; padding: 10px 24px; display: inline-block; border-radius: 50px; margin-left: 35%;" href="{entry_confirmation_url}" target="_blank" rel="noopener">Confirm</a></p>

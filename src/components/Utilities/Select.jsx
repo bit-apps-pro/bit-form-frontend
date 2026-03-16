@@ -2,7 +2,7 @@ import { useId } from 'react'
 import { useFela } from 'react-fela'
 
 export default function Select({
-  options = [], onChange, value, size = 'md', w, className, color = 'default', inputName, dataTestId,
+  title, options = [], onChange, value, size = 'md', w, className, color = 'default', inputName, dataTestId,
 }) {
   const { css } = useFela()
   const id = useId()
@@ -33,6 +33,7 @@ export default function Select({
 
   return (
     <select
+      title={title}
       data-testid={dataTestId}
       name={inputName}
       className={`${css(cls.selectInput)} ${className}`}

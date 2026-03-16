@@ -1,6 +1,9 @@
+import { useAtom } from 'jotai'
+import { useEffect } from 'react'
 import { useFela } from 'react-fela'
-import ut from '../../styles/2.utilities'
+import { $alertModal } from '../../GlobalStates/GlobalStates'
 import { __ } from '../../Utils/i18nwrap'
+import ut from '../../styles/2.utilities'
 import LoaderSm from '../Loaders/LoaderSm'
 import Btn from './Btn'
 import Modal from './Modal'
@@ -9,13 +12,24 @@ function ConfirmModal({
   close, action, mainMdlCls, show, btnTxt, body, btn2Txt, btn2Action, btnClass, title, className, children, warning, isLoading = false, cancelBtn = true,
 }) {
   const { css } = useFela()
+  const [alertMdl, setAlertMdl] = useAtom($alertModal)
+
+  useEffect(() => {
+    const handleNavigation = () => {
+      const tmpAlert = { ...alertMdl }
+      tmpAlert.show = false
+      setAlertMdl(tmpAlert)
+    }
+
+    window.addEventListener('popstate', handleNavigation)
+  }, [])
   return (
     <Modal
       sm
       show={show}
       setModal={close}
       className={mainMdlCls}
-      title={title || 'Confirmation'}
+      title={title || __('Confirmation')}
       warning={warning || false}
     >
       <div className={`txt-center atn-btns flx flx-center ${className || 'flx-col'}`}>

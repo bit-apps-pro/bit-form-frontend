@@ -1,4 +1,5 @@
 export default function setBFMsg(msgObj) {
+  if (typeof handleConversationalFormMsg !== 'undefined' && handleConversationalFormMsg(msgObj)) return
   let msgWrpr = bfSelect(`#bf-form-msg-wrp-${msgObj.contentId}`)
 
   msgWrpr.innerHTML = `<div class="bf-form-msg deactive ${msgObj.type} scroll">${msgObj.msg}</div>`

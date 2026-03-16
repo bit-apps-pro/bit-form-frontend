@@ -1,8 +1,8 @@
+import { useAtom } from 'jotai'
 import { create } from 'mutative'
 import { useEffect } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
 import { $fields } from '../../../GlobalStates/GlobalStates'
 import FieldStyle from '../../../styles/FieldStyle.style'
 import { addFormUpdateError, addToBuilderHistory, removeFormUpdateError } from '../../../Utils/FormBuilderHelper'
@@ -43,21 +43,21 @@ export default function FieldNameSettings() {
   }, [fieldName, fldKey])
 
   const handleFieldName = (value) => {
-    if (value.includes('.') || value.includes(' ')) {
-      const errorData = {
-        fieldKey: fldKey,
-        errorKey: 'fieldNameInvalid',
-        errorMsg: __('Field name cannot contain dots or spaces'),
-        errorUrl: `field-settings/${fldKey}`,
-      }
-      addFormUpdateError(errorData)
-    } else {
-      removeFormUpdateError(fldKey, 'fieldNameInvalid')
-    }
+    const changedValue = value.replace(/ |\./g, '_')
+    // if (value.includes('.') || value.includes(' ')) {
+    //   const errorData = {
+    //     fieldKey: fldKey,
+    //     errorKey: 'fieldNameInvalid',
+    //     errorMsg: __('Field name cannot contain dots or spaces'),
+    //     errorUrl: `field-settings/${fldKey}`,
+    //   }
+    //   addFormUpdateError(errorData)
+    // } else {
+    //   removeFormUpdateError(fldKey, 'fieldNameInvalid')
+    // }
+    fieldData.fieldName = changedValue
 
-    fieldData.fieldName = value
-
-    if (!value) {
+    if (!changedValue) {
       const errorData = {
         fieldKey: fldKey,
         errorKey: 'fieldNameEmpty',

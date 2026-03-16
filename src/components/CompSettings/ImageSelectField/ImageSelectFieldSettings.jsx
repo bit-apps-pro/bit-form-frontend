@@ -14,7 +14,7 @@ import CloseIcn from '../../../Icons/CloseIcn'
 import TopLeftArrowIcn from '../../../Icons/TopLeftArrowIcn'
 import TopRightArrowIcn from '../../../Icons/TopRightArrowIcn'
 import { addToBuilderHistory, deleteNestedObj, reCalculateFldHeights, setRequired } from '../../../Utils/FormBuilderHelper'
-import { IS_PRO, deepCopy } from '../../../Utils/Helpers'
+import { deepCopy } from '../../../Utils/Helpers'
 import tippyHelperMsg from '../../../Utils/StaticData/tippyHelperMsg'
 import { isDev } from '../../../Utils/config'
 import { mergeNestedObj } from '../../../Utils/globalHelpers'
@@ -25,10 +25,13 @@ import Modal from '../../Utilities/Modal'
 import StyleSegmentControl from '../../Utilities/StyleSegmentControl'
 import { assignNestedObj } from '../../style-new/styleHelpers'
 import AdminLabelSettings from '../CompSettingsUtils/AdminLabelSettings'
+import FieldDisabledSettings from '../CompSettingsUtils/FieldDisabledSettings'
 import FieldHideSettings from '../CompSettingsUtils/FieldHideSettings'
 import FieldLabelSettings from '../CompSettingsUtils/FieldLabelSettings'
 import FieldSettingsDivider from '../CompSettingsUtils/FieldSettingsDivider'
 import HelperTxtSettings from '../CompSettingsUtils/HelperTxtSettings'
+import MaximumOptionSettings from '../CompSettingsUtils/MaximumOptionSettings'
+import MinimumOptionSettings from '../CompSettingsUtils/MinimumOptionSettings'
 import RequiredSettings from '../CompSettingsUtils/RequiredSettings'
 import SubTitleSettings from '../CompSettingsUtils/SubTitleSettings'
 import UniqFieldSettings from '../CompSettingsUtils/UniqFieldSettings'
@@ -39,10 +42,6 @@ import SizeAndPosition from '../StyleCustomize/StyleComponents/SizeAndPosition'
 import AllowMultipleImage from './AllowMultipleImage'
 import OptionLableShowHide from './OptionLableShowHide'
 import tickPosition from './tickPosition'
-import ErrorMessageSettings from '../CompSettingsUtils/ErrorMessageSettings'
-import SingleToggle from '../../Utilities/SingleToggle'
-import MinimumOptionSettings from '../CompSettingsUtils/MinimumOptionSettings'
-import MaximumOptionSettings from '../CompSettingsUtils/MaximumOptionSettings'
 
 function ImageSelectFieldSettings() {
   const { css } = useFela()
@@ -74,7 +73,7 @@ function ImageSelectFieldSettings() {
       if (reqOpts.length && draft[fldKey].err.req) {
         draft[fldKey].err.req.custom = true
         draft[fldKey].err.req.msg = `<p style="margin:0">${reqOpts.map(opt => opt.lbl).join(',')} is required</p>`
-      } else if (draft[fldKey].err.req) draft[fldKey].err.req.msg = '<p style="margin:0">This field is required</p>'
+      } else if (draft[fldKey].err.req) draft[fldKey].err.req.msg = `<p style="margin:0">${__('This field is required')}</p>`
     })
     setFields(allFields)
     addToBuilderHistory({
@@ -186,6 +185,10 @@ function ImageSelectFieldSettings() {
 
       <FieldSettingsDivider />
 
+      <FieldDisabledSettings />
+
+      <FieldSettingsDivider />
+
       <AllowMultipleImage />
 
       <FieldSettingsDivider />
@@ -263,7 +266,7 @@ function ImageSelectFieldSettings() {
 
       <UniqFieldSettings
         type="entryUnique"
-        title="Unique Entry"
+        title={__('Unique Entry')}
         tipTitle={tippyHelperMsg.uniqueEntry}
         className={css(FieldStyle.fieldSection, FieldStyle.hover_tip)}
         isUnique="show"
@@ -294,7 +297,7 @@ function ImageSelectFieldSettings() {
         setModal={closeOptionModal}
         className="o-v"
         title={__('Options')}
-        width="800px"
+        width="835px"
       >
         <EditOptions
           optionMdl={optionMdl}

@@ -1,0 +1,38 @@
+@media (min-width: 1024px) and (max-width: 1400px) {
+  .bf-template-gallery {
+    grid-template-columns: repeat(3, 1fr) !important;
+
+    .bf-template-card-title {
+      font-size: 1rem !important;
+    }
+
+    .bf-template-card-descp {
+      font-size: .8rem !important;
+    }
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .bf-template-gallery {
+    grid-template-columns: repeat(2, 1fr) !important;
+
+    .bf-template-card-title {
+      font-size: .8rem !important;
+    }
+
+    .bf-template-card-descp {
+      font-size: .6rem !important;
+    }
+  }
+}
+@media (max-width: 767px) {
+  .bf-template-gallery {
+    grid-template-columns: repeat(1, 1fr) !important;
+
+    // .bf-template-card-title {
+    //   font-size: .5rem !important;
+    // }
+    // .bf-template-card-descp {
+    //   font-size: .5rem !important;
+    // }
+  }
+}

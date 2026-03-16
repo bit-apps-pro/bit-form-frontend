@@ -10,7 +10,7 @@ export default function textStyle_1_bitformDefault({ fk, type, breakpoint, color
     return {
       ...inputWrapperClasses(fk),
 
-      [`.${fk}-inp-fld-wrp`]: { position: 'relative', margin: 'var(--fld-m, 0)' },
+      [`.${fk}-inp-fld-wrp`]: { position: 'relative', margin: '0px' },
       // field style
       [`.${fk}-fld`]: {
         display: type === 'textarea' ? 'block!important' : 'inline-block!important',

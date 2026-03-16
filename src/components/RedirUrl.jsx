@@ -6,6 +6,7 @@ import CloseIcn from '../Icons/CloseIcn'
 import StackIcn from '../Icons/StackIcn'
 import TrashIcn from '../Icons/TrashIcn'
 import { deepCopy } from '../Utils/Helpers'
+import { nonMappableFields } from '../Utils/StaticData/allStaticArrays'
 import { __ } from '../Utils/i18nwrap'
 import useSWROnce from '../hooks/useSWROnce'
 import ut from '../styles/2.utilities'
@@ -18,6 +19,7 @@ function RedirUrl({ removeIntegration }) {
   const [redirectUrls, setredirectUrls] = useState(null)
   const [allConf, setAllConf] = useAtom($confirmations)
   const fieldsArr = useAtomValue($fieldsArr)
+  const [filterFields] = useState(() => fieldsArr.filter(field => !nonMappableFields.includes(field.typ)))
   const setUpdateBtn = useSetAtom($updateBtn)
   const { css } = useFela()
 
@@ -148,17 +150,30 @@ function RedirUrl({ removeIntegration }) {
             onTitleChange={e => handleUrlTitle(e, i)}
           >
             <div className="f-m">{__('Select A Page:')}</div>
-            <select className="btcd-paper-inp mt-1" onChange={e => handlePage(e, i)}>
+            <select
+              className="btcd-paper-inp mt-1"
+              onChange={e => handlePage(e, i)}
+            >
               <option value="">{__('Custom Link')}</option>
               {redirectUrls
                 && redirectUrls.map((urlDetail, ind) => (
-                  <option key={`r-url-${ind + 22}`} value={urlDetail.url}>{urlDetail.title}</option>
+                  <option
+                    key={`r-url-${ind + 22}`}
+                    value={urlDetail.url}
+                  >
+                    {urlDetail.title}
+                  </option>
                 ))}
             </select>
             <br />
             <br />
             <div className="f-m">Link:</div>
-            <input onChange={e => handleLink(e.target.value, i)} className="btcd-paper-inp mt-1" type="text" value={itm.url} />
+            <input
+              onChange={e => handleLink(e.target.value, i)}
+              className="btcd-paper-inp mt-1"
+              type="text"
+              value={itm.url}
+            />
             <br />
             <br />
             <div className="f-m">{__('Add Url Parameter: (optional)')}</div>
@@ -170,26 +185,55 @@ function RedirUrl({ removeIntegration }) {
                 </div>
                 {getUrlParams(itm.url) !== null && getUrlParams(itm.url).map((item, childIdx) => (
                   <div key={`url-p-${childIdx + 21}`} className="tr">
-                    <div className="td"><input className="btcd-paper-inp p-i-sm" onChange={e => handleParam('key', e.target.value, item, i)} type="text" value={item.split('=')[0].substr(1)} /></div>
                     <div className="td">
-                      <input className="btcd-paper-inp p-i-sm" onChange={e => handleParam('val', e.target.value, item, i)} type="text" value={item.split('=')[1]} />
+                      <input
+                        className="btcd-paper-inp p-i-sm"
+                        onChange={e => handleParam('key', e.target.value, item, i)}
+                        type="text"
+                        value={item.split('=')[0].substr(1)}
+                      />
+
+                    </div>
+                    <div className="td">
+                      <input
+                        className="btcd-paper-inp p-i-sm"
+                        onChange={e => handleParam('val', e.target.value, item, i)}
+                        type="text"
+                        value={item.split('=')[1]}
+                      />
                     </div>
                     <div className="flx p-atn">
                       <Button onClick={() => delParam(i, item)} icn><TrashIcn size={16} /></Button>
                       <span className="tooltip" style={{ '--tooltip-txt': `'${__('set Form Field')}'`, position: 'relative' }}>
                         <select className="btcd-paper-inp p-i-sm mt-1" onChange={e => setFromField(e.target.value, i, item)} defaultValue={item.split('=')[1]}>
                           <option value="">{__('Select Form Field')}</option>
-                          {fieldsArr !== null && fieldsArr.map(f => !f.type.match(/^(file-up|recaptcha)$/) && <option key={f.key} value={`\${${f.key}}`}>{f.name}</option>)}
+                          {filterFields !== null && filterFields.map(f => !f.type.match(/^(file-up|recaptcha)$/) && <option key={f.key} value={`\${${f.key}}`}>{f.name}</option>)}
                         </select>
                       </span>
                     </div>
                   </div>
                 ))}
-                <Button onClick={() => addParam(i)} className="add-pram" icn><CloseIcn size="14" stroke="3" className="icn-rotate-45" /></Button>
+                <Button
+                  onClick={() => addParam(i)}
+                  className="add-pram"
+                  icn
+                >
+                  <CloseIcn
+                    size="14"
+                    stroke="3"
+                    className="icn-rotate-45"
+                  />
+                </Button>
               </div>
             </div>
           </Accordions>
-          <Button onClick={() => showDelConf(i)} icn className="sh-sm white mt-2"><TrashIcn size={16} /></Button>
+          <Button
+            onClick={() => showDelConf(i)}
+            icn
+            className="sh-sm white mt-2"
+          >
+            <TrashIcn size={16} />
+          </Button>
         </div>
       )) : (
         <div className={css(ut.btcdEmpty, ut.txCenter)}>
@@ -197,7 +241,16 @@ function RedirUrl({ removeIntegration }) {
           {__('Empty')}
         </div>
       )}
-      <div className="txt-center"><Button onClick={addMoreUrl} icn className="sh-sm blue tooltip mt-2" style={{ '--tooltip-txt': `'${__('Add More Alternative URl')}'` }}><CloseIcn size="14" stroke="3" className="icn-rotate-45" /></Button></div>
+      <div className="txt-center">
+        <Button
+          onClick={addMoreUrl}
+          icn
+          className="sh-sm blue tooltip mt-2"
+          style={{ '--tooltip-txt': `'${__('Add More Alternative URl')}'` }}
+        >
+          <CloseIcn size="14" stroke="3" className="icn-rotate-45" />
+        </Button>
+      </div>
     </div>
   )
 }

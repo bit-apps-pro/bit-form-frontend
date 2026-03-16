@@ -60,7 +60,13 @@ const FieldStyleCustomize = memo(({ formType, formID, fieldKey, element }) => {
   ]
   const customClsName = fields[fieldKey]?.customClasses
 
-  const isFieldElemetOverrided = fldStyleObj?.overrideGlobalTheme?.includes(element)
+  // const isFieldElemetOverrided = fldStyleObj?.overrideGlobalTheme?.includes(element)
+  const list = Array.isArray(fldStyleObj?.overrideGlobalTheme)
+    ? fldStyleObj.overrideGlobalTheme
+    : []
+
+  const isFieldElemetOverrided = list.includes(element)
+
   const getPath = (elementKey, state = '') => `fields->${fieldKey}->classes->.${fieldKey}-${elementKey}${state}`
 
   useEffect(() => {

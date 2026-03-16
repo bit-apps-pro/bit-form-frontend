@@ -1,2 +1,2 @@
-const paymentFields = ['paypal', 'razorpay', 'stripe']
+const paymentFields = ['paypal', 'razorpay', 'stripe', 'mollie']
 export default paymentFields

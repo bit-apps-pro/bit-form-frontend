@@ -4,6 +4,8 @@ const proHelperData = {
   'advanced-file-up': { heading: __('Advanced File Upload Field'), featureText: __('Advanced File Upload Field') },
   paypal: { heading: __('PayPal Payment Field'), featureText: __('PayPal Payment Field') },
   razorpay: { heading: __('Razorpay Payment Field'), featureText: __('Razorpay Payment Field') },
+  stripe: { heading: __('Stripe Payment Field'), featureText: __('Stripe Payment Field') },
+  mollie: { heading: __('Mollie Payment Field'), featureText: __('Mollie Payment Field') },
   leadingIcon: { heading: __('Leading Icon'), featureText: __('Leading Icon') },
   trailingIcon: { heading: __('Trailing Icon'), featureText: __('Trailing Icon') },
   inputIcons: { heading: __('Input Icons'), featureText: __('Input Icons') },
@@ -53,12 +55,14 @@ const proHelperData = {
   blocked_ip: { heading: __('Blocked IP'), featureText: __('Blocked IP List') },
   entryLimit: { heading: __('Entry Limit'), featureText: __('Entry Limit') },
   singleEntry: { heading: __('Single Entry for each IP'), featureText: __('Single Entry for each IP') },
+  formEntryEdit: { heading: __('Form Entry Edit'), featureText: __('Form Entry Edit') },
   honeypot: { heading: __('Honeypot trap'), featureText: __('Honeypot trap') },
   snackbar_msg: { heading: __('Snackbar Message'), featureText: __('Snackbar Message') },
   modal_msg: { heading: __('Modal Message'), featureText: __('Modal Message') },
   ratingIcon: { heading: __('Rating Icon'), featureText: __('Rating Icon') },
   ratingMsgOnHover: { heading: __('Rating Message on Hover'), featureText: __('Rating Message on Hover') },
   ratingMsgOnSelect: { heading: __('Rating Message on Select'), featureText: __('Rating Message on Select') },
+  pdfProInstalledAlert: { heading: __('PDF Template'), featureText: __('PDF Template') },
 }
 
 export default proHelperData

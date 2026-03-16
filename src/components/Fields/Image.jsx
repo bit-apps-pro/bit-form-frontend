@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/jsx-props-no-spreading */
+import { useAtomValue, useSetAtom } from 'jotai'
 import { create } from 'mutative'
 import { useEffect, useRef } from 'react'
-import { useAtomValue, useSetAtom } from 'jotai'
 import { $breakpoint, $fields, $flags, $resizingFld } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import { getCustomAttributes, getCustomClsName } from '../../Utils/globalHelpers'
@@ -61,6 +61,7 @@ function Image({ fieldKey, attr: fieldData, styleClasses }) {
   }, [])
 
   useEffect(() => {
+    if (!width || !height) return
     tempData.current.extarnalSource = placeholderImgUrl(width, height)
   }, [width, height])
 

@@ -29,6 +29,7 @@
   --gray-1: hsl(var(--blue-h), 45%, 98%);
   --gray-3: hsl(var(--blue-h), 0%, 89%);
   --gray-4: hsl(var(--db-h), 21%, 42%);
+  --gray-5: hsl(var(--db-h), 21%, 60%);
   --red: hsl(0, 100%, 64%);
 
 

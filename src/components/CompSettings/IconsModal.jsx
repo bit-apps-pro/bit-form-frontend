@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-undef */
+import { useAtom } from 'jotai'
 import { create } from 'mutative'
 import { useEffect, useRef, useState } from 'react'
 import Scrollbars from 'react-custom-scrollbars-2'
@@ -7,7 +8,6 @@ import { useFela } from 'react-fela'
 import toast from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
 import { useAsyncDebounce } from 'react-table'
-import { useAtom } from 'jotai'
 import { $fields } from '../../GlobalStates/GlobalStates'
 import { $allStyles } from '../../GlobalStates/StylesState'
 import CloseIcn from '../../Icons/CloseIcn'
@@ -47,7 +47,7 @@ function IconsModal({
   const url = 'https://raw.githack.com'
   const ref = useRef()
   const [allStyles, setAllStyles] = useAtom($allStyles)
-  const clientId = 'n3pcVfA-CTg4OlOQsM3m6lEWLISyoSbtDqP2CfoukyU'
+  const clientId = ''
   const [pageNo, setPageNo] = useState(1)
   const [images, setImages] = useState([])
   const [selectUrl, setSelectUrl] = useState('')

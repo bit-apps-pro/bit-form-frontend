@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import BitRazorpayField from 'bit-razorpay-field/src/bit-razorpay-field'
-import { useEffect, useRef, useState } from 'react'
 import { useAtomValue } from 'jotai'
+import { useEffect, useRef, useState } from 'react'
 import { $payments } from '../../GlobalStates/AppSettingsStates'
 import { $fields } from '../../GlobalStates/GlobalStates'
 import { addFormUpdateError, reCalculateFldHeights, removeFormUpdateError } from '../../Utils/FormBuilderHelper'
@@ -131,7 +131,13 @@ export default function RazorpayField({ fieldKey, formID, attr, isBuilder, style
             </div>
           </div>
         )}
-        {(!loaded || !clientID) && <p>Select a config from field settings to render the Razorpay.</p>}
+        {(!loaded || !clientID) && (
+          <p>
+            Please select a Razorpay account from
+            <strong> Field Settings </strong>
+            to load Razorpay field.
+          </p>
+        )}
       </InputWrapper>
     </>
   )

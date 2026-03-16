@@ -20,6 +20,7 @@ export default function multiStepStyle_1_bitformDefault({ formId, breakpoint = '
       display: 'flex',
       'justify-content': 'space-around',
       'align-items': 'center',
+      'flex-wrap': 'wrap',
     },
     [`._frm-b${formId}-stp-wrpr`]: {
       'border-radius': '4px',
@@ -210,6 +211,9 @@ export default function multiStepStyle_1_bitformDefault({ formId, breakpoint = '
       height: '0px',
       opacity: '0%',
       overflow: 'hidden',
+    },
+    [`._frm-b${formId}-stp-cntnt .btcd-fld-itm:not(.fld-hide)`]: {
+      height: 'fit-content',
     },
     [`._frm-b${formId}-stp-btn-wrpr`]: {
       padding: 'var(--fld-wrp-p, 0)',

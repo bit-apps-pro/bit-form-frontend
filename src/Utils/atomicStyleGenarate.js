@@ -217,7 +217,7 @@ export default function atomicStyleGenarate({ sortedLayout, atomicClassSuffix = 
   cssText += lgLayoutStyleText
   if (nestedLayoutLgTxt) cssText += nestedLayoutLgTxt
   cssText += objectToCssText(lgLightCombineSelectors)
-  if (darkModeSelector.trim()) {
+  if (darkModeSelector?.trim()) {
     cssText += lgPrefixedDarkCssText
   }
 
@@ -226,7 +226,7 @@ export default function atomicStyleGenarate({ sortedLayout, atomicClassSuffix = 
     if (mdLayoutStyleText) cssText += mdLayoutStyleText
     if (nestedLayoutMdTxt) cssText += nestedLayoutMdTxt
     if (mdLightCssText) cssText += mdLightCssText
-    if (darkModeSelector.trim()) {
+    if (darkModeSelector?.trim()) {
       cssText += mdPrefixedDarkCssText
     }
     cssText += '}'
@@ -237,7 +237,7 @@ export default function atomicStyleGenarate({ sortedLayout, atomicClassSuffix = 
     if (smLayoutStyleText) cssText += smLayoutStyleText
     if (nestedLayoutSmTxt) cssText += nestedLayoutSmTxt
     if (smLightCssText) cssText += smLightCssText
-    if (darkModeSelector.trim()) {
+    if (darkModeSelector?.trim()) {
       cssText += smPrefixedDarkCssText
     }
     cssText += '}'

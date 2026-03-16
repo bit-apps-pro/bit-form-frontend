@@ -1,15 +1,14 @@
 /* eslint-disable no-unused-expressions */
-import { useState } from 'react'
 import { useAtomValue } from 'jotai'
+import { useEffect, useState } from 'react'
 import { $bits } from '../../../GlobalStates/GlobalStates'
 import { __ } from '../../../Utils/i18nwrap'
 import CopyText from '../../Utilities/CopyText'
 import AuthorizeBtn from '../AuthorizeBtn'
-import NextBtn from '../NextBtn'
 import { getAllOneDriveFolders, handleAuthorize } from './OneDriveCommonFunc'
 
 export default function OneDriveAuthorization({
-  flowID, oneDriveConf, setOneDriveConf, step, setStep, isLoading, setIsLoading, setSnackbar, redirectLocation, isInfo,
+  flowID: formID, oneDriveConf, setOneDriveConf, step, setStep, isLoading, setIsLoading, setSnackbar, redirectLocation, isInfo, authorizedAction,
 }) {
   const [isAuthorized, setIsAuthorized] = useState(false)
   const [error, setError] = useState({ clientId: '', clientSecret: '' })
@@ -17,7 +16,7 @@ export default function OneDriveAuthorization({
   const { siteURL } = bits
 
   const nextPage = () => {
-    getAllOneDriveFolders(flowID, oneDriveConf, setOneDriveConf, setIsLoading, setSnackbar)
+    getAllOneDriveFolders(formID, oneDriveConf, setOneDriveConf, setIsLoading, setSnackbar)
     setStep(2)
     document.querySelector('.btcd-s-wrp').scrollTop = 0
   }
@@ -31,8 +30,13 @@ export default function OneDriveAuthorization({
     setOneDriveConf(newConf)
   }
 
+  useEffect(() => {
+    if (isAuthorized) {
+      authorizedAction()
+    }
+  }, [isAuthorized])
   return (
-    <div className="btcd-stp-page" style={{ ...{ width: step === 1 && 900 }, ...{ height: step === 1 && `${100}%` } }}>
+    <div className="btcd-stp-page" style={{ width: 900, height: `${100}%` }}>
       <div className="mt-3">
         <b>{__('Integration Name:')}</b>
       </div>
@@ -111,10 +115,10 @@ export default function OneDriveAuthorization({
             handleAuthorize={() => handleAuthorize(oneDriveConf, setOneDriveConf, setIsAuthorized, setIsLoading, setError)}
           />
           <br />
-          <NextBtn
+          {/* <NextBtn
             nextPageHandler={() => nextPage()}
             disabled={!isAuthorized}
-          />
+          /> */}
         </>
       )}
     </div>

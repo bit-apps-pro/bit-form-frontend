@@ -1,0 +1,120 @@
+export default {
+  name: 'Login Form',
+  theme: 'bitformDefault',
+  formInfo: {
+    formName: 'Login Form',
+  },
+  fields: {
+    'fld_key-1': {
+      typ: 'button',
+      btnSiz: 'md',
+      btnTyp: 'submit',
+      txt: 'Submit',
+      icn: {
+        pos: '',
+        url: '',
+      },
+      valid: {},
+      customClasses: {},
+      customAttributes: {},
+      fieldName: 'fld_key-1',
+      fulW: true,
+    },
+    'fld_key-2': {
+      typ: 'email',
+      lbl: 'Email',
+      ph: 'Enter your email',
+      phHide: true,
+      pattern: '^[^$_bf_$s@]+@[^$_bf_$s@]+$_bf_$.[^$_bf_$s@]+$',
+      valid: {
+        req: true,
+        reqShow: true,
+        reqPos: 'after',
+      },
+      err: {
+        invalid: {
+          dflt: '<p style="margin:0">Please, Enter a valid email address.</p>',
+          show: true,
+        },
+        req: {
+          dflt: '<p style="margin:0">This field is required</p>',
+          show: true,
+          custom: true,
+          msg: '<p style="margin:0">Please enter your email.</p>',
+        },
+      },
+      customClasses: {},
+      customAttributes: {},
+      fieldName: 'fld_key-2',
+      acHide: true,
+      ac: 'email',
+    },
+    'fld_key-3': {
+      typ: 'password',
+      lbl: 'Password',
+      phHide: true,
+      valid: {},
+      err: {},
+      customClasses: {},
+      customAttributes: {},
+      fieldName: 'fld_key-3',
+      ph: 'Enter your password',
+    },
+    'fld_key-4': {
+      typ: 'decision-box',
+      adminLbl: 'Decision Box',
+      adminLblHide: true,
+      lbl: '<p style="margin: 0;"><span style="font-size: 12pt;">Remember me</span></p>',
+      msg: {
+        checked: 'Accepted',
+        unchecked: 'Rejected',
+      },
+      valid: {
+        req: true,
+      },
+      err: {
+        req: {
+          dflt: '<p style="margin:0">This field is required</p>',
+          show: true,
+        },
+      },
+      customClasses: {},
+      customAttributes: {},
+      fieldName: 'fld_key-4',
+    },
+  },
+  layouts: {
+    lg: [
+      {
+        w: 60,
+        h: 77,
+        x: 0,
+        y: 0,
+        i: 'fld_key-2',
+      },
+      {
+        w: 60,
+        h: 77,
+        x: 0,
+        y: 77,
+        i: 'fld_key-3',
+      },
+      {
+        w: 60,
+        h: 38,
+        x: 0,
+        y: 154,
+        i: 'fld_key-4',
+      },
+      {
+        w: 60,
+        h: 54,
+        x: 0,
+        y: 192,
+        i: 'fld_key-1',
+      },
+    ],
+    md: [],
+    sm: [],
+  },
+}
