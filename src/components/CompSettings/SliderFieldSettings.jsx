@@ -62,7 +62,6 @@ function SliderFieldSettings() {
   const { css } = useFela()
 
   const hideDefalutValue = (e) => {
-    if (!IS_PRO) return
     if (e.target.checked) {
       fieldData.defaultValue = 1
       fieldData.defaultValueHide = true
@@ -77,7 +76,6 @@ function SliderFieldSettings() {
   }
 
   const setDefaultValue = ({ target: { value } }) => {
-    if (!IS_PRO) return
     if (value === '') delete fieldData.defaultValue
     else fieldData.defaultValue = value
 
@@ -236,8 +234,7 @@ function SliderFieldSettings() {
           toggleAction={hideDefalutValue}
           toggleChecked={fieldData?.defaultValueHide}
           open={fieldData?.defaultValueHide}
-          {...IS_PRO && { disable: !fieldData?.defaultValueHide }}
-          isPro
+          disable={!fieldData?.defaultValueHide}
           proProperty="defaultValue"
         >
           <div className={css(FieldStyle.placeholder)}>

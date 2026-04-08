@@ -6,7 +6,7 @@ import { $proModal } from '../../../../GlobalStates/GlobalStates'
 import { __ } from '../../../../Utils/i18nwrap'
 import proHelperData from '../../../../Utils/StaticData/proHelperData'
 
-export default function PremiumSettingsOverlay({ classes, hideText, proProperty }) {
+export default function PremiumSettingsOverlay({ classes, hideText = true, proProperty }) {
   const setProModal = useSetAtom($proModal)
   const { css } = useFela()
   const showProModal = () => setProModal({ show: true, ...proHelperData[proProperty] })

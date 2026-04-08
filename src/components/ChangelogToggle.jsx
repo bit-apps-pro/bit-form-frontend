@@ -7,7 +7,6 @@ import ExternalLinkIcn from '../Icons/ExternalLinkIcn'
 import changelogInfo from '../Utils/StaticData/changelogInfo'
 import bitsFetch from '../Utils/bitsFetch'
 import { __ } from '../Utils/i18nwrap'
-import Btn from './Utilities/Btn'
 import Modal from './Utilities/Modal'
 
 export default function ChangelogToggle() {
@@ -56,9 +55,12 @@ export default function ChangelogToggle() {
         sm
         show={show}
         onCloseMdl={setChangeLogVersion}
-        showCloseBtn={bits.permission}
-        closeOnOutsideClick={!!bits.permission}
-        escKeyEvent={bits.permission}
+        // showCloseBtn={bits.permission}
+        // closeOnOutsideClick={!!bits.permission}
+        // escKeyEvent={bits.permission}
+        showCloseBtn
+        closeOnOutsideClick
+        escKeyEvent
       >
         <div>
           <div className="flx flx-col flx-center">
@@ -96,7 +98,7 @@ export default function ChangelogToggle() {
               <ExternalLinkIcn size="14" />
             </a>
           </div>
-          {!bits.permission && (
+          {/* {!bits.permission && (
             <>
               <hr />
               <p className={css(styles.optinTitle)}>Opt-In For Plugin Improvement</p>
@@ -125,7 +127,7 @@ export default function ChangelogToggle() {
                 </Btn>
               </div>
             </>
-          )}
+          )} */}
         </div>
       </Modal>
     </div>

@@ -248,19 +248,6 @@ function Workflow() {
                 </div>
               )}
             </div>
-            {!isPro && (
-              <div className="txt-center bg-pro p-5 mt-2">
-                <a href="https://bit-form.com/#pricing" target="_blank" rel="noreferrer">
-                  <b
-                    className="txt-pro"
-                  >
-                    {__('Upgrade to Pro version')}
-                  </b>
-                </a>
-                &nbsp;
-                {__(' to use advanced conditional logic.')}
-              </div>
-            )}
           </SortableItem>
         ))}
       </SortableList>

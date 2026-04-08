@@ -49,7 +49,7 @@ export default class BitDropdownField {
     dropdownIcn: '',
     selectedOptClearable: true,
     searchClearable: true,
-    optionIcon: true,
+    optionIcon: false,
     defaultValue: '',
     placeholder: 'Select an option',
     searchPlaceholder: 'Search option',

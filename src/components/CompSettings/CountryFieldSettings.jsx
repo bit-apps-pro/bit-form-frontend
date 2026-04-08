@@ -158,7 +158,6 @@ const CountryFieldSettings = () => {
         toggleChecked={showSearchPh}
         open={showSearchPh}
         disable={!showSearchPh}
-        isPro
         proProperty="searchPlaceholder"
       >
         <div className={css(FieldStyle.placeholder)}>

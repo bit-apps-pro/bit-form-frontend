@@ -54,7 +54,7 @@ export default function InputIconsSettings() {
       title={__('Input Icons')}
       className={css(FieldStyle.fieldSection)}
       toggleChecked
-      isPro
+      // isPro
       proProperty="inputIcons"
     >
       <div className={css(ut.mt2)}>

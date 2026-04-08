@@ -13,6 +13,15 @@ export default function bitformInit(contentId = null) {
   if (typeof bit_conversational_form !== 'undefined') bit_conversational_form(contentId)
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// in case script is loaded after DOMContentLoaded event, we need to initialize the script after the DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    bitformInit()
+  })
+} else {
   bitformInit()
-})
+}
+
+// document.addEventListener('DOMContentLoaded', () => {
+//   bitformInit()
+// })

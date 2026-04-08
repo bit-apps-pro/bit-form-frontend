@@ -4,16 +4,16 @@
 
 [36m
 [1msrc/bit-form-abandonment.js[22m → [1mdist/bit-form-abandonment.min.js[22m...[39m
-Browserslist: browsers data (caniuse-lite) is 11 months old. Please run:
+Browserslist: browsers data (caniuse-lite) is 12 months old. Please run:
   npx update-browserslist-db@latest
   Why you should do it regularly: https://github.com/browserslist/update-db#readme
 [32mcreated [1mdist/bit-form-abandonment.min.js[22m in [1m1.9s[22m[39m
 [36m
 [1msrc/saveFormProgress.js[22m → [1mdist/saveFormProgress.min.js[22m...[39m
-[32mcreated [1mdist/saveFormProgress.min.js[22m in [1m589ms[22m[39m
+[32mcreated [1mdist/saveFormProgress.min.js[22m in [1m454ms[22m[39m
 [36m
 [1msrc/setFieldValues.js[22m → [1mdist/setFieldValues.min.js[22m...[39m
-[32mcreated [1mdist/setFieldValues.min.js[22m in [1m430ms[22m[39m
+[32mcreated [1mdist/setFieldValues.min.js[22m in [1m487ms[22m[39m
 [36m
 [1msrc/autoSavePartial.js[22m → [1mdist/autoSavePartial.min.js[22m...[39m
-[32mcreated [1mdist/autoSavePartial.min.js[22m in [1m201ms[22m[39m
+[32mcreated [1mdist/autoSavePartial.min.js[22m in [1m305ms[22m[39m

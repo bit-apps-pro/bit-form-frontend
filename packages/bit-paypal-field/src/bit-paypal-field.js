@@ -71,8 +71,9 @@ export default class BitPayPalField {
     try { await isFormValidatedWithoutError(contentId) } catch (_) { return actions.reject() }
     const progressData = await saveFormProgress(contentId)
     const savedFormData = progressData?.[contentId]
+
     if (!savedFormData?.success) return actions.reject()
-    if (savedFormData.entry_id) this.#entryId = savedFormData.entry_id
+    if (savedFormData.data.entry_id) this.#entryId = savedFormData.data.entry_id
     return actions.resolve()
   }
 
@@ -201,10 +202,14 @@ export default class BitPayPalField {
     const taxAmount = ((this.#Number(taxVal) * orderAmount) / 100).toFixed(2) * 1
     const totalAmount = (orderAmount + shippingAmount + taxAmount).toFixed(2) * 1
     const formID = this.#getContentId()?.split('_')[1]
+    const fieldKey = this.#config?.fieldKey
+    const desc = this.#getDynamicValue(this.#config.descFld) || this.#config.description
+    const customId = `form-id:${formID};entry-id:${this.#entryId};field-key:${fieldKey}`
+
     return action.order.create({
       purchase_units: [{
-        // description: this.#getDynamicValue(this.#config.descFld) || this.#config.description,
-        description: `form-id:${formID};entry-id:${this.#entryId};field-key:${this.#config.fieldKey}`,
+        description: desc,
+        custom_id: customId,
         amount:
         {
           currency_code: currency,

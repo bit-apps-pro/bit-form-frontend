@@ -10,7 +10,7 @@ import { $bits, $fields } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import CloseIcn from '../../Icons/CloseIcn'
 import { addToBuilderHistory, reCalculateFldHeights, setRequired } from '../../Utils/FormBuilderHelper'
-import { deepCopy, IS_PRO } from '../../Utils/Helpers'
+import { deepCopy } from '../../Utils/Helpers'
 import tippyHelperMsg from '../../Utils/StaticData/tippyHelperMsg'
 import { isDev } from '../../Utils/config'
 import { __ } from '../../Utils/i18nwrap'
@@ -160,7 +160,6 @@ function RadioCheckSettings() {
   }
 
   function setColumn({ target: { value } }) {
-    if (!IS_PRO) return
     if (value === '') {
       delete fieldData.optionCol
     } else {
@@ -297,7 +296,6 @@ function RadioCheckSettings() {
         id="opt-clm-stng"
         title={__('Options Column')}
         className={css(FieldStyle.fieldSection)}
-        isPro
         proProperty="optionColumn"
         tip={__('Specify the number of columns to display the options in. Leave blank to display the options as needed space.')}
       >

@@ -4,58 +4,58 @@
 
 [36m
 [1msrc/checkFldValidation.js[22m → [1mdist/checkFldValidation.min.js[22m...[39m
-Browserslist: browsers data (caniuse-lite) is 11 months old. Please run:
+Browserslist: browsers data (caniuse-lite) is 12 months old. Please run:
   npx update-browserslist-db@latest
   Why you should do it regularly: https://github.com/browserslist/update-db#readme
-[32mcreated [1mdist/checkFldValidation.min.js[22m in [1m1.6s[22m[39m
+[32mcreated [1mdist/checkFldValidation.min.js[22m in [1m1.5s[22m[39m
 [36m
 [1msrc/checkMinMaxOptions.js[22m → [1mdist/checkMinMaxOptions.min.js[22m...[39m
-[32mcreated [1mdist/checkMinMaxOptions.min.js[22m in [1m458ms[22m[39m
+[32mcreated [1mdist/checkMinMaxOptions.min.js[22m in [1m457ms[22m[39m
 [36m
 [1msrc/checkMinMaxValue.js[22m → [1mdist/checkMinMaxValue.min.js[22m...[39m
-[32mcreated [1mdist/checkMinMaxValue.min.js[22m in [1m350ms[22m[39m
+[32mcreated [1mdist/checkMinMaxValue.min.js[22m in [1m326ms[22m[39m
 [36m
 [1msrc/customOptionValidation.js[22m → [1mdist/customOptionValidation.min.js[22m...[39m
-[32mcreated [1mdist/customOptionValidation.min.js[22m in [1m336ms[22m[39m
+[32mcreated [1mdist/customOptionValidation.min.js[22m in [1m366ms[22m[39m
 [36m
 [1msrc/dcsnbxFldValidation.js[22m → [1mdist/dcsnbxFldValidation.min.js[22m...[39m
-[32mcreated [1mdist/dcsnbxFldValidation.min.js[22m in [1m201ms[22m[39m
+[32mcreated [1mdist/dcsnbxFldValidation.min.js[22m in [1m337ms[22m[39m
 [36m
 [1msrc/emailFldValidation.js[22m → [1mdist/emailFldValidation.min.js[22m...[39m
-[32mcreated [1mdist/emailFldValidation.min.js[22m in [1m193ms[22m[39m
+[32mcreated [1mdist/emailFldValidation.min.js[22m in [1m364ms[22m[39m
 [36m
 [1msrc/fileupFldValidation.js[22m → [1mdist/fileupFldValidation.min.js[22m...[39m
-[32mcreated [1mdist/fileupFldValidation.min.js[22m in [1m193ms[22m[39m
+[32mcreated [1mdist/fileupFldValidation.min.js[22m in [1m432ms[22m[39m
 [36m
 [1msrc/advanceFileUpFldValidation.js[22m → [1mdist/advanceFileUpFldValidation.min.js[22m...[39m
-[32mcreated [1mdist/advanceFileUpFldValidation.min.js[22m in [1m202ms[22m[39m
+[32mcreated [1mdist/advanceFileUpFldValidation.min.js[22m in [1m397ms[22m[39m
 [36m
 [1msrc/bfDatetimeFldValidation.js[22m → [1mdist/bfDatetimeFldValidation.min.js[22m...[39m
-[32mcreated [1mdist/bfDatetimeFldValidation.min.js[22m in [1m201ms[22m[39m
+[32mcreated [1mdist/bfDatetimeFldValidation.min.js[22m in [1m420ms[22m[39m
 [36m
 [1msrc/generateBackslashPattern.js[22m → [1mdist/generateBackslashPattern.min.js[22m...[39m
-[32mcreated [1mdist/generateBackslashPattern.min.js[22m in [1m205ms[22m[39m
+[32mcreated [1mdist/generateBackslashPattern.min.js[22m in [1m365ms[22m[39m
 [36m
 [1msrc/nmbrFldValidation.js[22m → [1mdist/nmbrFldValidation.min.js[22m...[39m
-[32mcreated [1mdist/nmbrFldValidation.min.js[22m in [1m240ms[22m[39m
+[32mcreated [1mdist/nmbrFldValidation.min.js[22m in [1m359ms[22m[39m
 [36m
 [1msrc/requiredFldValidation.js[22m → [1mdist/requiredFldValidation.min.js[22m...[39m
-[32mcreated [1mdist/requiredFldValidation.min.js[22m in [1m221ms[22m[39m
+[32mcreated [1mdist/requiredFldValidation.min.js[22m in [1m377ms[22m[39m
 [36m
 [1msrc/urlFldValidation.js[22m → [1mdist/urlFldValidation.min.js[22m...[39m
-[32mcreated [1mdist/urlFldValidation.min.js[22m in [1m199ms[22m[39m
+[32mcreated [1mdist/urlFldValidation.min.js[22m in [1m332ms[22m[39m
 [36m
 [1msrc/validateForm.js[22m → [1mdist/validateForm.min.js[22m...[39m
-[32mcreated [1mdist/validateForm.min.js[22m in [1m587ms[22m[39m
+[32mcreated [1mdist/validateForm.min.js[22m in [1m687ms[22m[39m
 [36m
 [1msrc/inputMaskValidation.js[22m → [1mdist/inputMaskValidation.min.js[22m...[39m
-[32mcreated [1mdist/inputMaskValidation.min.js[22m in [1m245ms[22m[39m
+[32mcreated [1mdist/inputMaskValidation.min.js[22m in [1m262ms[22m[39m
 [36m
 [1msrc/regexPatternValidation.js[22m → [1mdist/regexPatternValidation.min.js[22m...[39m
-[32mcreated [1mdist/regexPatternValidation.min.js[22m in [1m244ms[22m[39m
+[32mcreated [1mdist/regexPatternValidation.min.js[22m in [1m262ms[22m[39m
 [36m
 [1msrc/phoneNumberFldValidation.js[22m → [1mdist/phoneNumberFldValidation.min.js[22m...[39m
-[32mcreated [1mdist/phoneNumberFldValidation.min.js[22m in [1m245ms[22m[39m
+[32mcreated [1mdist/phoneNumberFldValidation.min.js[22m in [1m284ms[22m[39m
 [36m
 [1msrc/currencyFldValidation.js[22m → [1mdist/currencyFldValidation.min.js[22m...[39m
-[32mcreated [1mdist/currencyFldValidation.min.js[22m in [1m262ms[22m[39m
+[32mcreated [1mdist/currencyFldValidation.min.js[22m in [1m290ms[22m[39m

@@ -10,7 +10,7 @@ import ut from '../../styles/2.utilities'
 import FieldStyle from '../../styles/FieldStyle.style'
 import { isDev } from '../../Utils/config'
 import { addToBuilderHistory } from '../../Utils/FormBuilderHelper'
-import { deepCopy, IS_PRO } from '../../Utils/Helpers'
+import { deepCopy } from '../../Utils/Helpers'
 import { __ } from '../../Utils/i18nwrap'
 import tippyHelperMsg from '../../Utils/StaticData/tippyHelperMsg'
 import Btn from '../Utilities/Btn'
@@ -84,7 +84,6 @@ const CurrencyFieldSettings = () => {
   }
 
   const hideDefalutValue = (e) => {
-    if (!IS_PRO) return
     if (e.target.checked) {
       fieldData.config.defaultValue = 'USD 0.0'
       fieldData.defaultValueHide = true
@@ -99,7 +98,6 @@ const CurrencyFieldSettings = () => {
   }
 
   const setDefaultValue = ({ target: { value } }) => {
-    if (!IS_PRO) return
     if (value === '') delete fieldData.config.defaultValue
     else fieldData.config.defaultValue = value
 
@@ -197,8 +195,7 @@ const CurrencyFieldSettings = () => {
         toggleAction={hideDefalutValue}
         toggleChecked={fieldData?.defaultValueHide}
         open={fieldData?.defaultValueHide}
-        {...IS_PRO && { disable: !fieldData?.defaultValueHide }}
-        isPro
+        disable={!fieldData?.defaultValueHide}
         proProperty="defaultValue"
       >
         <div className={css(FieldStyle.placeholder)}>
@@ -593,7 +590,7 @@ const CurrencyFieldSettings = () => {
         toggleChecked={showSearchPh}
         open={showSearchPh}
         disable={!showSearchPh}
-        isPro
+        // isPro
         proProperty="searchPlaceholder"
       >
         <div className={css(FieldStyle.placeholder)}>

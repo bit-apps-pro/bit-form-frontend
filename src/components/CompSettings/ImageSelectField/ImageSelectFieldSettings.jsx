@@ -211,7 +211,6 @@ function ImageSelectFieldSettings() {
         id="opt-clm-stng"
         title={__('Item Size')}
         className={css(FieldStyle.fieldSection)}
-        isPro
         tip={__("Specify item's minimum size (in pixels)")}
       >
         <div className={css(FieldStyle.placeholder)}>

@@ -4,6 +4,7 @@ import { create } from 'mutative'
 import { Fragment, useState } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
+import { $globalMessages } from '../../GlobalStates/AppSettingsStates'
 import { $fields, $proModal } from '../../GlobalStates/GlobalStates'
 import CloseIcn from '../../Icons/CloseIcn'
 import EditIcn from '../../Icons/EditIcn'
@@ -37,7 +38,6 @@ import OptionList from './OptionList'
 import SimpleAccordion from './StyleCustomize/ChildComp/SimpleAccordion'
 import FieldSettingTitle from './StyleCustomize/FieldSettingTitle'
 import SizeAndPosition from './StyleCustomize/StyleComponents/SizeAndPosition'
-import { $globalMessages } from '../../GlobalStates/AppSettingsStates'
 
 export default function DropdownFieldSettings() {
   const { fieldKey: fldKey } = useParams()
@@ -293,8 +293,7 @@ export default function DropdownFieldSettings() {
         toggleAction={toggleSearchPlaceholder}
         toggleChecked={showSearchPh}
         open={showSearchPh}
-        {...IS_PRO && { disable: !showSearchPh }}
-        isPro
+        disable={!showSearchPh}
         proProperty="searchPlaceholder"
       >
         <div className={css(FieldStyle.placeholder)}>
@@ -309,19 +308,6 @@ export default function DropdownFieldSettings() {
           />
         </div>
       </SimpleAccordion>
-
-      <FieldSettingsDivider />
-
-      <SingleToggle
-        id="shw-slctd-img-stng"
-        className={css(FieldStyle.fieldSection, FieldStyle.hover_tip, FieldStyle.singleOption)}
-        title={__('Show Selected Option Image')}
-        action={e => handleConfigChange(e.target.checked, 'selectedOptImage')}
-        isChecked={selectedOptImage}
-        tip="By disabling this option, the field show selected option image will be hidden"
-        isPro
-        proProperty="selectedOptImage"
-      />
 
       <FieldSettingsDivider />
 
@@ -348,6 +334,19 @@ export default function DropdownFieldSettings() {
       <FieldSettingsDivider />
 
       <SingleToggle
+        id="shw-slctd-img-stng"
+        className={css(FieldStyle.fieldSection, FieldStyle.hover_tip, FieldStyle.singleOption)}
+        title={__('Show Selected Option Image')}
+        action={e => handleConfigChange(e.target.checked, 'selectedOptImage')}
+        isChecked={selectedOptImage}
+        tip="By disabling this option, the field show selected option image will be hidden"
+        isPro
+        proProperty="selectedOptImage"
+      />
+
+      <FieldSettingsDivider />
+
+      <SingleToggle
         id="opt-icn-stng"
         className={css(FieldStyle.fieldSection, FieldStyle.singleOption)}
         title={__('Option Icon/Image:')}
@@ -367,6 +366,7 @@ export default function DropdownFieldSettings() {
         action={e => handleConfigChange(e.target.checked, 'allowCustomOption')}
         isChecked={allowCustomOption}
         tip="By disabling this option, the field allow custom option will be hidden"
+        isPro
       />
 
       <FieldSettingsDivider />
@@ -456,6 +456,7 @@ export default function DropdownFieldSettings() {
         action={e => handleConfigChange(e.target.checked, 'closeOnSelect')}
         isChecked={closeOnSelect}
         tip="By disabling this option, the field close on select will be hidden"
+        isPro
       />
 
       <FieldSettingsDivider />

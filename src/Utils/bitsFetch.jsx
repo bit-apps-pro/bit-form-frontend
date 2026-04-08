@@ -13,6 +13,7 @@ export default async function bitsFetch(data, action, contentType = null, queryP
   } else {
     payload.append('data', JSON.stringify(data))
   }
+  // payload.append('data', data instanceof FormData ? data : JSON.stringify(data))  // FormData nesting - if the data is an instance of formdata, sets [object FormData] to data property of payload.
   payload.append('action', action)
   payload.append('_ajax_nonce', typeof bits === 'undefined' ? '' : bits.nonce)
 

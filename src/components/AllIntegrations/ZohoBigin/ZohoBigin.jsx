@@ -6,7 +6,6 @@ import { __ } from '../../../Utils/i18nwrap'
 import Modal from '../../Utilities/Modal'
 import SnackMsg from '../../Utilities/SnackMsg'
 import Steps from '../../Utilities/Steps'
-import ConnectedAppsList from '../ConnectedAppsList'
 import { getConnectedAppList } from '../integrationHelper'
 import { saveIntegConfig, setGrantTokenResponse } from '../IntegrationHelpers/IntegrationHelpers'
 import IntegrationStepThree from '../IntegrationHelpers/IntegrationStepThree'
@@ -14,6 +13,7 @@ import NextBtn from '../NextBtn'
 import ZohoBiginAuthorization from './ZohoBiginAuthorization'
 import { handleInput, refreshModules } from './ZohoBiginCommonFunc'
 import ZohoBiginIntegLayout from './ZohoBiginIntegLayout'
+import ConnectedAppsList from '../ConnectedAppsList'
 
 function ZohoBigin({ formFields, setIntegration, integrations, allIntegURL }) {
   const history = useNavigate()

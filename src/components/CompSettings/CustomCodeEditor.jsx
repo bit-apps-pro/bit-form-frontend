@@ -40,7 +40,6 @@ import ListGroup from '../Utilities/ListGroup'
 import Select from '../Utilities/Select'
 import StyleSegmentControl from '../Utilities/StyleSegmentControl'
 import Grow from './StyleCustomize/ChildComp/Grow'
-import ProOverlay from './StyleCustomize/ChildComp/ProOverlay'
 
 function CustomCodeEditor() {
   const { css } = useFela()
@@ -196,7 +195,6 @@ function CustomCodeEditor() {
 
       <Grow open={editorTab === 'JavaScript'}>
         <div className="pos-rel">
-          {!IS_PRO && (<ProOverlay style={{ left: 0, width: '100%' }} />)}
           {enableEditor === 'on' ? (
             <AceEditor
               {...editorProps}
@@ -221,7 +219,6 @@ function CustomCodeEditor() {
 
       <Grow open={editorTab === 'CSS'}>
         <div className="pos-rel">
-          {!IS_PRO && (<ProOverlay style={{ left: 0, width: '100%' }} />)}
           {enableEditor === 'on' ? (
             <AceEditor
               {...editorProps}

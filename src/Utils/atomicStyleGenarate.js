@@ -410,7 +410,14 @@ function addPrefixInObjectKeys(obj, prefix) {
   const objKeys = Object.keys(obj)
   const newObj = {}
   objKeys.forEach((key) => {
-    newObj[prefix + key] = { ...obj[key] }
+    // if key contains , it means it has multiple selectors, so we need to add prefix to each selector
+    if (key.includes(',')) {
+      const splittedKeys = key.split(',').map(k => k.trim())
+      const prefixedSplittedKeys = splittedKeys.map(k => prefix + k)
+      newObj[prefixedSplittedKeys.join(', ')] = { ...obj[key] }
+    } else {
+      newObj[prefix + key] = { ...obj[key] }
+    }
   })
   return newObj
 }

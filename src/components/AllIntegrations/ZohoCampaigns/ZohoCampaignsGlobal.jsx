@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import 'react-multiple-select-dropdown-lite/dist/index.css'
 import { useNavigate, useParams } from 'react-router-dom'
+import { __ } from '../../../Utils/i18nwrap'
 import SnackMsg from '../../Utilities/SnackMsg'
 import { setGrantTokenResponse } from '../IntegrationHelpers/IntegrationHelpers'
 import ZohoCampaignsAuthorization from './ZohoCampaignsAuthorization'
+import { checkMappedFields } from './ZohoCampaignsCommonFunc'
 
 function ZohoCampaignsGlobal({ formFields, setIntegration, integrations, allIntegURL }) {
   const navigate = useNavigate()

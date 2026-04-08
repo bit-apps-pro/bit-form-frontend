@@ -45,7 +45,6 @@ function HiddenFieldSettings() {
   const { css } = useFela()
 
   const hideDefalutValue = (e) => {
-    if (!IS_PRO) return
     if (e.target.checked) {
       fieldData.defaultValue = fieldData.lbl || fldKey
       fieldData.defaultValueHide = true
@@ -60,7 +59,6 @@ function HiddenFieldSettings() {
   }
 
   const setDefaultValue = ({ target: { value } }) => {
-    if (!IS_PRO) return
     if (value === '') delete fieldData.defaultValue
     else fieldData.defaultValue = value
 
@@ -104,8 +102,7 @@ function HiddenFieldSettings() {
           toggleAction={hideDefalutValue}
           toggleChecked={fieldData?.defaultValueHide}
           open={fieldData?.defaultValueHide}
-          {...IS_PRO && { disable: !fieldData?.defaultValueHide }}
-          isPro
+          disable={!fieldData?.defaultValueHide}
           proProperty="defaultValue"
         >
           <div className={css(FieldStyle.placeholder)}>

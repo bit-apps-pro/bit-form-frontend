@@ -58,10 +58,8 @@ export default class FakeFormFiller {
 
   fill() {
     const inputs = Array.from(
-      this.#form.querySelectorAll(
-        'input:not(.d-none):not([type="hidden"]):not([type="search"]), textarea, select',
-      ),
-    )
+      this.#form.querySelectorAll('input:not(.d-none):not([type="hidden"]):not([type="search"]), textarea, select'),
+    ).filter(el => !el.closest('.fld-hide'))
 
     const customFieldsHiddenField = this.#form.querySelectorAll('.bf-currency-hidden-input, .bf-country-hidden-input, .bf-phone-hidden-input, .bf-dpd-hidden-input, .bf-signature-hidden-input, .bf-advanced-datetime-hidden-input')
     if (customFieldsHiddenField) {

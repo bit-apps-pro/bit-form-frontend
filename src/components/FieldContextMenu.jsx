@@ -25,7 +25,6 @@ import {
   reCalculateFldHeights,
 } from '../Utils/FormBuilderHelper'
 import { IS_PRO } from '../Utils/Helpers'
-import proHelperData from '../Utils/StaticData/proHelperData'
 import { generateFieldLblForHistory } from '../Utils/gridLayoutHelpers'
 import { __ } from '../Utils/i18nwrap'
 import FieldDeleteButton from './FieldDeleteButton'
@@ -97,10 +96,10 @@ export default function FieldContextMenu({
   }
 
   const handleFieldHide = () => {
-    if (!IS_PRO) {
-      setProModal({ show: true, ...proHelperData.hidden })
-      return
-    }
+    // if (!IS_PRO) {
+    //   setProModal({ show: true, ...proHelperData.hidden })
+    //   return
+    // }
     const allFields = create(fields, draft => {
       const fldData = draft[fldKey]
       if ('hide' in fldData.valid && fldData.valid?.hide === true) {
@@ -267,7 +266,7 @@ export default function FieldContextMenu({
             <ContextMenuItem onClick={navigateToFieldSettings} label="Settings" icn={<EditIcn size="19" />} />
             <ContextMenuItem onClick={styleNavigation} label="Style" icn={<BrushIcn height="18" width="14" stroke="1.6" />} />
             <ContextMenuItem onClick={() => cloneLayoutItem(fldKey)} label="Clone" icn={<CopyIcn size="19" />} isPro proProperty="fieldClone" />
-            <ContextMenuItem onClick={() => handleFieldHide()} label="Hide" icn={<EyeOffIcon size="19" classes={css({ p: '2px 0px 0px 2px' })} />} postIcn={checkIfHidden() && <CheckMarkIcn cls="context-btn-color" size="19" />} isPro proProperty="hidden" />
+            <ContextMenuItem onClick={() => handleFieldHide()} label="Hide" icn={<EyeOffIcon size="19" classes={css({ p: '2px 0px 0px 2px' })} />} postIcn={checkIfHidden() && <CheckMarkIcn cls="context-btn-color" size="19" />} proProperty="hidden" />
             {canMoveToStep && (
               <MenuItemWrapper isContextMenu={isContextMenu}>
                 <li className="context-item">

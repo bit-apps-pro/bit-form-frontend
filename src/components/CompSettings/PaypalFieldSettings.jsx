@@ -439,8 +439,7 @@ export default function PaypalFieldSettings() {
                 </label>
               </div>
 
-              {/*
-              // ---------Description Added in bit-paypal-filed.js whith form-id,entry-id,field-key value----------
+              {/* ---------Description Added in bit-paypal-filed.js with form-id,entry-id,field-key value---------- currently using user input for desc from field settings */}
               <div className={css(ut.ml2, ut.mr2, ut.p1)}>
                 <b>{__('Description')}</b>
                 <br />
@@ -474,7 +473,7 @@ export default function PaypalFieldSettings() {
                     {getDescFields()}
                   </select>
                 </div>
-              )} */}
+              )}
             </>
           )}
         </>

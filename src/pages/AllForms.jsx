@@ -122,7 +122,7 @@ function AllFroms() {
               {__('Settings')}
             </Link>
             <a
-              href={`${bits.siteURL}/bitform-form-view/${val.row.original.formID}`}
+              href={`${bits.siteURL}/?bitform-form-view=${val.row.original.formID}`}
               target="_blank"
               rel="noreferrer"
             >

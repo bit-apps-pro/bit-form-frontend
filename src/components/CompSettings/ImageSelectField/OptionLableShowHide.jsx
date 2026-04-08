@@ -1,16 +1,15 @@
 /* eslint-disable no-param-reassign */
+import { useAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
 import { $fields } from '../../../GlobalStates/GlobalStates'
 import FieldStyle from '../../../styles/FieldStyle.style'
 import { addToBuilderHistory, reCalculateFldHeights } from '../../../Utils/FormBuilderHelper'
-import { IS_PRO } from '../../../Utils/Helpers'
 import { __ } from '../../../Utils/i18nwrap'
 import tippyHelperMsg from '../../../Utils/StaticData/tippyHelperMsg'
-import SingleToggle from '../../Utilities/SingleToggle'
 import { addDefaultStyleClasses } from '../../style-new/styleHelpers'
+import SingleToggle from '../../Utilities/SingleToggle'
 
 export default function OptionLableShowHide({ cls }) {
   const { fieldKey: fldKey } = useParams()
@@ -19,7 +18,7 @@ export default function OptionLableShowHide({ cls }) {
   const { css } = useFela()
 
   const setImgLbl = ({ target }) => {
-    if (!IS_PRO) return
+    // if (!IS_PRO) return
     const { checked } = target
     const allFields = create(fields, draft => {
       const fldData = draft[fldKey]
@@ -45,7 +44,7 @@ export default function OptionLableShowHide({ cls }) {
         title={__('Hide Image Label')}
         action={setImgLbl}
         isChecked={isImageLbl}
-        isPro
+        // isPro
         proProperty="hidden"
       />
     </div>

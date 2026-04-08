@@ -28,6 +28,7 @@ export const allowedFieldsForIntegration = (formFields) => {
     'phone-number',
     'username',
     'password',
+    'advanced-datetime',
     'date',
     'time',
     'datetime-local',

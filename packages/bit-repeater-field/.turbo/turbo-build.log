@@ -4,19 +4,19 @@
 
 [36m
 [1msrc/bit-repeater-field.js[22m → [1mdist/bit-repeater-field.min.js[22m...[39m
-Browserslist: browsers data (caniuse-lite) is 11 months old. Please run:
+Browserslist: browsers data (caniuse-lite) is 12 months old. Please run:
   npx update-browserslist-db@latest
   Why you should do it regularly: https://github.com/browserslist/update-db#readme
-[32mcreated [1mdist/bit-repeater-field.min.js[22m in [1m2.7s[22m[39m
+[32mcreated [1mdist/bit-repeater-field.min.js[22m in [1m2.2s[22m[39m
 [36m
 [1msrc/checkRepeatedField.js[22m → [1mdist/checkRepeatedField.min.js[22m...[39m
-[32mcreated [1mdist/checkRepeatedField.min.js[22m in [1m217ms[22m[39m
+[32mcreated [1mdist/checkRepeatedField.min.js[22m in [1m249ms[22m[39m
 [36m
 [1msrc/isRepeaterField.js[22m → [1mdist/isRepeaterField.min.js[22m...[39m
-[32mcreated [1mdist/isRepeaterField.min.js[22m in [1m205ms[22m[39m
+[32mcreated [1mdist/isRepeaterField.min.js[22m in [1m241ms[22m[39m
 [36m
 [1msrc/getRepeatedIndexes.js[22m → [1mdist/getRepeatedIndexes.min.js[22m...[39m
-[32mcreated [1mdist/getRepeatedIndexes.min.js[22m in [1m208ms[22m[39m
+[32mcreated [1mdist/getRepeatedIndexes.min.js[22m in [1m312ms[22m[39m
 [36m
 [1msrc/getIndexesBaseOnConditions.js[22m → [1mdist/getIndexesBaseOnConditions.min.js[22m...[39m
-[32mcreated [1mdist/getIndexesBaseOnConditions.min.js[22m in [1m238ms[22m[39m
+[32mcreated [1mdist/getIndexesBaseOnConditions.min.js[22m in [1m472ms[22m[39m

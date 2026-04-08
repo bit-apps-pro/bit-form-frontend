@@ -45,7 +45,7 @@ export default class BitCurrencyField {
     noCurrencyFoundText: 'No Currency Found',
     selectedCurrencyClearable: true,
     searchClearable: true,
-    selectedFlagImage: true,
+    selectedFlagImage: false,
     defaultCurrencyKey: '',
     defaultValue: '',
     optionFlagImage: true,

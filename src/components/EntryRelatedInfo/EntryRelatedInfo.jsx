@@ -98,7 +98,7 @@ function EntryRelatedInfo({ entryID, rowDtl, setSnackbar, close }) {
               <div key={pdf.id} className={css(styles.pdfTemplateContainer)}>
                 <a
                   target="_blank"
-                  href={`${window.origin}/bitform-download-pdf/?formID=${formID}&pdftemp=${pdf.id}&entryId=${entryID}`}
+                  href={`${window.origin}?bitform-download-pdf=1&formID=${formID}&pdftemp=${pdf.id}&entryId=${entryID}`}
                   rel="noreferrer"
                 >
                   <DownloadIcon size={14} />

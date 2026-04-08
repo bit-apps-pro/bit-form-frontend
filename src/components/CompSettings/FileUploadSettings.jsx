@@ -318,9 +318,8 @@ export default function FileUploadSettings() {
         switching
         tip="By enabling this feature, you will see file select status"
         tipProps={{ width: 200, icnSize: 17 }}
-        // open={showSelectStatus}
-        {...IS_PRO && { disable: !showSelectStatus }}
-        isPro
+        open={showSelectStatus}
+        disable={!showSelectStatus}
         proProperty="fileSelectStatus"
       >
         <div className={css({ m: 2 })}>
@@ -330,35 +329,6 @@ export default function FileUploadSettings() {
             type="text"
             value={fileSelectStatus}
             onChange={e => setConfigValue('fileSelectStatus', e.target.value)}
-          />
-        </div>
-      </SimpleAccordion>
-
-      <FieldSettingsDivider />
-
-      <SimpleAccordion
-        id="shw-mxmm-siz-stng"
-        title={__('Show Maximum Size')}
-        // eslint-disable-next-line react/jsx-no-bind
-        toggleAction={e => setConfigValue('showMaxSize', e.target.checked)}
-        toggleChecked={showMaxSize}
-        className={css(FieldStyle.fieldSection, FieldStyle.hover_tip)}
-        switching
-        tip="By disabling this option, the field show maximum size will be hidden"
-        tipProps={{ width: 200, icnSize: 17 }}
-        open={showMaxSize}
-        {...IS_PRO && { disable: !showMaxSize }}
-        isPro
-        proProperty="showMaxSize"
-      >
-        <div className={css({ m: 2 })}>
-          <input
-            data-testid="fil-slct-stts-inp"
-            className={css(FieldStyle.input)}
-            type="text"
-            value={maxSizeLabel}
-            placeholder="Write a Max Size Label Ex:(Max 2MB)"
-            onChange={e => setConfigValue('maxSizeLabel', e.target.value)}
           />
         </div>
       </SimpleAccordion>
@@ -411,6 +381,35 @@ export default function FileUploadSettings() {
       <FieldSettingsDivider />
 
       <SimpleAccordion
+        id="shw-mxmm-siz-stng"
+        title={__('Show Maximum Size')}
+        // eslint-disable-next-line react/jsx-no-bind
+        toggleAction={e => setConfigValue('showMaxSize', e.target.checked)}
+        toggleChecked={showMaxSize}
+        className={css(FieldStyle.fieldSection, FieldStyle.hover_tip)}
+        switching
+        tip="By disabling this option, the field show maximum size will be hidden"
+        tipProps={{ width: 200, icnSize: 17 }}
+        open={showMaxSize}
+        {...IS_PRO && { disable: !showMaxSize }}
+        isPro
+        proProperty="showMaxSize"
+      >
+        <div className={css({ m: 2 })}>
+          <input
+            data-testid="fil-slct-stts-inp"
+            className={css(FieldStyle.input)}
+            type="text"
+            value={maxSizeLabel}
+            placeholder="Write a Max Size Label Ex:(Max 2MB)"
+            onChange={e => setConfigValue('maxSizeLabel', e.target.value)}
+          />
+        </div>
+      </SimpleAccordion>
+
+      <FieldSettingsDivider />
+
+      <SimpleAccordion
         id="shw-fil-lst-stng"
         title={__('Show File List')}
         // eslint-disable-next-line react/jsx-no-bind
@@ -421,7 +420,6 @@ export default function FileUploadSettings() {
         tip="By enabling this feature, you will see file select status"
         tipProps={{ width: 200, icnSize: 17 }}
         open={showFileList}
-        disable={!showFileList}
         {...IS_PRO && { disable: !showFileList }}
         isPro
         proProperty="showFileList"

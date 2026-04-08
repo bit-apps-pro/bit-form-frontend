@@ -14,8 +14,7 @@ export default function FormPreviewBtn() {
 
   // Handle the preview button click
   const handlePreviewClick = () => {
-    const previewUrl = `${bits.siteURL}/bitform-form-view/${formID}`
-
+    const previewUrl = `${bits.siteURL}/?bitform-form-view=${formID}`
     /// Case 1: No existing preview window or window was closed
     if (!previewWindow || previewWindow.closed) {
       const newWindow = window.open(previewUrl, '_blank')
@@ -26,7 +25,7 @@ export default function FormPreviewBtn() {
     }
     try {
       // Case 2: Existing window has different form ID
-      if (!previewWindow.location.href.includes(`/bitform-form-view/${formID}`)) {
+      if (!previewWindow.location.href.includes(`bitform-form-view=${formID}`)) {
         previewWindow.location.href = previewUrl
       }
       // Case 3: Existing window has same form ID

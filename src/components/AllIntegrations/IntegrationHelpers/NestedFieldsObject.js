@@ -25,9 +25,9 @@ export default function nestedFieldsObject(fields, nestedLayouts = {}, notAllowF
         if (!notAllowFieldType.includes(field.typ)) {
           let prop = ''
           if (field.typ === 'repeater') {
-            prop = `${field.lbl}_(Repeater)`
+            prop = `${field.adminLbl || field.lbl || field.key}_(Repeater)`
           } else if (field.typ === 'section') {
-            prop = `${field.lbl}_(Section)`
+            prop = `${field.adminLbl || field.lbl || field.key}_(Section)`
           }
           if (!nestedFieldLayouts[prop]) {
             nestedFieldLayouts[prop] = {

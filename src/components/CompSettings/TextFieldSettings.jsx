@@ -88,7 +88,6 @@ function TextFieldSettings() {
   // }
 
   const hideDefalutValue = (e) => {
-    if (!IS_PRO) return
     if (e.target.checked) {
       fieldData.defaultValue = fieldData.lbl || fldKey
       fieldData.defaultValueHide = true
@@ -103,7 +102,6 @@ function TextFieldSettings() {
   }
 
   const setDefaultValue = ({ target: { value } }) => {
-    if (!IS_PRO) return
     if (value === '') delete fieldData.defaultValue
     else fieldData.defaultValue = value
 
@@ -113,6 +111,7 @@ function TextFieldSettings() {
   }
 
   function setMin(e) {
+    if (!IS_PRO) return
     if (e.target.value === '') {
       delete fieldData.mn
     } else {
@@ -128,6 +127,7 @@ function TextFieldSettings() {
   }
 
   function setMax(e) {
+    if (!IS_PRO) return
     if (e.target.value === '') {
       delete fieldData.mx
     } else {
@@ -417,8 +417,7 @@ function TextFieldSettings() {
               toggleAction={hideDefalutValue}
               toggleChecked={fieldData?.defaultValueHide}
               open={fieldData?.defaultValueHide}
-              {...IS_PRO && { disable: !fieldData?.defaultValueHide }}
-              isPro
+              disable={!fieldData?.defaultValueHide}
               proProperty="defaultValue"
             >
               <div className={css(FieldStyle.placeholder)}>
@@ -439,7 +438,7 @@ function TextFieldSettings() {
         {
           ['number', 'date', 'datetime-local', 'time', 'month', 'week'].includes(fieldData.typ) && (
             <>
-              <SimpleAccordion id="nmbr-stng" title="Value Range(Min/Max):" className={css(FieldStyle.fieldSection)}>
+              <SimpleAccordion id="nmbr-stng" title="Value Range(Min/Max):" className={css(FieldStyle.fieldSection)} isPro>
                 {/* <input aria-label="Maximum number for this field" className={css(FieldStyle.input)} type="text" value={placeholder} onChange={setPlaceholder} /> */}
                 <div className={css({ mx: 5 })}>
                   <div className={css(FieldStyle.fieldNumber, { py: '0px !important' })}>

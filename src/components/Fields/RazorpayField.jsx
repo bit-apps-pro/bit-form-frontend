@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import BitRazorpayField from 'bit-razorpay-field/src/bit-razorpay-field'
-import { useAtomValue } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
+import { useAtomValue } from 'jotai'
 import { $payments } from '../../GlobalStates/AppSettingsStates'
 import { $fields } from '../../GlobalStates/GlobalStates'
 import { addFormUpdateError, reCalculateFldHeights, removeFormUpdateError } from '../../Utils/FormBuilderHelper'

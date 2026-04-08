@@ -128,7 +128,7 @@ export default function EditEntryData(props) {
         <iframe
           ref={ref}
           title="Form Entry Edit"
-          src={`${window.location.origin}/bitform-form-entry-edit/${formID}/${entryID}`}
+          src={`${window.location.origin}?bitform-form-entry-edit=1&formId=${formID}&entryId=${entryID}`}
           className={css(style.iframe, style.body)}
           onLoad={() => setisIframeLoading(false)}
         />

@@ -104,7 +104,6 @@ const PhoneNumberFieldSettings = () => {
   }
 
   const setDefaultValue = ({ target: { value } }) => {
-    if (!IS_PRO) return
     if (value === '') delete fieldData.defaultValue
     else fieldData.defaultValue = value
 
@@ -114,7 +113,6 @@ const PhoneNumberFieldSettings = () => {
   }
 
   const hideDefalutValue = (e) => {
-    if (!IS_PRO) return
     if (e.target.checked) {
       fieldData.defaultValueHide = true
     } else {
@@ -259,8 +257,7 @@ const PhoneNumberFieldSettings = () => {
         toggleAction={hideDefalutValue}
         toggleChecked={fieldData?.defaultValueHide}
         open={fieldData?.defaultValueHide}
-        {...IS_PRO && { disable: !fieldData?.defaultValueHide }}
-        isPro
+        disable={!fieldData?.defaultValueHide}
         proProperty="defaultValue"
       >
         <div className={css(FieldStyle.placeholder)}>
@@ -434,7 +431,6 @@ const PhoneNumberFieldSettings = () => {
         toggleChecked={showSearchPh}
         open={showSearchPh}
         disable={!showSearchPh}
-        isPro
         proProperty="searchPlaceholder"
       >
         <div className={css(FieldStyle.placeholder)}>

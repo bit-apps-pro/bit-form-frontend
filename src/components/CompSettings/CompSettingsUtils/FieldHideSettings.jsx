@@ -1,12 +1,11 @@
 /* eslint-disable no-param-reassign */
+import { useAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
 import { $fields } from '../../../GlobalStates/GlobalStates'
 import FieldStyle from '../../../styles/FieldStyle.style'
 import { addToBuilderHistory } from '../../../Utils/FormBuilderHelper'
-import { IS_PRO } from '../../../Utils/Helpers'
 import { __ } from '../../../Utils/i18nwrap'
 import tippyHelperMsg from '../../../Utils/StaticData/tippyHelperMsg'
 import SingleToggle from '../../Utilities/SingleToggle'
@@ -18,7 +17,7 @@ export default function FieldHideSettings({ cls }) {
   const { css } = useFela()
 
   const setHidden = ({ target }) => {
-    if (!IS_PRO) return
+    // if (!IS_PRO) return
     const { checked } = target
     const allFields = create(fields, draft => {
       const fldData = draft[fldKey]
@@ -42,7 +41,7 @@ export default function FieldHideSettings({ cls }) {
         title={__('Hidden')}
         action={setHidden}
         isChecked={isHidden}
-        isPro
+        // isPro
         proProperty="hidden"
       />
     </div>

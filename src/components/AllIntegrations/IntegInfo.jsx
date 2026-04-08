@@ -2,11 +2,12 @@ import { lazy, Suspense, useState } from 'react'
 import { useFela } from 'react-fela'
 import { Link, useParams } from 'react-router-dom'
 import { useAtomValue } from 'jotai'
-import { $bits, $integrations } from '../../GlobalStates/GlobalStates'
+import { $bits, $fieldsArr, $integrations } from '../../GlobalStates/GlobalStates'
 import ChevronLeft from '../../Icons/ChevronLeft'
 import app from '../../styles/app.style'
 import { __ } from '../../Utils/i18nwrap'
 import SnackMsg from '../Utilities/SnackMsg'
+import { allowedFieldsForIntegration } from './integrationHelper'
 
 const ActiveCampaignAuthorization = lazy(() => import('./ActiveCampaign/ActiveCampaignAuthorization'))
 const GoogleSheetAuthorization = lazy(() => import('./GoogleSheet/GoogleSheetAuthorization'))
@@ -74,6 +75,7 @@ export default function IntegInfo({ allIntegURL }) {
 
 const IntegInfoComponents = ({ integ, location, setSnackbar }) => {
   const bits = useAtomValue($bits)
+  const formFields = allowedFieldsForIntegration(useAtomValue($fieldsArr))
 
   switch (integ.type) {
     case 'Zoho Analytics':
@@ -115,17 +117,17 @@ const IntegInfoComponents = ({ integ, location, setSnackbar }) => {
     case 'ActiveCampaign':
       return <ActiveCampaignAuthorization activeCampaingConf={integ} step={1} setSnackbar={setSnackbar} isInfo />
     case 'Web Hooks':
-      return <WebHooksIntegration webHooks={integ} setSnackbar={setSnackbar} isInfo />
+      return <WebHooksIntegration webHooks={integ} setSnackbar={setSnackbar} isInfo formFields={formFields} />
     case 'Zapier':
-      return <WebHooksIntegration webHooks={integ} setSnackbar={setSnackbar} isInfo />
+      return <WebHooksIntegration webHooks={integ} setSnackbar={setSnackbar} isInfo formFields={formFields} />
     case 'Integromat':
-      return <WebHooksIntegration webHooks={integ} setSnackbar={setSnackbar} isInfo />
+      return <WebHooksIntegration webHooks={integ} setSnackbar={setSnackbar} isInfo formFields={formFields} />
     case 'Integrately':
-      return <WebHooksIntegration webHooks={integ} setSnackbar={setSnackbar} isInfo />
+      return <WebHooksIntegration webHooks={integ} setSnackbar={setSnackbar} isInfo formFields={formFields} />
     case 'Pabbly':
-      return <WebHooksIntegration webHooks={integ} setSnackbar={setSnackbar} isInfo />
+      return <WebHooksIntegration webHooks={integ} setSnackbar={setSnackbar} isInfo formFields={formFields} />
     case 'Zoho Flow':
-      return <WebHooksIntegration webHooks={integ} setSnackbar={setSnackbar} isInfo />
+      return <WebHooksIntegration webHooks={integ} setSnackbar={setSnackbar} isInfo formFields={formFields} />
     case 'Telegram':
       return <TelegramAuthorization telegramConf={integ} step={1} setSnackbar={setSnackbar} isInfo />
     case 'Encharge':

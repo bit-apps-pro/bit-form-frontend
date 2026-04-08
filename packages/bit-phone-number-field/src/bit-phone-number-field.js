@@ -55,6 +55,8 @@ export default class BitPhoneNumberField {
     searchCountryPlaceholder: 'Search Country',
     noCountryFoundText: 'No Country Found',
     searchClearable: true,
+    inputFormat: '+c #### ### ###',
+    valueFormat: '+c #### ### ###',
     defaultCountryKey: '',
     attributes: {},
     classNames: {},

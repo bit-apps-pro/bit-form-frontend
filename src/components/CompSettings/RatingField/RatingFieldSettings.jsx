@@ -14,6 +14,7 @@ import { useFela } from 'react-fela'
 import 'react-multiple-select-dropdown-lite/dist/index.css'
 import { useParams } from 'react-router-dom'
 import { $fields } from '../../../GlobalStates/GlobalStates'
+import { $styles } from '../../../GlobalStates/StylesState'
 import CloseIcn from '../../../Icons/CloseIcn'
 import { addToBuilderHistory } from '../../../Utils/FormBuilderHelper'
 import { IS_PRO, deepCopy } from '../../../Utils/Helpers'
@@ -31,12 +32,11 @@ import HelperTxtSettings from '../CompSettingsUtils/HelperTxtSettings'
 import RequiredSettings from '../CompSettingsUtils/RequiredSettings'
 import SubTitleSettings from '../CompSettingsUtils/SubTitleSettings'
 import EditOptions from '../EditOptions/EditOptions'
+import Icons from '../Icons'
+import FieldIconSettings from '../StyleCustomize/ChildComp/FieldIconSettings'
+import SimpleAccordion from '../StyleCustomize/ChildComp/SimpleAccordion'
 import FieldSettingTitle from '../StyleCustomize/FieldSettingTitle'
 import SizeAndPosition from '../StyleCustomize/StyleComponents/SizeAndPosition'
-import SimpleAccordion from '../StyleCustomize/ChildComp/SimpleAccordion'
-import { $styles } from '../../../GlobalStates/StylesState'
-import FieldIconSettings from '../StyleCustomize/ChildComp/FieldIconSettings'
-import Icons from '../Icons'
 
 function RatingFieldSettings() {
   const { fieldKey: fldKey } = useParams()
@@ -170,7 +170,6 @@ function RatingFieldSettings() {
           id="rating-algn"
           title={__('Rating Position')}
           className={css(FieldStyle.fieldSection)}
-          isPro
         >
           <div className={css(FieldStyle.placeholder)}>
             <select
