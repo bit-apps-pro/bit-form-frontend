@@ -66,18 +66,6 @@ If you do not enable integrations or use those features, the plugin does not sen
 
 ---
 
-### 5. Placeholder Images (fakeimg.pl)
-
-| Item                 | Details                                                                                    |
-| -------------------- | ------------------------------------------------------------------------------------------ |
-| **What it does**     | Generates placeholder images for the Image field when no custom image is set.              |
-| **When it connects** | When a form with an Image field using the default placeholder is rendered on the frontend. |
-| **Data sent**        | Dimensions (width/height) in the image URL.                                                |
-| **Terms of Use**     | [fakeimg.pl](https://fakeimg.pl/) – third-party service; review their site for terms.      |
-| **Privacy Policy**   | See service website.                                                                       |
-
----
-
 ### 6. Telemetry (wp-api.bitapps.pro) – Opt-in Only
 
 | Item                 | Details                                                                                                     |
@@ -96,23 +84,23 @@ The following services are used **only when you configure and enable** the corre
 
 ### Email Marketing & CRM
 
-| Service                | Purpose                            | Data Sent                                  | Terms                                                                    | Privacy                                                                  |
-| ---------------------- | ---------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| **GetGist**            | Add contacts to GetGist lists      | Form field values mapped to GetGist fields | [GetGist Terms](https://www.getgist.com/terms)                           | [GetGist Privacy](https://www.getgist.com/privacy)                       |
-| **Mailchimp**          | Add subscribers to Mailchimp lists | Form field values (email, name, etc.)      | [Mailchimp Terms](https://mailchimp.com/legal/terms/)                    | [Mailchimp Privacy](https://mailchimp.com/legal/privacy/)                |
-| **Brevo (SendinBlue)** | Email marketing, CRM               | Form field values                          | [Brevo Terms](https://www.brevo.com/legal/termsofuse/)                   | [Brevo Privacy](https://www.brevo.com/legal/privacypolicy/)              |
-| **ActiveCampaign**     | CRM, email automation              | Form field values                          | [ActiveCampaign Terms](https://www.activecampaign.com/terms-of-service/) | [ActiveCampaign Privacy](https://www.activecampaign.com/privacy-policy/) |
-| **MailerLite**         | Email marketing                    | Form field values                          | [MailerLite Terms](https://www.mailerlite.com/legal/terms-of-service)    | [MailerLite Privacy](https://www.mailerlite.com/legal/privacy-policy)    |
-| **Elastic Email**      | Email delivery, lists              | Form field values, API key                 | [Elastic Email Terms](https://elasticemail.com/terms)                    | [Elastic Email Privacy](https://elasticemail.com/privacy-policy)         |
-| **HubSpot**            | CRM, marketing automation          | Form field values                          | [HubSpot Terms](https://legal.hubspot.com/terms-of-service)              | [HubSpot Privacy](https://legal.hubspot.com/privacy-policy)              |
-| **Fluent CRM**         | Email marketing (self-hosted)      | Form field values                          | N/A (self-hosted)                                                        | N/A                                                                      |
-| **Acumbamail**         | Email marketing                    | Form field values                          | [Acumbamail Terms](https://acumbamail.com/terminos-condiciones/)         | [Acumbamail Privacy](https://acumbamail.com/politica-privacidad/)        |
-| **Rapidmail**          | Email marketing                    | Form field values                          | [Rapidmail Terms](https://www.rapidmail.de/agb)                          | [Rapidmail Privacy](https://www.rapidmail.de/datenschutz)                |
-| **Autonami**           | Marketing automation               | Form field values                          | [Autonami](https://autonami.io/)                                         | See service website                                                      |
-| **Groundhogg**         | Marketing automation               | Form field values                          | [Groundhogg](https://www.groundhogg.io/)                                 | See service website                                                      |
-| **Encharge**           | Email marketing                    | Form field values                          | [Encharge Terms](https://encharge.io/terms/)                             | [Encharge Privacy](https://encharge.io/privacy-policy/)                  |
-| **SendFox**            | Email marketing                    | Form field values                          | [SendFox](https://sendfox.com/)                                          | See service website                                                      |
-| **Mail Poet**          | Email (WordPress plugin)           | Form field values                          | [Mail Poet](https://www.mailpoet.com/terms-of-use/)                      | [Mail Poet Privacy](https://www.mailpoet.com/privacy-notice/)            |
+| Service                | Purpose                            | Data Sent                                  | Terms                                                                         | Privacy                                                                       |
+| ---------------------- | ---------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| **GetGist**            | Add contacts to GetGist lists      | Form field values mapped to GetGist fields | [GetGist Terms](https://getgist.com/terms-of-service/)                        | [GetGist Privacy](https://getgist.com/privacy/)                               |
+| **Mailchimp**          | Add subscribers to Mailchimp lists | Form field values (email, name, etc.)      | [Mailchimp Terms](https://mailchimp.com/legal/terms/)                         | [Mailchimp Privacy](https://mailchimp.com/legal/prior-privacy-policy/)        |
+| **Brevo (SendinBlue)** | Email marketing, CRM               | Form field values                          | [Brevo Terms](https://www.brevo.com/legal/termsofuse/)                        | [Brevo Privacy](https://www.brevo.com/legal/privacypolicy/)                   |
+| **ActiveCampaign**     | CRM, email automation              | Form field values                          | [ActiveCampaign Terms](https://www.activecampaign.com/legal/terms-of-service) | [ActiveCampaign Privacy](https://www.activecampaign.com/legal/privacy-policy) |
+| **MailerLite**         | Email marketing                    | Form field values                          | [MailerLite Terms](https://www.mailerlite.com/legal/terms-of-service)         | [MailerLite Privacy](https://www.mailerlite.com/legal/privacy-policy)         |
+| **Elastic Email**      | Email delivery, lists              | Form field values, API key                 | [Elastic Email Terms](https://elasticemail.com/resources/usage-policies)      | [Elastic Email Privacy](https://elasticemail.com/resources/usage-policies)    |
+| **HubSpot**            | CRM, marketing automation          | Form field values                          | [HubSpot Terms](https://legal.hubspot.com/terms-of-service)                   | [HubSpot Privacy](https://legal.hubspot.com/privacy-policy)                   |
+| **Fluent CRM**         | Email marketing (self-hosted)      | Form field values                          | N/A (self-hosted)                                                             | N/A                                                                           |
+| **Acumbamail**         | Email marketing                    | Form field values                          | [Acumbamail Terms](https://acumbamail.com/en/terms-of-use/)                   | [Acumbamail Privacy](https://acumbamail.com/en/privacy-policy/)               |
+| **Rapidmail**          | Email marketing                    | Form field values                          | [Rapidmail Terms](https://www.rapidmail.com/general-terms-and-conditions)     | [Rapidmail Privacy](https://www.rapidmail.com/data-protection)                |
+| **Autonami**           | Marketing automation               | Form field values                          | [Autonami](https://autonami.io/)                                              | See service website                                                           |
+| **Groundhogg**         | Marketing automation               | Form field values                          | [Groundhogg](https://www.groundhogg.io/)                                      | See service website                                                           |
+| **Encharge**           | Email marketing                    | Form field values                          | [Encharge Terms](https://encharge.io/terms-of-service/)                       | [Encharge Privacy](https://encharge.io/privacy-policy/)                       |
+| **SendFox**            | Email marketing                    | Form field values                          | [SendFox Terms](https://sendfox.com/tos)                                      | [SendFox Privacy](https://sendfox.com/privacy)                                |
+| **Mail Poet**          | Email (WordPress plugin)           | Form field values                          | [Mail Poet Terms](https://wordpress.com/tos/)                                 | [Mail Poet Privacy](https://automattic.com/privacy/)                          |
 
 ### Zoho Services
 
@@ -135,37 +123,37 @@ The following services are used **only when you configure and enable** the corre
 
 ### File Storage & Collaboration
 
-| Service           | Purpose          | Data Sent                                     | Terms                                                                 | Privacy                                                                   |
-| ----------------- | ---------------- | --------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| **Google Sheets** | Spreadsheet data | Form field values, OAuth tokens               | [Google Terms](https://policies.google.com/terms)                     | [Google Privacy](https://policies.google.com/privacy)                     |
-| **Dropbox**       | File storage     | Form field values, file uploads, OAuth tokens | [Dropbox Terms](https://www.dropbox.com/terms)                        | [Dropbox Privacy](https://www.dropbox.com/privacy)                        |
-| **OneDrive**      | File storage     | Form field values, file uploads, OAuth tokens | [Microsoft Terms](https://www.microsoft.com/en-us/servicesagreement/) | [Microsoft Privacy](https://privacy.microsoft.com/en-us/privacystatement) |
+| Service           | Purpose          | Data Sent                                     | Terms                                                             | Privacy                                                                                              |
+| ----------------- | ---------------- | --------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Google Sheets** | Spreadsheet data | Form field values, OAuth tokens               | [Google Terms](https://policies.google.com/terms)                 | [Google Privacy](https://policies.google.com/privacy)                                                |
+| **Dropbox**       | File storage     | Form field values, file uploads, OAuth tokens | [Dropbox Terms](https://www.dropbox.com/terms)                    | [Dropbox Privacy](https://www.dropbox.com/privacy)                                                   |
+| **OneDrive**      | File storage     | Form field values, file uploads, OAuth tokens | [Microsoft Terms](https://www.microsoft.com/en/servicesagreement) | [Microsoft Privacy](https://learn.microsoft.com/en-us/sharepoint/onedrive-privacy-security-overview) |
 
 ### Messaging & Notifications
 
-| Service              | Purpose                          | Data Sent                                  | Terms                                            | Privacy                                                |
-| -------------------- | -------------------------------- | ------------------------------------------ | ------------------------------------------------ | ------------------------------------------------------ |
-| **Telegram Bot API** | Send messages/files via Telegram | Form field values, file uploads, bot token | [Telegram Terms](https://telegram.org/tos)       | [Telegram Privacy](https://telegram.org/privacy)       |
-| **Twilio**           | SMS, voice                       | Form field values, phone numbers           | [Twilio Terms](https://www.twilio.com/legal/tos) | [Twilio Privacy](https://www.twilio.com/legal/privacy) |
+| Service              | Purpose                          | Data Sent                                  | Terms                                                  | Privacy                                                      |
+| -------------------- | -------------------------------- | ------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------ |
+| **Telegram Bot API** | Send messages/files via Telegram | Form field values, file uploads, bot token | [Telegram Terms](https://telegram.org/tos)             | [Telegram Privacy](https://telegram.org/privacy)             |
+| **Twilio**           | SMS, voice                       | Form field values, phone numbers           | [Twilio Terms](https://www.twilio.com/en-us/legal/tos) | [Twilio Privacy](https://www.twilio.com/en-us/legal/privacy) |
 
 ### Automation & Webhooks
 
-| Service                       | Purpose                       | Data Sent                                | Terms                                                  | Privacy                                                |
-| ----------------------------- | ----------------------------- | ---------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------ |
-| **Webhooks**                  | Send form data to custom URLs | Form field values to your configured URL | Defined by you                                         | Defined by you                                         |
-| **Zapier**                    | Connect to 5000+ apps         | Form field values                        | [Zapier Terms](https://zapier.com/terms)               | [Zapier Privacy](https://zapier.com/privacy)           |
-| **Make (Integromat)**         | Workflow automation           | Form field values                        | [Make Terms](https://www.make.com/en/terms-of-service) | [Make Privacy](https://www.make.com/en/privacy-notice) |
-| **Integrately**               | Workflow automation           | Form field values                        | [Integrately](https://integrately.com/)                | See service website                                    |
-| **Pabbly**                    | Workflow automation           | Form field values                        | [Pabbly](https://www.pabbly.com/terms)                 | See service website                                    |
-| **n8n**                       | Workflow automation           | Form field values                        | [n8n Terms](https://n8n.io/terms/)                     | [n8n Privacy](https://n8n.io/privacy/)                 |
-| **IFTTT**                     | Applets                       | Form field values                        | [IFTTT Terms](https://ifttt.com/terms)                 | [IFTTT Privacy](https://ifttt.com/privacy)             |
-| **WP Webhooks**               | WordPress automation          | Form field values                        | N/A (WordPress plugin)                                 | N/A                                                    |
-| **Uncanny Automator**         | WordPress automation          | Form field values                        | N/A (WordPress plugin)                                 | N/A                                                    |
-| **Thrive Automator**          | WordPress automation          | Form field values                        | N/A (WordPress plugin)                                 | N/A                                                    |
-| **SureTriggers**              | WordPress automation          | Form field values                        | N/A (WordPress plugin)                                 | N/A                                                    |
-| **FlowMattic**                | WordPress automation          | Form field values                        | N/A (WordPress plugin)                                 | N/A                                                    |
-| **AutomatorWP**               | WordPress automation          | Form field values                        | N/A (WordPress plugin)                                 | N/A                                                    |
-| **Advanced Form Integration** | Custom integrations           | Form field values                        | Depends on target                                      | Depends on target                                      |
+| Service                       | Purpose                       | Data Sent                                | Terms                                                      | Privacy                                                     |
+| ----------------------------- | ----------------------------- | ---------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------- |
+| **Webhooks**                  | Send form data to custom URLs | Form field values to your configured URL | Defined by you                                             | Defined by you                                              |
+| **Zapier**                    | Connect to 5000+ apps         | Form field values                        | [Zapier Terms](https://zapier.com/legal/terms-of-service)  | [Zapier Privacy](https://zapier.com/legal/data-privacy)     |
+| **Make (Integromat)**         | Workflow automation           | Form field values                        | [Make Terms](https://www.make.com/en/terms-and-conditions) | [Make Privacy](https://www.make.com/en/privacy-and-gdpr)    |
+| **Integrately**               | Workflow automation           | Form field values                        | [Integrately Terms](https://integrately.com/home/terms)    | [Integrately Privacy](https://integrately.com/home/privacy) |
+| **Pabbly**                    | Workflow automation           | Form field values                        | [Pabbly Terms](https://www.pabbly.com/terms-conditions/)   | [Pabbly Privacy](https://www.pabbly.com/privacy-policy/)    |
+| **n8n**                       | Workflow automation           | Form field values                        | [n8n Terms](https://n8n.io/legal/)                         | [n8n Privacy](https://n8n.io/legal/privacy/)                |
+| **IFTTT**                     | Applets                       | Form field values                        | [IFTTT Terms](https://ifttt.com/terms)                     | [IFTTT Privacy](https://ifttt.com/privacy)                  |
+| **WP Webhooks**               | WordPress automation          | Form field values                        | N/A (WordPress plugin)                                     | N/A                                                         |
+| **Uncanny Automator**         | WordPress automation          | Form field values                        | N/A (WordPress plugin)                                     | N/A                                                         |
+| **Thrive Automator**          | WordPress automation          | Form field values                        | N/A (WordPress plugin)                                     | N/A                                                         |
+| **SureTriggers**              | WordPress automation          | Form field values                        | N/A (WordPress plugin)                                     | N/A                                                         |
+| **FlowMattic**                | WordPress automation          | Form field values                        | N/A (WordPress plugin)                                     | N/A                                                         |
+| **AutomatorWP**               | WordPress automation          | Form field values                        | N/A (WordPress plugin)                                     | N/A                                                         |
+| **Advanced Form Integration** | Custom integrations           | Form field values                        | Depends on target                                          | Depends on target                                           |
 
 ### WordPress-Specific
 
