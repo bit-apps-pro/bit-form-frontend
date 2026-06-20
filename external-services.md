@@ -66,7 +66,31 @@ If you do not enable integrations or use those features, the plugin does not sen
 
 ---
 
-### 6. Telemetry (wp-api.bitapps.pro) – Opt-in Only
+### 5. Field Auto-Detect by IP (Cloudflare Trace)
+
+| Item                 | Details                                                                                                                     |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **What it does**     | Detects the visitor's country to pre-select it in the Country, Phone Number, and Address fields, based on their IP address. |
+| **When it connects** | Only when a Country, Phone Number, or Address field has "Detect country by IP" enabled, on form load.                       |
+| **Data sent**        | No personal data is sent in the request. Cloudflare returns the visitor's approximate location/country code from their IP.  |
+| **Terms of Use**     | [Cloudflare Terms of Service](https://www.cloudflare.com/terms/)                                                            |
+| **Privacy Policy**   | [Cloudflare Privacy Policy](https://www.cloudflare.com/privacypolicy/)                                                      |
+
+---
+
+### 6. Field Auto-Detect by Geolocation (GeoNames)
+
+| Item                 | Details                                                                                                                                             |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **What it does**     | Detects the visitor's country to pre-select it in the Country, Phone Number, and Address fields, based on their device GPS/geolocation.             |
+| **When it connects** | Only when a Country, Phone Number, or Address field has "Detect country by geolocation" enabled and the visitor grants browser location permission. |
+| **Data sent**        | The visitor's latitude and longitude coordinates. GeoNames returns the matching country code.                                                       |
+| **Terms of Use**     | [GeoNames Terms](https://www.geonames.org/about.html)                                                                                               |
+| **Privacy Policy**   | [GeoNames Privacy/Manual](https://www.geonames.org/manual.html)                                                                                     |
+
+---
+
+### 7. Telemetry (wp-api.bitapps.pro) – Opt-in Only
 
 | Item                 | Details                                                                                                     |
 | -------------------- | ----------------------------------------------------------------------------------------------------------- |
