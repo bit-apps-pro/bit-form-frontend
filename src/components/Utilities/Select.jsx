@@ -17,7 +17,7 @@ export default function Select({
       bc: color === 'default' ? 'var(--white-0-95)!important' : 'var(--b-79-96)!important',
       bs: 'none!important',
       tn: 'box-shadow .3s',
-      brs: '8px!important',
+      brs: 'var(--bf-bdr-radius-sm)!important',
       b: '1px solid #e6e6e6 !important',
       mnh: 'auto!important',
       'background-size': '12px 12px!important',

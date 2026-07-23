@@ -1,7 +1,7 @@
+import { useAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
 import { $draggableModal } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import CloseIcn from '../../Icons/CloseIcn'
@@ -32,7 +32,7 @@ export default function SizeControler({ subtitle, action, value, objectPaths, id
 
   return (
     <div className={css(ut.flxc, { cg: 3 })}>
-      {allowImportant && val && (<Important id={id} propertyPath={paths?.width || paths?.height} />)}
+      {allowImportant && val && (<Important id={id} propertyPath={paths?.width || paths?.height} stateObjName={object} />)}
       <div className={css(c.preview_wrp, draggableModal.id === id && c.active)}>
         <button
           onClick={e => showDraggableModal(e, setDraggableModal, { component: 'size-control', subtitle, action, value, objectPaths, id })}
@@ -65,7 +65,7 @@ const c = {
     bd: 'var(--white-0-95)',
     w: 130,
     mnw: 130,
-    brs: 10,
+    brs: 'var(--bf-bdr-radius-sm)',
     p: 7,
     flx: 'center-between',
     h: 30,

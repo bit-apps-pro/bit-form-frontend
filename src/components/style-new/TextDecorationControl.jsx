@@ -1,6 +1,6 @@
+import { useAtom, useSetAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
-import { useAtom, useSetAtom } from 'jotai'
 import { $draggableModal } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import { $themeColors } from '../../GlobalStates/ThemeColorsState'
@@ -56,6 +56,7 @@ export default function TextDecorationControl({ subtitle, value, objectPaths, id
           id={id}
           className={css({ mr: 3 })}
           propertyPath={paths['text-decoration-line']}
+          stateObjName={objectPaths.object || 'styles'}
         />
       )}
       <div title={txtDcrtnValue} className={css(c.preview_wrp, draggableModel.id === id && c.active)}>
@@ -95,7 +96,7 @@ const c = {
     bd: 'var(--white-0-95)',
     w: 130,
     mnw: 130,
-    brs: 10,
+    brs: 'var(--bf-bdr-radius-sm)',
     p: 3,
     flx: 'center-between',
     ':hover': { bs: '0 0 0 1px var(--white-0-83)' },

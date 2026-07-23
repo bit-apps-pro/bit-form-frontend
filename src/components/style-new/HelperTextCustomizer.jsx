@@ -1,8 +1,7 @@
-import { useFela } from 'react-fela'
 import { useAtomValue } from 'jotai'
+import { useFela } from 'react-fela'
 import { $themeColors } from '../../GlobalStates/ThemeColorsState'
 import ut from '../../styles/2.utilities'
-import { __ } from '../../Utils/i18nwrap'
 import BorderControl from './BorderControl'
 import FontSizeControl from './FontSizeControl'
 import FontWeightAndStyleControl from './FontWeightAndStyleControl'
@@ -58,15 +57,14 @@ export default function HelperTextCustomizer() {
         id="hlp-txt-font"
       />
 
-      <div className={css(ut.flxcb, ut.mt2)}>
-        <span className={css(ut.fw500)}>{__('Spacing')}</span>
+      <ThemeStylePropertyBlock label="Spacing">
         <SpacingControl
           action={{ type: 'spacing-control' }}
           subtitle="Helper Text Spacing control"
           objectPaths={htSpacingObj}
           id="hlp-spacing-ctrl"
         />
-      </div>
+      </ThemeStylePropertyBlock>
 
       <ThemeStylePropertyBlock label="Shadow">
         <div className={css(ut.flxc)}>

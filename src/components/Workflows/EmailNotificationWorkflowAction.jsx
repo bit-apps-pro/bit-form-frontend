@@ -1,7 +1,8 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
-import { $bits, $fieldsArr, $mailTemplates, $pdfTemplates, $updateBtn, $workflows } from '../../GlobalStates/GlobalStates'
+import { $fieldsArr, $mailTemplates, $pdfTemplates, $updateBtn, $workflows } from '../../GlobalStates/GlobalStates'
+import useWPUsers from '../../hooks/useWPUsers'
 import { fileUpOrMappableImageFieldTypes } from '../../Utils/StaticData/allStaticArrays'
 import { __ } from '../../Utils/i18nwrap'
 import ut from '../../styles/2.utilities'
@@ -23,7 +24,7 @@ export default function EmailNotificationWorkflowAction({
   const pdfTem = useAtomValue($pdfTemplates)
   const fieldsArr = useAtomValue($fieldsArr)
   const setUpdateBtn = useSetAtom($updateBtn)
-  const bits = useAtomValue($bits)
+  const { userMail } = useWPUsers()
   const fileInFormField = () => {
     const file = []
     fieldsArr.map(field => {
@@ -49,8 +50,8 @@ export default function EmailNotificationWorkflowAction({
       mail.push({ title: 'Form Fields', type: 'group', childs: flds })
     }
 
-    if (bits.userMail && Array.isArray(bits.userMail)) {
-      mail.push({ title: 'WP Emails', type: 'group', childs: bits.userMail })
+    if (userMail && Array.isArray(userMail)) {
+      mail.push({ title: 'WP Emails', type: 'group', childs: userMail })
     }
     return mail
   }
@@ -60,6 +61,32 @@ export default function EmailNotificationWorkflowAction({
       const { success: draftSuccessActions } = draftWorkflow[lgcGrpInd].conditions[condGrpInd].actions
       const findEmailActions = draftSuccessActions.find(val => val.type === actionKey)
       if (findEmailActions) findEmailActions.details[typ] = value
+    })
+    setWorkflows(tmpWorkflows)
+    setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
+  }
+
+  // Multi-PDF attachments. Option values are single-key JSON ({"id":"7"} / {"index":"0"}) —
+  // comma-free, so the DropDown's comma-joined value contract is safe. `pdfId` (legacy
+  // single key) is kept in sync with the first selection for older Pro versions.
+  const legacyPdfId = getValueFromArr(actionKey, 'pdfId')
+  const pdfAttachmentValue = getValueFromArr(actionKey, 'pdfIds') || (legacyPdfId ? [legacyPdfId] : [])
+  const pdfTemplateOptions = (pdfTem || [])
+    .map((itm, i) => ({
+      label: itm.title,
+      value: itm.id ? JSON.stringify({ id: String(itm.id) }) : JSON.stringify({ index: String(i) }),
+    }))
+    // drop marker/incomplete entries AFTER mapping so `index` values stay aligned with $pdfTemplates
+    .filter(opt => opt.label !== undefined)
+  const setPdfAttachments = val => {
+    const ids = val ? val.split(',') : []
+    const tmpWorkflows = create(workflows, draftWorkflow => {
+      const { success: draftSuccessActions } = draftWorkflow[lgcGrpInd].conditions[condGrpInd].actions
+      const findEmailActions = draftSuccessActions.find(v => v.type === actionKey)
+      if (findEmailActions) {
+        findEmailActions.details.pdfIds = ids
+        findEmailActions.details.pdfId = ids[0] || ''
+      }
     })
     setWorkflows(tmpWorkflows)
     setUpdateBtn(prevState => ({ ...prevState, unsaved: true }))
@@ -126,7 +153,7 @@ export default function EmailNotificationWorkflowAction({
               id="from_name"
               type="text"
               className="btcd-paper-inp"
-              style={{ height: '35px', width: '69%', background: 'var(--b-79-96)' }}
+              style={{ height: '35px', width: '69%', background: 'var(--bf-bg-white)' }}
               value={getValueFromArr(actionKey, 'from_name')}
               onChange={e => setEmailSetting('from_name', e.target.value)}
               placeholder="Add mail from name"
@@ -175,27 +202,16 @@ export default function EmailNotificationWorkflowAction({
             className="w-10 mt-1"
             options={fileInFormField()}
           />
-          <div className="mt-2">
-            <label htmlFor="pdf-template" className="f-m f-5">
-              {__('PDF Attachment Template:')}
-            </label>
-            <div className="mt-1" />
-            <select
-              className="btcd-paper-inp w-7"
-              onChange={e => setEmailSetting('pdfId', e.target.value)}
-              value={getValueFromArr(actionKey, 'pdfId')}
-            >
-              <option value="">{__('Select PDF Template')}</option>
-              {pdfTem?.map((itm, i) => (
-                <option
-                  key={`sem-${i + 2.3}`}
-                  value={itm.id ? JSON.stringify({ id: String(itm.id) }) : JSON.stringify({ index: String(i) })}
-                >
-                  {itm.title}
-                </option>
-              ))}
-            </select>
-          </div>
+          <DropDown
+            action={setPdfAttachments}
+            value={pdfAttachmentValue}
+            placeholder={__('Select PDF Templates')}
+            title={<span className="f-m f-5">{__('PDF Attachment Templates')}</span>}
+            isMultiple
+            titleClassName="w-7 mt-2"
+            className="w-10 mt-1"
+            options={pdfTemplateOptions}
+          />
         </div>
       )}
     </div>

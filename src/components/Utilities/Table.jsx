@@ -37,7 +37,7 @@ const IndeterminateCheckbox = forwardRef(
   },
 )
 
-function GlobalFilter({ globalFilter, setGlobalFilter, setSearch }) {
+function GlobalFilter({ globalFilter, setGlobalFilter, setSearch, placeholder }) {
   const [delay, setDelay] = useState(null)
 
   const handleSearch = e => {
@@ -52,12 +52,12 @@ function GlobalFilter({ globalFilter, setGlobalFilter, setSearch }) {
   }
 
   return (
-    <div className="f-search ml-2">
+    <div className="f-search">
       <span><SearchIcn size="16" /></span>
       <input
         value={globalFilter || ''}
         onChange={handleSearch}
-        placeholder={__('Search')}
+        placeholder={placeholder || __('Search')}
         className="search-input-box"
       />
     </div>
@@ -66,7 +66,7 @@ function GlobalFilter({ globalFilter, setGlobalFilter, setSearch }) {
 
 function ColumnHide({ cols, setCols, tableCol, tableAllCols }) {
   return (
-    <Menu icn={<EyeOffIcon size="21" />}>
+    <Menu icn={<EyeOffIcon size="21" />} className="table-col-hide-menu">
       <Scrollbars autoHide style={{ width: 200 }}>
         <ReactSortable list={cols} setList={l => setCols(l)} handle=".btcd-pane-drg">
           {tableCol.map((column, i) => (
@@ -84,7 +84,8 @@ function ColumnHide({ cols, setCols, tableCol, tableAllCols }) {
 function Table(props) {
   const [confMdl, setconfMdl] = useState({ show: false, btnTxt: '' })
   const {
-    columns, data, fetchData, refreshResp, report, rightHeader, centerHeader, centerHeaderClasses, leftHeader, leftHeaderClasses, initialState,
+    columns, data, fetchData, refreshResp, report, rightHeader, centerHeader, centerHeaderClasses, leftHeader, leftHeaderClasses, initialState, searchPosition = 'left',
+    countLabel, searchPlaceholder,
   } = props
   const [currentReportData, updateReportData] = useAtom($reportSelector)
   const reportId = useAtomValue($reportId)
@@ -217,7 +218,8 @@ function Table(props) {
   }, [gotoPage, pageCount, pageIndex])
 
   useEffect(() => {
-    if (!Number.isNaN(report)) {
+    const hasValidReport = report !== undefined && report !== null && !Number.isNaN(Number(report))
+    if (hasValidReport) {
       let details
 
       if (currentReportData && currentReportData.details && typeof currentReportData.details === 'object') {
@@ -328,9 +330,9 @@ function Table(props) {
         btn2Action={confMdl.btn2Action}
         btnClass={confMdl.btnClass}
       />
-      <div className="flx flx-between mt-1 mr-2">
+      <div className="flx flx-between mt-2 mr-2">
         <div className={`btcd-t-actions ${leftHeaderClasses}`}>
-          <div className="flx" style={{ marginLeft: 7 }}>
+          <div className="flx gap-2">
 
             {props.columnHidable && (
               <ColumnHide
@@ -340,7 +342,6 @@ function Table(props) {
                 tableAllCols={allColumns}
               />
             )}
-            {leftHeader}
             {props.rowSeletable && selectedFlatRows.length > 0
               && (
                 <>
@@ -348,7 +349,7 @@ function Table(props) {
                     && (
                       <button
                         onClick={showStModal}
-                        className="icn-btn btcd-icn-lg tooltip"
+                        className="icn-btn btcd-icn-sm tooltip stroke-border br-sm"
                         style={{ '--tooltip-txt': '"Status"' }}
                         aria-label="icon-btn"
                         type="button"
@@ -360,7 +361,7 @@ function Table(props) {
                     && (
                       <button
                         onClick={showBulkDupMdl}
-                        className="icn-btn btcd-icn-sm tooltip"
+                        className="icn-btn btcd-icn-sm tooltip stroke-border br-sm"
                         style={{ '--tooltip-txt': '"Duplicate"' }}
                         aria-label="icon-btn"
                         type="button"
@@ -370,12 +371,12 @@ function Table(props) {
                     )}
                   <button
                     onClick={showDelModal}
-                    className="icn-btn btcd-icn-sm tooltip"
+                    className="icn-btn btcd-icn-sm tooltip stroke-border br-sm"
                     style={{ '--tooltip-txt': '"Delete"' }}
                     aria-label="icon-btn"
                     type="button"
                   >
-                    <TrashIcn size="21" />
+                    <TrashIcn size="20" />
                   </button>
                   <small className={css(cls.pill)}>
                     {selectedFlatRows.length}
@@ -384,17 +385,35 @@ function Table(props) {
                   </small>
                 </>
               )}
-            <GlobalFilter
-              preGlobalFilteredRows={preGlobalFilteredRows}
-              globalFilter={state.globalFilter}
-              setGlobalFilter={setGlobalFilter}
-              setSearch={setSearch}
-              data={props.data}
-              cols={props.columns}
-              formID={props.formID}
-              report={report}
-              fetchData={fetchData}
-            />
+            {searchPosition === 'left' && (
+              <GlobalFilter
+                preGlobalFilteredRows={preGlobalFilteredRows}
+                globalFilter={state.globalFilter}
+                setGlobalFilter={setGlobalFilter}
+                setSearch={setSearch}
+                placeholder={searchPlaceholder}
+                data={props.data}
+                cols={props.columns}
+                formID={props.formID}
+                report={report}
+                fetchData={fetchData}
+              />
+            )}
+            {leftHeader}
+            {searchPosition === 'after-left-header' && (
+              <GlobalFilter
+                preGlobalFilteredRows={preGlobalFilteredRows}
+                globalFilter={state.globalFilter}
+                setGlobalFilter={setGlobalFilter}
+                setSearch={setSearch}
+                placeholder={searchPlaceholder}
+                data={props.data}
+                cols={props.columns}
+                formID={props.formID}
+                report={report}
+                fetchData={fetchData}
+              />
+            )}
           </div>
         </div>
         <div className={`table-center-header ${centerHeaderClasses}`}>
@@ -403,15 +422,29 @@ function Table(props) {
         <div className="table-right-menu">
           {rightHeader}
         </div>
+        {searchPosition === 'right' && (
+          <GlobalFilter
+            preGlobalFilteredRows={preGlobalFilteredRows}
+            globalFilter={state.globalFilter}
+            setGlobalFilter={setGlobalFilter}
+            setSearch={setSearch}
+            placeholder={searchPlaceholder}
+            data={props.data}
+            cols={props.columns}
+            formID={props.formID}
+            report={report}
+            fetchData={fetchData}
+          />
+        )}
       </div>
       <div className="mt-2">
         <Scrollbars className="btcd-scroll" style={{ height: props.height }}>
           <div {...getTableProps()} className={`${props.className} ${props.rowClickable && 'rowClickable'}`}>
             <div className="thead">
               {headerGroups.map((headerGroup, i) => (
-                <div key={`t-th-${i + 8}`} className="tr" {...headerGroup.getHeaderGroupProps()}>
+                <div key={`t-th-${i + 8}`} className="tr" {...(() => { const { key, ...rest } = headerGroup.getHeaderGroupProps(); return rest })()}>
                   {headerGroup.headers.map(column => (
-                    <div key={column.id} className="th flx" {...column.getHeaderProps()}>
+                    <div key={column.id} className="th flx" {...(() => { const { key, ...rest } = column.getHeaderProps(); return rest })()}>
                       <div {...column.id !== 't_action' && column.getSortByToggleProps()} style={{ display: 'flex', alignItems: 'center' }}>
                         {column.render('Header')}
                         {' '}
@@ -440,15 +473,15 @@ function Table(props) {
                   prepareRow(row)
                   return (
                     <div
-                      key={`t-r-${row.index}`}
+                      key={row.id ? `t-r-${row.id}` : `t-r-${row.index}`}
                       className={`tr ${row.isSelected ? 'btcd-row-selected' : ''}`}
-                      {...row.getRowProps()}
+                      {...(() => { const { key, ...rest } = row.getRowProps(); return rest })()}
                     >
                       {row.cells.map(cell => (
                         <div
-                          key={`t-d-${cell.row.index}`}
+                          key={`t-d-${row.id ? row.id : row.index}-${cell.column.id}`}
                           className="td flx"
-                          {...cell.getCellProps()}
+                          {...(() => { const { key, ...rest } = cell.getCellProps(); return rest })()}
                           {...props.rowClickable
                           && typeof cell.column.Header === 'string'
                           && {
@@ -474,12 +507,12 @@ function Table(props) {
         </Scrollbars>
       </div>
 
-      <div className="btcd-pagination">
+      <div className={`btcd-pagination ${props.paginationClassName || ''}`}>
         <small>
-          {props.countEntries >= 0 && (
+          {countLabel || (props.countEntries >= 0 && (
             `${__('Total Entries:')}
             ${props.countEntries}`
-          )}
+          ))}
         </small>
         <div className="flx mr-2">
           <button
@@ -535,7 +568,7 @@ function Table(props) {
             size="sm"
             w={170}
             value={pageSize}
-            onChange={(value, e) => {
+            onChange={(value) => {
               setPageSize(Number(value))
               if (props.getPageSize) {
                 props.getPageSize(value, pageIndex)
@@ -563,9 +596,11 @@ const cls = {
   pill: {
     bd: 'hsla(var(--blue-h), var(--blue-s), var(--blue-l), 0.8)',
     cr: 'var(--white)',
+    h: 'var(--bf-thead-inp-height)',
     py: 5,
-    px: 7,
-    brs: 5,
+    px: 10,
+    brs: 'var(--bf-bdr-radius-sm)',
+    flx: 'center',
   },
 }
 

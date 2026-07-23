@@ -6,7 +6,7 @@ import { $allLayouts } from '../../../../GlobalStates/GlobalStates'
 import { msgDefaultConfig } from '../../../../Utils/StaticData/form-templates/defaultConfirmation'
 import { cleanObj, mergeNestedObj } from '../../../../Utils/globalHelpers'
 import confirmMsgCssStyles from '../../../ConfirmMessage/confirmMsgCssStyles'
-import { defaultLgLightThemeVars } from '../1_bitformDefault/1_bitformDefault'
+import { defaultLgLightThemeVars } from '../1_bitformLegacy/1_bitformLegacy'
 import advancedDatetimeStyle_0_noStyle from './advancedDatetimeStyle_0_noStyle'
 import advancedFileUp_0_noStyle from './advancedFileUp_0_noStyle'
 import buttonStyle_0_noStyle from './buttonStyle_0_noStyle'
@@ -16,6 +16,7 @@ import currencyStyle_0_noStyle from './currencyStyle_0_noStyle'
 import decisionBoxStyle_0_noStyle from './decisionBoxStyle_0_noStyle'
 import dividerStyle_0_noStyle from './dividerStyle_0_noStyle'
 import dropdownStyle_0_noStyle from './dropdownStyle_0_noStyle'
+import emailOtpStyle_0_noStyle from './emailOtpStyle_0_noStyle'
 import fileUploadStyle_0_noStyle from './fileUpload_0_noStyle'
 import gdprStyle_0_noStyle from './gdprStyle_0_noStyle'
 import hcaptchaStyle_0_noStyle from './hcaptchaStyle_0_noStyle'
@@ -33,12 +34,14 @@ import recaptchaStyle_0_noStyle from './recaptchaStyle_0_noStyle'
 import repeaterStyle_0_noStyle from './repeaterStyle_0_noStyle'
 import sectionStyle_0_noStyle from './sectionStyle_0_noStyle'
 import selectStyle_0_noStyle from './selectStyle_0_noStyle'
+import shortcodeStyle_0_noStyle from './shortcodeStyle_0_noStyle'
 import signature_0_noStyle from './signature_0_noStyle'
 import sliderStyle_0_noStyle from './sliderStyle_0_noStyle'
 import spacerStyle_0_noStyle from './spacerStyle_0_noStyle'
 import stripeStyle_0_noStyle from './stripeStyle_0_noStyle'
 import textStyle_0_noStyle from './textStyle_0_noStyle'
 import titleStyle_0_noStyle from './titleStyle_0_noStyle'
+import addressStyle_0_noStyle from './addressStyle_0_noStyle'
 import turnstileStyle_0_noStyle from './turnstileStyle_0_noStyle'
 
 export default function noStyleTheme({
@@ -79,6 +82,7 @@ export default function noStyleTheme({
     case 'week':
     case 'color':
     case 'textarea':
+    case 'name':
       return text({ type, fk, breakpoint, colorScheme })
     case 'range':
       return slider({ type, fk, breakpoint, colorScheme })
@@ -123,6 +127,8 @@ export default function noStyleTheme({
       return htmlSelect({ type, fk, breakpoint, colorScheme })
     case 'select':
       return select({ type, fk, direction, breakpoint, colorScheme })
+    case 'address':
+      return addressStyle_0_noStyle({ fk, breakpoint, colorScheme })
     case 'phone-number':
       return phoneNumber({ type, fk, direction, breakpoint, colorScheme })
     case 'hidden':
@@ -141,6 +147,8 @@ export default function noStyleTheme({
       return mollie({ type, fk, breakpoint, colorScheme })
     case 'signature':
       return signature({ type, fk, breakpoint, colorScheme })
+    case 'email-otp':
+      return emailOtp({ type, fk, breakpoint, colorScheme })
     case 'rating':
       return rating({ type, fk, breakpoint, colorScheme })
     case 'image-select':
@@ -180,10 +188,10 @@ export default function noStyleTheme({
 }
 
 export const lightThemeColors = {
-  '--global-accent-color': 'hsla(217, 100%, 50%, 100%)', // Accent Color
-  '--gah': 217, // global primary hue
-  '--gas': '100%', // global primary saturation
-  '--gal': '50%', // global primary lightness
+  '--global-accent-color': 'hsla(0, 0%, 85%, 100%)', // Accent Color
+  '--gah': 0, // global primary hue
+  '--gas': '0%', // global primary saturation
+  '--gal': '85%', // global primary lightness
   '--gaa': '100%', // global primary opacity
   '--global-font-color': 'hsla(0, 0%, 14%, 100%)',
   '--gfh': 0, // global font color hue
@@ -577,6 +585,19 @@ const signature = ({ type, fk, direction, breakpoint, colorScheme }) => {
       overrideGlobalTheme: [],
       fieldSize: 'medium',
       classes: signature_0_noStyle({ fk, direction, breakpoint, colorScheme }),
+    }
+  }
+  return {}
+}
+
+const emailOtp = ({ type, fk, breakpoint, colorScheme }) => {
+  if (breakpoint === 'lg' && colorScheme === 'light') {
+    return {
+      theme: 'noStyle',
+      fieldType: type,
+      overrideGlobalTheme: [],
+      fieldSize: 'medium',
+      classes: emailOtpStyle_0_noStyle({ fk, breakpoint, colorScheme }),
     }
   }
   return {}

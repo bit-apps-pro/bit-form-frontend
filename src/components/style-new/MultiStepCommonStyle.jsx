@@ -1,22 +1,21 @@
 /* eslint-disable no-param-reassign */
 import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useFela } from 'react-fela'
 import { Navigate, useParams } from 'react-router-dom'
 import { $styles } from '../../GlobalStates/StylesState'
 import { $themeColors } from '../../GlobalStates/ThemeColorsState'
 import { addToBuilderHistory, deleteNestedObj, generateHistoryData, getLatestState } from '../../Utils/FormBuilderHelper'
 import { ucFirst } from '../../Utils/Helpers'
+import { __ } from '../../Utils/i18nwrap'
 import ut from '../../styles/2.utilities'
-import Grow from '../CompSettings/StyleCustomize/ChildComp/Grow'
-import LoaderSm from '../Loaders/LoaderSm'
-import StyleSegmentControl from '../Utilities/StyleSegmentControl'
+import TabsView from '../UIv3/Utilities/TabsView'
 import BackgroundControl from './BackgroundControl'
 import BorderControl from './BorderControl'
 import CssPropertyList from './CssPropertyList'
 import IndividualShadowControl from './IndividualShadowControl'
-import editorConfig from './NewStyleEditorConfig'
+import elementCssPropertiesConfig from './NewStyleEditorConfig'
 import OutlineControl from './OutlineControl'
 import ResetStyle from './ResetStyle'
 import SimpleColorPicker from './SimpleColorPicker'
@@ -40,16 +39,17 @@ export default function MultiStepCommonStyle({ element, componentTitle, isMultis
   const options = [
     { label: 'Default', icn: 'Default', show: ['icn'], tip: 'Default Style' },
   ]
-  const { states } = editorConfig[element] || {}
+  const { states } = elementCssPropertiesConfig[element] || {}
   states?.map(state => {
     const stateLabel = state ? ucFirst(state) : 'Default'
     options.push({ label: stateLabel, icn: stateLabel, show: ['icn'], tip: `${stateLabel} Style` })
   })
 
-  const setController = lblName => {
-    if (lblName === 'Default') setStateController('')
-    else setStateController(lblName)
+  const setController = tabId => {
+    if (tabId === 'normal') setStateController('')
+    else setStateController(ucFirst(tabId))
   }
+
   useEffect(() => {
     setIsLoading(false)
     if (!('form' in styles && actualElement in styles.form)) {
@@ -57,7 +57,7 @@ export default function MultiStepCommonStyle({ element, componentTitle, isMultis
     }
   }, [])
   const addableCssProps = Object
-    .keys(editorConfig[element].properties)
+    .keys(elementCssPropertiesConfig[element].properties)
     .filter(x => !formWrpStylesPropertiesArr?.includes(x))
 
   const getPropertyPath = (cssProperty) => `form->${actualElement}->${cssProperty}`
@@ -76,8 +76,8 @@ export default function MultiStepCommonStyle({ element, componentTitle, isMultis
 
   const setNewCssProp = (prop) => {
     let value = ''
-    if (typeof editorConfig[element].properties[prop] !== 'object') {
-      value = editorConfig[element].properties[prop]
+    if (typeof elementCssPropertiesConfig[element].properties[prop] !== 'object') {
+      value = elementCssPropertiesConfig[element].properties[prop]
     }
     setStyles(prvStyles => create(prvStyles, drft => {
       assignNestedObj(drft, getPropertyPath(prop), value)
@@ -106,7 +106,7 @@ export default function MultiStepCommonStyle({ element, componentTitle, isMultis
       paths: {},
     }
 
-    const configProperty = editorConfig[element].properties[prop]
+    const configProperty = elementCssPropertiesConfig[element].properties[prop]
     let propertyKeys = [prop]
     if (typeof configProperty === 'object') {
       propertyKeys = Object.keys(configProperty)
@@ -277,37 +277,39 @@ export default function MultiStepCommonStyle({ element, componentTitle, isMultis
         break
     }
   }
-
+  const stateTabs = useMemo(() => ([
+    {
+      id: 'normal',
+      label: __('Normal'),
+      content: (
+        <div className={css(ut.ml2, { pn: 'relative' })}>
+          {formWrpStylesPropertiesArr.map((prop, indx) => (
+            getCssProps(prop)
+          ))}
+        </div>
+      ),
+    },
+    ...states.map(state => ({
+      id: state.toLowerCase(),
+      label: __(ucFirst(state)),
+      content: (
+        <div className={css(ut.ml2, { pn: 'relative' })}>
+          {formWrpStylesPropertiesArr.map((prop, indx) => (
+            getCssProps(prop)
+          ))}
+        </div>
+      ),
+    })),
+  ]), [formWrpStylesObj, stateController, isLoading])
   return (
     <div className={css(ut.ml2, { pn: 'relative' })}>
-      <StyleSegmentControl
-        square
-        noShadow
-        defaultActive="Default"
-        options={options}
-        size={60}
-        component="button"
-        onChange={lbl => setController(lbl)}
-        show={['icn']}
-        variant="lightgray"
-        width="100%"
-        wideTab
+      <TabsView
+        tabs={stateTabs}
+        defaultTab="normal"
+        onChange={tabId => setController(tabId === 'normal' ? '' : ucFirst(tabId))}
+        // variant="clean-bottom-line"
+        variant="tertiary-segment"
       />
-      {formWrpStylesPropertiesArr.length === 0 && isLoading && <LoaderSm size={50} clr="#006aff" className="ml-2" />}
-      <Grow overflw="" open={stateController.toLowerCase() === ''}>
-        {formWrpStylesPropertiesArr.map((prop, indx) => (
-          getCssProps(prop)
-        ))}
-      </Grow>
-      {
-        states?.map(state => (
-          <Grow overflw="" open={stateController.toLowerCase() === state.toLowerCase()}>
-            {formWrpStylesPropertiesArr.map((prop, indx) => (
-              getCssProps(prop)
-            ))}
-          </Grow>
-        ))
-      }
       {
         addableCssProps.length > 0
         && (

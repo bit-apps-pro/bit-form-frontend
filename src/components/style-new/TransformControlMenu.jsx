@@ -115,7 +115,7 @@ function TransformControlMenu({ propertyPath, id }) {
                   <button
                     data-testid={`${id}-del-btn-${indx}`}
                     onClick={() => deleteTransform(indx)}
-                    className={`${css(c.delBtn)} delete-btn`}
+                    className={`${css(ut.stylePropDeleteBtn)} delete-btn`}
                     type="button"
                   >
                     <TrashIcn />
@@ -241,22 +241,6 @@ const c = {
     b: '1px solid #e6e6e6 !important',
     '::placeholder': { cr: 'hsl(215deg 16% 57%)', fs: 12 },
     ':focus': { bs: '0 0 0 1px var(--b-50) !important', bcr: 'var(--b-50)!important' },
-  },
-  delBtn: {
-    se: 20,
-    flx: 'center',
-    b: 'none',
-    p: 0,
-    mr: 1,
-    tn: '.2s all',
-    curp: 1,
-    brs: '50%',
-    tm: 'scale(0)',
-    bd: 'none',
-    cr: 'var(--red-100-61)',
-    pn: 'absolute',
-    lt: 1,
-    ':hover': { bd: '#ffd0d0', cr: '#460000' },
   },
   overFlowScroll: { owx: 'scroll', mxh: 200 },
 }

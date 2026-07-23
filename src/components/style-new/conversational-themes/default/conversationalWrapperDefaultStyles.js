@@ -3,6 +3,12 @@ export default function conversationalWrapperDefaultStyles(formId) {
 
     [`._frm-bc${formId}`]: {
       height: '100%',
+      // Phase 5: container queries — sizes respond to the form's own width, not the
+      // viewport. Critical when the form is shortcoded into narrow widgets on wide
+      // viewports. Browsers without container-query support (Safari <16, Firefox <110)
+      // fall back to the @media block at the bottom of this stylesheet.
+      'container-type': 'inline-size',
+      'container-name': 'bf-conv',
     },
     [`._frm-b${formId}`]: {
       display: 'grid',
@@ -14,6 +20,7 @@ export default function conversationalWrapperDefaultStyles(formId) {
     [`.bc${formId}-steps-container`]: {
       height: '100%',
       padding: '0px 0px 50px 0px',
+      position: 'relative',
     },
     [`.bit-conversational-form .bc${formId}-steps-container`]: {
       padding: '0px',
@@ -45,13 +52,61 @@ export default function conversationalWrapperDefaultStyles(formId) {
       },
     },
 
+    // Transition Type keyframes (Phase 2). Scoped via .bf-trans-* on the steps container.
+    '@keyframes bf-slide-up': {
+      '0%': { opacity: 0, transform: 'translate3d(0, 100px, 0)' },
+      '100%': { opacity: '1', transform: 'none' },
+    },
+    '@keyframes bf-slide-down': {
+      '0%': { opacity: 0, transform: 'translate3d(0, -100px, 0)' },
+      '100%': { opacity: '1', transform: 'none' },
+    },
+    '@keyframes bf-slide-left': {
+      '0%': { opacity: 0, transform: 'translate3d(60px, 0, 0)' },
+      '100%': { opacity: '1', transform: 'none' },
+    },
+    '@keyframes bf-slide-right': {
+      '0%': { opacity: 0, transform: 'translate3d(-60px, 0, 0)' },
+      '100%': { opacity: '1', transform: 'none' },
+    },
+    '@keyframes bf-fade': {
+      '0%': { opacity: 0 },
+      '100%': { opacity: '1' },
+    },
+
+    // When a transition-type class is on the steps container, override legacy fade-up/down
+    // and animate via the new bf-* keyframes. Old (no class) keeps legacy behaviour.
+    '.bf-trans-vertical .bc-step-fade-up,.bf-trans-vertical .bc-step-enter-fwd': {
+      animation: 'bf-slide-up 0.5s ease-in-out',
+    },
+    '.bf-trans-vertical .bc-step-fade-down,.bf-trans-vertical .bc-step-enter-bwd': {
+      animation: 'bf-slide-down 0.5s ease-in-out',
+    },
+    '.bf-trans-horizontal .bc-step-fade-up,.bf-trans-horizontal .bc-step-enter-fwd': {
+      animation: 'bf-slide-left 0.5s ease-in-out',
+    },
+    '.bf-trans-horizontal .bc-step-fade-down,.bf-trans-horizontal .bc-step-enter-bwd': {
+      animation: 'bf-slide-right 0.5s ease-in-out',
+    },
+    '.bf-trans-fade .bc-step-fade-up,.bf-trans-fade .bc-step-fade-down,.bf-trans-fade .bc-step-enter-fwd,.bf-trans-fade .bc-step-enter-bwd': {
+      animation: 'bf-fade 0.4s ease-in-out',
+    },
+    '@media (prefers-reduced-motion: reduce)': {
+      '.bf-trans-vertical .bc-step-fade-up,.bf-trans-vertical .bc-step-fade-down,.bf-trans-vertical .bc-step-enter-fwd,.bf-trans-vertical .bc-step-enter-bwd,.bf-trans-horizontal .bc-step-fade-up,.bf-trans-horizontal .bc-step-fade-down,.bf-trans-horizontal .bc-step-enter-fwd,.bf-trans-horizontal .bc-step-enter-bwd,.bf-trans-fade .bc-step-fade-up,.bf-trans-fade .bc-step-fade-down,.bf-trans-fade .bc-step-enter-fwd,.bf-trans-fade .bc-step-enter-bwd': {
+        animation: 'bf-fade 0.001s linear',
+      },
+    },
+
     // progress style
+    [`.bc${formId}-progress-wrpr`]: {
+      flex: '1 1 auto',
+      'min-width': 0,
+    },
     [`.bc${formId}-progress-cntnt`]: {
       gap: '5px',
       display: 'flex',
       'flex-direction': 'column',
-      padding: '5px 15px',
-      'min-width': '200px',
+      padding: '8px 12px',
     },
     [`.bc${formId}-progress-lbl-wrpr`]: {
       'line-height': '1rem',
@@ -79,6 +134,7 @@ export default function conversationalWrapperDefaultStyles(formId) {
     [`.bc${formId}-nav-wrpr`]: {
       position: 'absolute',
       bottom: 0,
+      left: 0,
       right: 0,
       'font-weight': '300',
     },
@@ -89,22 +145,21 @@ export default function conversationalWrapperDefaultStyles(formId) {
     [`.bc${formId}-nav-wrpr-cntnt`]: {
       'align-content': 'center',
       'align-items': 'center',
-      background: 'hsla(0,0%,100%,.3)',
-      'border-radius': '8px',
-      'box-shadow': '0 3px 12px 0 rgba(0,0,0,.1)',
+      background: 'hsla(0,0%,100%,.5)',
+      'border-style': 'solid',
+      'border-color': 'hsla(0,0%,0%,.08)',
+      'border-width': '1px 0px 1px 0px',
       display: 'flex',
       'flex-direction': 'row',
-      float: 'right',
-      'justify-content': 'flex-start',
-      'margin-bottom': '5px',
-      'margin-right': '5px',
+      'justify-content': 'space-between',
+      width: '100%',
       padding: '0',
       'pointer-events': 'auto',
       '-webkit-user-select': 'none',
       '-moz-user-select': 'none',
       'user-select': 'none',
       'white-space': 'nowrap',
-      overflow: 'auto',
+      overflow: 'hidden',
     },
     [`.bc${formId}-nav-btn-cntnt`]: {
       display: 'flex',
@@ -112,24 +167,30 @@ export default function conversationalWrapperDefaultStyles(formId) {
     },
     [`.bc${formId}-nav-btn-container`]: {
       display: 'flex',
-      padding: '5px 10px',
-      background: `var(--bc${formId}-a-clr, #0062ff)`,
+      padding: '0 8px',
+      background: 'transparent',
       gap: '5px',
       'align-items': 'center',
+      'flex-shrink': 0,
     },
     [`.bc${formId}-branding-wrpr`]: {
       display: 'flex',
-      gap: '5px',
-      color: '#fff',
+      'justify-content': 'center',
+      'align-items': 'center',
+      gap: '4px',
+      width: '100%',
+      padding: '6px 0',
+      color: 'hsla(0,0%,0%,.45)',
     },
     [`.bc${formId}-prowered-by-lbl`]: {
-      'font-size': '.6rem',
-      display: 'block',
+      'font-size': '.75rem',
+      display: 'inline',
     },
     [`.bc${formId}-bit-form-lbl`]: {
-      'font-size': '1rem',
-      display: 'block',
-      'line-height': '1rem',
+      'font-size': '.75rem',
+      'font-weight': '600',
+      display: 'inline',
+      'line-height': 'inherit',
     },
 
     // navigation button style
@@ -139,17 +200,17 @@ export default function conversationalWrapperDefaultStyles(formId) {
       'border-style': 'solid',
       'border-width': '2px',
       'box-shadow': 'none',
-      'border-color': '#fff',
+      'border-color': `var(--bc${formId}-a-clr, #0062ff)`,
       cursor: 'pointer',
       display: 'inline-flex',
       width: '30px',
       height: '30px',
       'justify-content': 'center',
       'align-items': 'center',
-      color: 'white',
+      color: `var(--bc${formId}-a-clr, #0062ff)`,
     },
     [`.bc${formId}-nav-btn:hover`]: {
-      'background-color': `hsl(var(--bc${formId}-a-h), var(--bc${formId}-a-s), calc(var(--bc${formId}-a-l) - 5%)) !important`,
+      'background-color': `hsla(var(--bc${formId}-a-h), var(--bc${formId}-a-s), var(--bc${formId}-a-l), 0.1) !important`,
     },
     [`.bc${formId}-nav-btn:focus-visible`]: {
       outline: `2px solid var(--bc${formId}-a-clr)`,
@@ -165,6 +226,13 @@ export default function conversationalWrapperDefaultStyles(formId) {
     },
     [`.bc${formId}-nav-btn-down`]: {
       transform: 'rotate(180deg)',
+    },
+    // Horizontal transition: arrow icons point left/right instead of up/down
+    [`.bf-trans-horizontal .bc${formId}-nav-btn-up`]: {
+      transform: 'rotate(270deg)',
+    },
+    [`.bf-trans-horizontal .bc${formId}-nav-btn-down`]: {
+      transform: 'rotate(90deg)',
     },
 
     // step style
@@ -204,21 +272,100 @@ export default function conversationalWrapperDefaultStyles(formId) {
     [`.compact-right-layout .bc${formId}-step-content`]: {
       'flex-direction': 'row-reverse',
     },
+    // Cover layouts: image stretches to full step height
+    [`.compact-left-layout .bc${formId}-step-img-cntnr`]: {
+      'align-self': 'stretch',
+    },
+    [`.compact-right-layout .bc${formId}-step-img-cntnr`]: {
+      'align-self': 'stretch',
+    },
+    [`.compact-left-layout .bc${formId}-step-img`]: {
+      height: '100%',
+      'object-fit': 'contain',
+    },
+    [`.compact-right-layout .bc${formId}-step-img`]: {
+      height: '100%',
+      'object-fit': 'contain',
+    },
+    // Panel Left / Panel Right: generous field padding + vertical spacing
+    [`.padding-left-layout .bc${formId}-step-content`]: {
+      padding: '50px 0',
+      gap: '0',
+    },
     [`.padding-right-layout .bc${formId}-step-content`]: {
       'flex-direction': 'row-reverse',
+      padding: '50px 0',
+      gap: '0',
     },
+    [`.padding-left-layout .bc${formId}-step-img-cntnr`]: {
+      'align-self': 'stretch',
+    },
+    [`.padding-right-layout .bc${formId}-step-img-cntnr`]: {
+      'align-self': 'stretch',
+    },
+    [`.padding-left-layout .bc${formId}-step-img`]: {
+      height: '100%',
+      'object-fit': 'contain',
+    },
+    [`.padding-right-layout .bc${formId}-step-img`]: {
+      height: '100%',
+      'object-fit': 'contain',
+    },
+    [`.padding-left-layout .bc${formId}-step-fld-wrpr`]: {
+      padding: '40px 60px',
+    },
+    [`.padding-right-layout .bc${formId}-step-fld-wrpr`]: {
+      padding: '40px 60px',
+    },
+
+    // Floating Card layout: the step-wrapper centers a card-styled step-content
+    // over the visible form background (._frm-bg-b{id}).
+    [`.centered-card-layout.bc${formId}-step-wrapper`]: {
+      'align-items': 'center',
+      'justify-content': 'center',
+      padding: '40px 20px 80px',
+      background: 'transparent',
+    },
+    [`.centered-card-layout .bc${formId}-step-content`]: {
+      width: 'min(680px, 90%)',
+      'flex-grow': '0',
+      'flex-basis': 'auto',
+      'flex-direction': 'column',
+      'justify-content': 'flex-start',
+      'align-self': 'center',
+      // White is the default fallback; overridden by Step Background setting when set.
+      'background-color': '#fff',
+      'background-size': 'cover',
+      'background-repeat': 'no-repeat',
+      'border-radius': '12px',
+      'box-shadow': '0 4px 32px hsla(0, 0%, 0%, 0.12)',
+      padding: '40px 50px',
+    },
+    [`.centered-card-layout .bc${formId}-step-fld-wrpr`]: {
+      width: '100%',
+      padding: '5px',
+    },
+
     [`.bc${formId}-step-img-cntnr`]: {
       width: '50%',
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
     },
     [`.bc${formId}-step-img-wrpr`]: {
-      display: 'block',
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
       overflow: 'hidden',
       'text-align': 'center',
+      height: '100%',
+      width: '100%',
     },
     [`.bc${formId}-step-img`]: {
       height: '100%',
       width: '100%',
       display: 'block',
+      'object-fit': 'contain',
     },
 
     [`.bit-conversational-form .compact-left-layout .bc${formId}-step-img`]: {
@@ -252,14 +399,14 @@ export default function conversationalWrapperDefaultStyles(formId) {
       // 'background-color': 'transparent',
       background: 'transparent',
       padding: '0',
-      margin: '0',
+      margin: '15px 0',
       position: 'relative',
       'box-shadow': 'none',
       'border-style': 'medium',
       'border-color': 'none',
       'border-radius': '0',
       'border-width': '0',
-      width: 'width',
+      width: '100%',
     },
     [`.bc${formId}-lbl-wrp`]: {
       width: 'auto',
@@ -522,9 +669,8 @@ export default function conversationalWrapperDefaultStyles(formId) {
     },
     '.bc-form-msg': {
       padding: '5px 35px 5px 20px',
-      'border-width': '1px',
-      'border-style': 'solid',
-
+      // 'border-width': '1px',
+      // 'border-style': 'solid',
       'border-radius': 'var(--g-bdr-rad)',
       width: '100%',
       height: '100%',
@@ -537,49 +683,95 @@ export default function conversationalWrapperDefaultStyles(formId) {
       'box-shadow': '0px 0px 0px 0px rgb(0 0 0 / 6%)',
     },
     '.bc-form-msg.success': {
-      background: '#bdffd4e8',
-      'border-color': '#bdffd4e8',
+      background: `var(--bc${formId}-stp-bg-clr, transparent)`,
+      // 'border-color': '#bdffd4e8',
     },
     '.bc-form-msg.error': {
       background: '#ffbdbe',
       'border-color': '#ffbdbe',
     },
 
-    // container query for less than 768px
+    // Container queries — primary responsive layer.
+    // Applies when the form's own width crosses the breakpoint, not the viewport.
+    // Critical when the form is shortcoded into a narrow column on a wide viewport.
+    // 600px: typography + field/image sizing (tablet + mobile).
+    '@container bf-conv (max-width: 600px)': {
+      [`.bc${formId}-fld-wrp`]: { width: '100%' },
+      [`.bc${formId}-lbl-wrp`]: { width: '100%' },
+      [`.bc${formId}-inp-wrp`]: { width: '100%' },
+      [`.bc${formId}-sub-titl`]: { 'font-size': '1rem' },
+      [`.bc${formId}-hlp-txt`]: { 'font-size': '1rem' },
+      [`.bc${formId}-lbl`]: { 'font-size': '1.5rem' },
+      [`.bc${formId}-req-smbl`]: { 'font-size': '1.5rem' },
+      [`.bc${formId}-err-msg`]: { 'font-size': '1rem' },
+      [`.bc${formId}-err-txt`]: { 'font-size': '1rem' },
+      [`.bc${formId}-btn`]: { 'font-size': '16px' },
+      [`.bc${formId}-step-hints`]: { 'font-size': '12px' },
+      [`.bc${formId}-step-fld-wrpr`]: { width: '100%', padding: '20px 15px' },
+      [`.bc${formId}-step-img-cntnr`]: { width: '100%' },
+      // Floating Card: compact padding on small containers
+      [`.centered-card-layout.bc${formId}-step-wrapper`]: { padding: '20px 10px 70px' },
+      [`.centered-card-layout .bc${formId}-step-content`]: { width: '100%', padding: '24px 20px' },
+    },
+    // 480px: mobile-only — flip to column/column-reverse + equal 50/50 height split.
+    // Left layouts keep image on top; right layouts keep image on bottom (column-reverse).
+    '@container bf-conv (max-width: 480px)': {
+      [`.compact-left-layout .bc${formId}-step-content`]: { 'flex-direction': 'column' },
+      [`.compact-right-layout .bc${formId}-step-content`]: { 'flex-direction': 'column-reverse' },
+      [`.padding-left-layout .bc${formId}-step-content`]: { 'flex-direction': 'column', padding: '0' },
+      [`.padding-right-layout .bc${formId}-step-content`]: { 'flex-direction': 'column-reverse', padding: '0' },
+      // Equal 50/50 height split for image and field when stacked
+      [`.compact-left-layout .bc${formId}-step-img-cntnr`]: { flex: '1 1 50%', 'align-self': 'auto' },
+      [`.compact-right-layout .bc${formId}-step-img-cntnr`]: { flex: '1 1 50%', 'align-self': 'auto' },
+      [`.padding-left-layout .bc${formId}-step-img-cntnr`]: { flex: '1 1 50%', 'align-self': 'auto' },
+      [`.padding-right-layout .bc${formId}-step-img-cntnr`]: { flex: '1 1 50%', 'align-self': 'auto' },
+      [`.compact-left-layout .bc${formId}-step-fld-wrpr`]: { flex: '1 1 50%', 'max-height': 'none' },
+      [`.compact-right-layout .bc${formId}-step-fld-wrpr`]: { flex: '1 1 50%', 'max-height': 'none' },
+      [`.padding-left-layout .bc${formId}-step-fld-wrpr`]: { flex: '1 1 50%', 'max-height': 'none', padding: '24px 20px' },
+      [`.padding-right-layout .bc${formId}-step-fld-wrpr`]: { flex: '1 1 50%', 'max-height': 'none', padding: '24px 20px' },
+    },
+    '@container bf-conv (max-width: 380px)': {
+      [`.bc${formId}-lbl`]: { 'font-size': '1.25rem' },
+      [`.bc${formId}-req-smbl`]: { 'font-size': '1.25rem' },
+      [`.bc${formId}-sub-titl`]: { 'font-size': '0.9rem' },
+      [`.bc${formId}-hlp-txt`]: { 'font-size': '0.9rem' },
+      [`.bc${formId}-btn`]: { 'font-size': '14px' },
+      [`.bc${formId}-step-hints`]: { 'font-size': '11px' },
+      [`.bc${formId}-step-fld-wrpr`]: { padding: '16px 12px' },
+      [`.centered-card-layout .bc${formId}-step-content`]: { padding: '16px 14px' },
+    },
+
+    // Fallback for browsers without container-query support (Safari <16, Firefox <110).
+    // 767px: typography + field/image sizing (tablet + mobile).
     '@media (max-width: 767px)': {
-      [`.bc${formId}-fld-wrp`]: {
-        width: '100%',
-      },
-      [`.bc${formId}-lbl-wrp`]: {
-        width: '100%',
-      },
-      [`.bc${formId}-inp-wrp`]: {
-        width: '100%',
-      },
-      [`.bc${formId}-sub-titl`]: {
-        'font-size': '1rem',
-      },
-      [`.bc${formId}-hlp-txt`]: {
-        'font-size': '1rem',
-      },
-      [`.bc${formId}-lbl`]: {
-        'font-size': '1.5rem',
-      },
-      [`.bc${formId}-req-smbl`]: {
-        'font-size': '1.5rem',
-      },
-      [`.bc${formId}-err-msg`]: {
-        'font-size': '1rem',
-      },
-      [`.bc${formId}-err-txt`]: {
-        'font-size': '1rem',
-      },
-      [`.bc${formId}-btn`]: {
-        'font-size': '16px',
-      },
-      [`.bc${formId}-step-hints`]: {
-        'font-size': '12px',
-      },
+      [`.bc${formId}-fld-wrp`]: { width: '100%' },
+      [`.bc${formId}-lbl-wrp`]: { width: '100%' },
+      [`.bc${formId}-inp-wrp`]: { width: '100%' },
+      [`.bc${formId}-sub-titl`]: { 'font-size': '1rem' },
+      [`.bc${formId}-hlp-txt`]: { 'font-size': '1rem' },
+      [`.bc${formId}-lbl`]: { 'font-size': '1.5rem' },
+      [`.bc${formId}-req-smbl`]: { 'font-size': '1.5rem' },
+      [`.bc${formId}-err-msg`]: { 'font-size': '1rem' },
+      [`.bc${formId}-err-txt`]: { 'font-size': '1rem' },
+      [`.bc${formId}-btn`]: { 'font-size': '16px' },
+      [`.bc${formId}-step-hints`]: { 'font-size': '12px' },
+      [`.bc${formId}-step-fld-wrpr`]: { width: '100%', padding: '20px 15px' },
+      [`.bc${formId}-step-img-cntnr`]: { width: '100%' },
+    },
+    // 480px: mobile-only layout flip + equal 50/50 height split.
+    '@media (max-width: 480px)': {
+      [`.compact-left-layout .bc${formId}-step-content`]: { 'flex-direction': 'column' },
+      [`.compact-right-layout .bc${formId}-step-content`]: { 'flex-direction': 'column-reverse' },
+      [`.padding-left-layout .bc${formId}-step-content`]: { 'flex-direction': 'column', padding: '0' },
+      [`.padding-right-layout .bc${formId}-step-content`]: { 'flex-direction': 'column-reverse', padding: '0' },
+      [`.compact-left-layout .bc${formId}-step-img-cntnr`]: { flex: '1 1 50%', 'align-self': 'auto' },
+      [`.compact-right-layout .bc${formId}-step-img-cntnr`]: { flex: '1 1 50%', 'align-self': 'auto' },
+      [`.padding-left-layout .bc${formId}-step-img-cntnr`]: { flex: '1 1 50%', 'align-self': 'auto' },
+      [`.padding-right-layout .bc${formId}-step-img-cntnr`]: { flex: '1 1 50%', 'align-self': 'auto' },
+      [`.compact-left-layout .bc${formId}-step-fld-wrpr`]: { flex: '1 1 50%', 'max-height': 'none' },
+      [`.compact-right-layout .bc${formId}-step-fld-wrpr`]: { flex: '1 1 50%', 'max-height': 'none' },
+      [`.padding-left-layout .bc${formId}-step-fld-wrpr`]: { flex: '1 1 50%', 'max-height': 'none', padding: '24px 20px' },
+      [`.padding-right-layout .bc${formId}-step-fld-wrpr`]: { flex: '1 1 50%', 'max-height': 'none', padding: '24px 20px' },
     },
 
   }

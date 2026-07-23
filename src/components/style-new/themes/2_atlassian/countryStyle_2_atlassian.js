@@ -2,12 +2,12 @@
 /* eslint-disable camelcase */
 
 import { mergeNestedObj } from '../../../../Utils/globalHelpers'
-import countryStyle_1_BitformDefault from '../1_bitformDefault/countryStyle_1_bitformDefault'
+import countryStyle_1_bitformLegacy from '../1_bitformLegacy/countryStyle_1_bitformLegacy'
 
 export default function countryStyle_2_atlassian({ fk, direction, breakpoint, colorScheme }) {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return mergeNestedObj(
-      countryStyle_1_BitformDefault({ fk, direction, breakpoint, colorScheme }),
+      countryStyle_1_bitformLegacy({ fk, direction, breakpoint, colorScheme }),
       {
         [`.${fk}-option-list .option`]: {
           'border-radius': '',

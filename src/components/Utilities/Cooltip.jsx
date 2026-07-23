@@ -5,9 +5,9 @@ import 'tippy.js/animations/shift-away.css'
 import 'tippy.js/dist/backdrop.css'
 import 'tippy.js/dist/tippy.css'
 import 'tippy.js/themes/material.css'
-import QuestionIcn from '../../Icons/QuestionIcn'
+import InfoIcn from '../../Icons/InfoIcn'
 
-export default function Cooltip({ className, children, width = 'auto', icnSize = 20, tip = false, tipLabel = '' }) {
+export default function Cooltip({ className, children, width = 'auto', icnSize = 16, tip = false, tipLabel = '' }) {
   const { css } = useFela()
   return (
     <Tippy
@@ -27,7 +27,7 @@ export default function Cooltip({ className, children, width = 'auto', icnSize =
         data-tipbtn
         className={`${css(c.popper_icn)} ${className}`}
       >
-        {tip ? (tipLabel || children) : <QuestionIcn size={icnSize} />}
+        {tip ? (tipLabel || children) : <InfoIcn size={icnSize} />}
       </div>
     </Tippy>
   )
@@ -37,7 +37,8 @@ const c = {
   popper_icn: {
     dy: 'inline-grid',
     placeContent: 'center',
-    cr: 'var(--dp-blue-bg)',
+    // cr: 'var(--dp-blue-bg)',
+    cr: 'var(--bf-text-clr-gray)',
     oy: 0.3,
     ml: 5,
     ':hover': {

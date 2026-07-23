@@ -1,9 +1,8 @@
-import { useFela } from 'react-fela'
 import { useAtomValue } from 'jotai'
+import { useFela } from 'react-fela'
 import { $themeColors } from '../../GlobalStates/ThemeColorsState'
 import { $themeVars } from '../../GlobalStates/ThemeVarsState'
 import ut from '../../styles/2.utilities'
-import { __ } from '../../Utils/i18nwrap'
 import BorderControl from './BorderControl'
 import ResetStyle from './ResetStyle'
 import ShadowControl from './ShadowControl'
@@ -32,8 +31,7 @@ export default function FieldContainerCustomizer() {
         propertyPath="--fld-wrp-bg"
         modalId="fld-cnr-bg-cuser"
       />
-      <div className={css(ut.flxcb, ut.mt2)}>
-        <span className={css(ut.fw500)}>{__('Spacing')}</span>
+      <ThemeStylePropertyBlock label="Spacing">
         <SpacingControl
           value={{ margin: wrpMagin, padding: wrpPadding }}
           action={{ type: 'spacing-control' }}
@@ -41,7 +39,7 @@ export default function FieldContainerCustomizer() {
           objectPaths={fldWrapperObj}
           id="fld-spacing-ctrl"
         />
-      </div>
+      </ThemeStylePropertyBlock>
       <ThemeStylePropertyBlock label="Shadow">
         <div className={css(ut.flxc)}>
           <ResetStyle

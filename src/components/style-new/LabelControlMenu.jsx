@@ -1,10 +1,10 @@
 /* eslint-disable es/no-logical-assignment-operators */
 /* eslint-disable no-param-reassign */
+import { useAtom } from 'jotai'
 import { create } from 'mutative'
 import { useState } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
 import { $themeVars } from '../../GlobalStates/ThemeVarsState'
 import LblPlacementInlineIcn from '../../Icons/LblPlacementInlineIcn'
 import LblPlacementReverseIcn from '../../Icons/LblPlacementReverseIcn'
@@ -140,7 +140,7 @@ export default function LabelControlMenu() {
 
   return (
     <div style={{ marginTop: '3px' }}>
-      <div className={css(ut.flxcb, ut.mb2)}>
+      {/* <div className={css(ut.flxcb, ut.mb2)}>
         <span className={css(ut.fs12)}>Label Font Size</span>
         <span className={css(ut.flxc)}>
           <ResetStyle
@@ -158,8 +158,8 @@ export default function LabelControlMenu() {
             dataTestId="lbl-fs"
           />
         </span>
-      </div>
-      <div className={css(ut.flxcb, ut.mb2)}>
+      </div> */}
+      {/* <div className={css(ut.flxcb, ut.mb2)}>
         <span className={css(ut.fs12)}>Subtitle Font Size</span>
         <span className={css(ut.flxc)}>
           <ResetStyle
@@ -198,7 +198,7 @@ export default function LabelControlMenu() {
             dataTestId="hlp-txt-fs"
           />
         </span>
-      </div>
+      </div> */}
       <div className={css(ut.flxcb, ut.mb2)}>
         <span className={css(ut.fs12)}>Label Wrapper Width</span>
         <span className={css(ut.flxc)}>

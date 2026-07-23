@@ -19,13 +19,15 @@ import Tip from '../Utilities/Tip'
 export default function EntriesFilter({ fetchData }) {
   const currentReport = useAtomValue($reportSelector)
   const initialRange = {
-    startDate: '',
-    endDate: '',
+    startDate: null,
+    endDate: null,
     key: 'date',
   }
   const [data, setData] = useState(initialRange)
   const { css } = useFela()
   const searchBtnClicked = useRef(false)
+
+  const isValidDate = date => date instanceof Date && !Number.isNaN(date.getTime())
 
   const handleSearch = () => {
     searchBtnClicked.current = true
@@ -55,14 +57,17 @@ export default function EntriesFilter({ fetchData }) {
     hideAll()
   }
 
-  // eslint-disable-next-line no-restricted-globals
-  const isFiniteDate = date => date && isFinite(date)
+  const pickerRange = {
+    ...data,
+    startDate: isValidDate(data.startDate) ? data.startDate : new Date(),
+    endDate: isValidDate(data.endDate) ? data.endDate : new Date(),
+  }
 
   return (
     <div className="mr-2">
       <Downmenu>
         <div className="flx">
-          {(searchBtnClicked.current && isFiniteDate(data.startDate) && isFiniteDate(data.endDate)) && (
+          {(searchBtnClicked.current && isValidDate(data.startDate) && isValidDate(data.endDate)) && (
             <div className="btcd-custom-date-range white ml-2">
               <span className="m-a">
                 &nbsp;
@@ -96,7 +101,7 @@ export default function EntriesFilter({ fetchData }) {
             moveRangeOnFirstSelection={false}
             retainEndDateOnFirstSelection
             editableDateInputs
-            ranges={[data]}
+            ranges={[pickerRange]}
             maxDate={new Date()}
             showSelectionPreview={false}
             showDateDisplay

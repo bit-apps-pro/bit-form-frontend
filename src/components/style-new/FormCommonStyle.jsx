@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useEffect, useState } from 'react'
 import { useFela } from 'react-fela'
 import { Navigate, useParams } from 'react-router-dom'
-import { useAtom, useAtomValue } from 'jotai'
 import { $styles } from '../../GlobalStates/StylesState'
 import { $themeColors } from '../../GlobalStates/ThemeColorsState'
 import ut from '../../styles/2.utilities'
@@ -13,7 +13,7 @@ import BackgroundControl from './BackgroundControl'
 import BorderControl from './BorderControl'
 import CssPropertyList from './CssPropertyList'
 import IndividualShadowControl from './IndividualShadowControl'
-import editorConfig from './NewStyleEditorConfig'
+import elementCssPropertiesConfig from './NewStyleEditorConfig'
 import OutlineControl from './OutlineControl'
 import ResetStyle from './ResetStyle'
 import SimpleColorPicker from './SimpleColorPicker'
@@ -39,7 +39,7 @@ export default function FormCommonStyle({ element, componentTitle }) {
     }
   }, [])
   const addableCssProps = Object
-    .keys(editorConfig[element].properties)
+    .keys(elementCssPropertiesConfig[element].properties)
     .filter(x => !formWrpStylesPropertiesArr?.includes(x))
 
   const getPropertyPath = (cssProperty) => `form->${elemn}->${cssProperty}`
@@ -57,8 +57,8 @@ export default function FormCommonStyle({ element, componentTitle }) {
 
   const setNewCssProp = (prop) => {
     let value = ''
-    if (typeof editorConfig[element].properties[prop] !== 'object') {
-      value = editorConfig[element].properties[prop]
+    if (typeof elementCssPropertiesConfig[element].properties[prop] !== 'object') {
+      value = elementCssPropertiesConfig[element].properties[prop]
     }
     setStyles(prvStyles => create(prvStyles, drft => {
       assignNestedObj(drft, getPropertyPath(prop), value)
@@ -87,7 +87,7 @@ export default function FormCommonStyle({ element, componentTitle }) {
       paths: {},
     }
 
-    const configProperty = editorConfig[element].properties[prop]
+    const configProperty = elementCssPropertiesConfig[element].properties[prop]
     let propertyKeys = [prop]
     if (typeof configProperty === 'object') {
       propertyKeys = Object.keys(configProperty)

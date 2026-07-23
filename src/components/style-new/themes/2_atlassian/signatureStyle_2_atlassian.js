@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { mergeNestedObj } from '../../../../Utils/globalHelpers'
-import signatureStyle_1_bitformDefault from '../1_bitformDefault/signatureStyle_1_bitformDefault'
+import signatureStyle_1_bitformLegacy from '../1_bitformLegacy/signatureStyle_1_bitformLegacy'
 
 /* eslint-disable camelcase */
 export default function signatureStyle_2_atlassian({
@@ -8,7 +8,7 @@ export default function signatureStyle_2_atlassian({
 }) {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return mergeNestedObj(
-      signatureStyle_1_bitformDefault({
+      signatureStyle_1_bitformLegacy({
         fk, breakpoint, colorScheme, align, txtAlign, btnTyp, fulW,
       }),
       {

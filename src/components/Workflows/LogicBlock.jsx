@@ -15,6 +15,7 @@ import Button from '../Utilities/Button'
 import CalculatorField from '../Utilities/CalculationField/CalculatorField'
 import MtInput from '../Utilities/MtInput'
 import MtSelect from '../Utilities/MtSelect'
+import { isConfirmField } from './WorkflowHelpers'
 
 function LogicBlock({
   logic, fieldVal,
@@ -32,6 +33,7 @@ function LogicBlock({
   changeFormField,
   smartTagAllowed,
   formFields,
+  isBasic,
 }) {
   const { css } = useFela()
   const fields = useAtomValue($fields)
@@ -60,7 +62,7 @@ function LogicBlock({
   const getOptions = () => {
     if (fldType === 'razorpay') return
     let options
-    if (fldType === 'user') {
+    if (type === 'user') {
       options = checkLoginOption
     } else {
       options = fields?.[fieldKey]?.opt?.map(opt => ({ label: opt.lbl, value: (opt.val || opt.lbl) }))
@@ -152,7 +154,7 @@ function LogicBlock({
 
   const notNeededValField = ['change', 'null', 'not_null', 'on_click']
   return (
-    <div className={`${css(lgcStyle.lgcBlk)} btcd-logic-blk`}>
+    <div className={`${css(lgcStyle.lgcBlk)} btcd-logic-blk ${isBasic ? 'bf-basic-logic' : ''}`}>
       <div className={css(lgcStyle.processDgrm)}>
         <div className="block-wrapper">
           <div className="block-content">
@@ -164,7 +166,7 @@ function LogicBlock({
               <option value="">{__('Select Form Field')}</option>
               {!!formFields.length && (
                 <optgroup label="Form Fields">
-                  {formFields.map(itm => !filterFieldTypesForLogicBlock.includes(itm.type)
+                  {formFields.map(itm => (!filterFieldTypesForLogicBlock.includes(itm.type) && !isConfirmField(itm))
                     && <option key={`ff-lb-${itm.key}`} value={itm.key}>{itm.name}</option>)}
                 </optgroup>
               )}
@@ -234,7 +236,7 @@ function LogicBlock({
         {logicValue !== 'between' && logicValue !== 'not between' && !notNeededValField.includes(logicValue) && (
           <div className="block-wrapper">
             <div className="block-content">
-              {type.match(/user|select|check|radio/g)
+              {['user', 'select', 'check', 'radio'].includes(type)
                 ? (
                   <MultiSelect
                     className="msl-wrp-options btcd-paper-drpdwn"
@@ -314,31 +316,33 @@ function LogicBlock({
         )}
       </div>
 
-      <div className="btcd-li-side-btn">
-        <Button
-          onClick={() => cloneInLineLogic(lgcInd, subLgcInd, subSubLgcInd)}
-          icn
-          className="ml-2 white sh-sm"
-        >
-          <CopyIcn size="16" />
-        </Button>
-        <Button
-          onClick={() => delLogic(lgcInd, subLgcInd, subSubLgcInd)}
-          icn
-          className="ml-2 white mr-2 sh-sm"
-        >
-          <TrashIcn size="16" />
-        </Button>
+      <div className="btcd-li-side-btn logic-block">
+        <div className="btcd-li-side-btn-row">
+          <Button
+            onClick={() => cloneInLineLogic(lgcInd, subLgcInd, subSubLgcInd)}
+            icn
+            className="white sh-sm logic-action-icon-btn clone-btn"
+          >
+            <CopyIcn size="16" />
+          </Button>
+          <Button
+            onClick={() => delLogic(lgcInd, subLgcInd, subSubLgcInd)}
+            icn
+            className="white sh-sm logic-action-icon-btn red-clr delete-btn"
+          >
+            <TrashIcn size="16" />
+          </Button>
+        </div>
         <Button
           onClick={() => addInlineLogic('and', lgcInd, subLgcInd, subSubLgcInd)}
-          className="white mr-2 sh-sm"
+          className="white sh-sm logic-action-btn and-btn"
         >
           <CloseIcn size="10" className="icn-rotate-45 mr-1" />
           AND
         </Button>
         <Button
           onClick={() => addInlineLogic('or', lgcInd, subLgcInd, subSubLgcInd)}
-          className="white sh-sm"
+          className="white sh-sm logic-action-btn or-btn"
         >
           <CloseIcn size="10" className="icn-rotate-45 mr-1" />
           OR
@@ -357,7 +361,9 @@ const lgcStyle = {
     cg: 15,
     rg: 15,
     my: 5,
-
+    '&.bf-basic-logic .block-content': {
+      '--linewidth': '0.5em',
+    },
     ':hover': { bc: '#F0F0F0' },
   },
 
@@ -508,7 +514,7 @@ const lgcStyle = {
 
     '& >.block-wrapper>.block-group,  &  ol>.block-wrapper>.block-group': { pr: 0 },
 
-    '& >.block-wrapper:last-child>.block-content::after,  &  ol>.block-wrapper:last-child>.block-content::after,  & >.block-wrapper:last-child>.block-group::after,  &  ol>.block-wrapper:last-child>.block-group::after': { dy: 'block' },
+    '&:hover>.block-wrapper:last-child>.block-content::after,  &  ol>.block-wrapper:last-child>.block-content::after,  & >.block-wrapper:last-child>.block-group::after,  &  ol>.block-wrapper:last-child>.block-group::after': { dy: 'block' },
 
     '& >.block-wrapper:last-child>.block-content, & ol>.block-wrapper:last-child>.block-content': { mr: 0 },
 

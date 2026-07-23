@@ -4,6 +4,7 @@ import { useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
 import { useFela } from 'react-fela'
 import { $newFormId } from '../../GlobalStates/GlobalStates'
+import ImportIcn from '../../Icons/ImportIcn'
 import { __ } from '../../Utils/i18nwrap'
 import FormImporter from '../FormImporter'
 import Btn from '../Utilities/Btn'
@@ -142,9 +143,10 @@ export default function FormTemplates({ setTempModal, setSnackbar }) {
               type="search"
               className={`btcd-paper-inp mt-1 ${css(formTemplateStyles.search)}`}
               onChange={e => handleSearch(e)}
-              placeholder="Search Template"
+              placeholder={__('Search Template')}
             />
             <Btn onClick={() => setModal(true)}>
+              <ImportIcn size={18} stroke={2} classNames={css({ mr: 5 })} />
               {__('Import Form')}
             </Btn>
           </div>
@@ -240,14 +242,14 @@ const formTemplateStyles = {
     fs: 16,
     p: 10,
     oe: 'none !important',
-    brs: 8,
+    brs: 'var(--bf-bdr-radius-sm)',
     // mnh: '15px !important',
     b: '1px solid var(--white-0-89) !important',
     tn: 'box-shadow 0.3s !important',
     // ml: 10,
   },
   cateWrap: {
-    h: 'calc(100vh - 200px)',
+    h: 'calc(100vh - 285px)',
     ow: 'scroll',
     mt: 10,
     pl: 10,
@@ -265,7 +267,7 @@ const formTemplateStyles = {
   nav: {
     dy: 'block',
     cur: 'pointer',
-    brs: 8,
+    brs: 'var(--bf-bdr-radius-sm)',
     p: 10,
     cr: 'var(--gray-4)',
     ':hover': {

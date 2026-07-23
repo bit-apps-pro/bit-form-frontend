@@ -1,11 +1,11 @@
+import { MouseEventHandler, ReactNode } from 'react'
 import { useFela } from 'react-fela'
-import { ReactNode, MouseEventHandler } from 'react'
 
 interface BtnProps {
   children: ReactNode
   className?: string
   size?: 'xs' | 'sm' | 'md' | 'lg'
-  variant?: 'default' | 'primary' | 'warning' | 'secondary' | 'success' | 'danger' | 'primary-outline' | 'secondary-outline' | 'success-outline' | 'danger-outline'
+  variant?: 'default' | 'primary' | 'warning' | 'secondary' | 'tertiary' | 'success' | 'danger' | 'primary-outline' | 'secondary-outline' | 'tertiary-outline' | 'success-outline' | 'danger-outline'
   width?: string
   gap?: string
   shadow?: boolean
@@ -16,6 +16,7 @@ interface BtnProps {
   animated?: boolean
   id?: string
   title?: string
+  style?: React.CSSProperties
 }
 
 export default function Btn({
@@ -33,13 +34,14 @@ export default function Btn({
   animated,
   id,
   title,
+  style,
 }: BtnProps) {
   const { css } = useFela()
   return (
     <button
       id={id}
       data-testid={dataTestId}
-      style={{ width, gap }}
+      style={{ width, gap, ...style }}
       type="button"
       disabled={disabled}
       className={`${css([
@@ -52,7 +54,7 @@ export default function Btn({
         animated && btnStyle.animated,
       ])} ${className}`}
       onClick={onClick}
-      title={title}
+      {...title && { title }}
     >
       {children}
     </button>
@@ -63,7 +65,7 @@ const btnStyle: Record<string, any> = {
   btn: {
     fw: 500,
     b: 'none',
-    brs: 8,
+    brs: 'var(--bf-bdr-radius-sm)', // 4
     bd: 'transparent',
     cur: 'pointer',
     oe: 'none',
@@ -109,10 +111,10 @@ const btnStyle: Record<string, any> = {
     ':hover': { bd: 'hsl(0, 0%, 90%)' },
   },
   primary: {
-    bd: 'hsl(211, 100%, 50%)',
+    bd: 'var(--bf-primary)',
     cr: 'hsl(0, 0%, 100%)',
-    ':hover': { bd: 'hsl(211, 100%, 40%)' },
-    ':active': { bd: 'hsl(211, 100%, 30%)' },
+    ':hover': { bd: 'var(--bf-primary-hover)' },
+    ':active': { bd: 'var(--bf-primary-active)' },
   },
   warning: {
     bd: 'hsl(42, 100%, 50%)',
@@ -124,6 +126,11 @@ const btnStyle: Record<string, any> = {
     cr: 'hsl(0, 0%, 100%)',
     bd: 'hsl(208, 7%, 46%)',
     ':hover': { bd: 'hsla(207, 7%, 51%, 0.851)' },
+  },
+  tertiary: {
+    cr: 'var(--bf-text-clr-white)',
+    bd: 'var(--bf-bg-tertiary)',
+    ':hover': { bd: 'var(--bf-bg-tertiary-hover)' },
   },
   success: {
     bd: 'hsla(160, 100%, 49%, 100%)',
@@ -138,11 +145,11 @@ const btnStyle: Record<string, any> = {
     ':focus-visible': { 'outline-color': 'hsl(0, 100%, 64%)' },
   },
   'primary-outline': {
-    cr: 'hsl(211, 100%, 50%)',
+    cr: 'var(--bf-primary)',
     bc: '#fff',
-    b: '1px solid hsl(211, 100%, 50%)',
+    b: '1px solid var(--bf-primary)',
     ':hover': {
-      bd: 'hsl(211, 100%, 50%)',
+      bd: 'var(--bf-primary-hover)',
       cr: 'hsl(0, 0%, 100%)',
     },
   },
@@ -153,6 +160,15 @@ const btnStyle: Record<string, any> = {
     ':hover': {
       cr: 'hsl(0, 0%, 100%)',
       bc: 'hsl(208, 7%, 46%)',
+    },
+  },
+  'tertiary-outline': {
+    cr: 'var(--bf-text-clr-darkgray)',
+    bc: '#fff',
+    b: '1px solid var(--bf-bdr-clr-tertiary)',
+    ':hover': {
+      cr: 'hsl(0, 0%, 100%)',
+      bc: 'var(--bf-bg-tertiary)',
     },
   },
   'success-outline': {

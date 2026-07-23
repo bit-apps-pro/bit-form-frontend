@@ -1,13 +1,12 @@
 /* eslint-disable no-param-reassign */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom, useAtomValue } from 'jotai'
 import { $themeColors } from '../../GlobalStates/ThemeColorsState'
 import { $themeVars } from '../../GlobalStates/ThemeVarsState'
 import ut from '../../styles/2.utilities'
 import { addToBuilderHistory, generateHistoryData, getLatestState } from '../../Utils/FormBuilderHelper'
-import { __ } from '../../Utils/i18nwrap'
 import SizeControl from '../CompSettings/StyleCustomize/ChildComp/SizeControl'
 import BorderControl from './BorderControl'
 import FilterColorPicker from './FilterColorPicker'
@@ -134,15 +133,14 @@ export default function IcnCustomizer({ elementKey }) {
         </div>
       </ThemeStylePropertyBlock>
 
-      <div className={css(ut.flxcb, ut.mt2)}>
-        <span className={css(ut.fw500)}>{__('Spacing')}</span>
+      <ThemeStylePropertyBlock label="Spacing">
         <SpacingControl
           action={{ type: 'spacing-control' }}
           subtitle={`${title()} Icon Spacing`}
           objectPaths={preIconSpacingObj}
           id="pre-i-spacing-control"
         />
-      </div>
+      </ThemeStylePropertyBlock>
 
       <ThemeStylePropertyBlock label="Shadow">
         <div className={css(ut.flxc)}>

@@ -1,5 +1,5 @@
-import { useFela } from 'react-fela'
 import { useAtom, useAtomValue } from 'jotai'
+import { useFela } from 'react-fela'
 import { $draggableModal } from '../../GlobalStates/GlobalStates'
 import { $themeVars } from '../../GlobalStates/ThemeVarsState'
 import { showDraggableModal } from './styleHelpers'
@@ -29,7 +29,7 @@ const c = {
     bd: 'var(--white-0-95)',
     w: 130,
     mnw: 130,
-    brs: 10,
+    brs: 'var(--bf-bdr-radius-sm)',
     px: 5,
     py: 3,
     flx: 'center-between',

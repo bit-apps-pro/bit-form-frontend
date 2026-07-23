@@ -1,11 +1,11 @@
 /* eslint-disable camelcase */
 import { mergeNestedObj } from '../../../../Utils/globalHelpers'
-import gdprStyle_1_bitformDefault from '../1_bitformDefault/gdprStyle_1_bitformDefault '
+import gdprStyle_1_bitformLegacy from '../1_bitformLegacy/gdprStyle_1_bitformLegacy'
 
 export default function gdprStyle_2_atlassian({ fk, direction, breakpoint, colorScheme }) {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return mergeNestedObj(
-      gdprStyle_1_bitformDefault({ fk, direction, breakpoint, colorScheme }),
+      gdprStyle_1_bitformLegacy({ fk, direction, breakpoint, colorScheme }),
       {
         [`.${fk}-bx`]: {
           height: '13px',

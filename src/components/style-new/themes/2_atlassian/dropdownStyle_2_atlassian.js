@@ -1,12 +1,12 @@
 /* eslint-disable object-curly-newline */
 /* eslint-disable camelcase */
 import { mergeNestedObj } from '../../../../Utils/globalHelpers'
-import dropdownStyle_1_BitformDefault from '../1_bitformDefault/dropdownStyle_1_bitformDefault'
+import dropdownStyle_1_bitformLegacy from '../1_bitformLegacy/dropdownStyle_1_bitformLegacy'
 
 export default function dropdownStyle_2_atlassian({ fk, direction, breakpoint, colorScheme }) {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return mergeNestedObj(
-      dropdownStyle_1_BitformDefault({ fk, direction, breakpoint, colorScheme }),
+      dropdownStyle_1_bitformLegacy({ fk, direction, breakpoint, colorScheme }),
       {
         [`.${fk}-option-list .option`]: {
           'border-radius': '',

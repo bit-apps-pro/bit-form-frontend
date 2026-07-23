@@ -1,8 +1,25 @@
 import { getAtom } from '../../GlobalStates/BitStore'
 import { $allLayouts, $fields, $formInfo, $nestedLayouts } from '../../GlobalStates/GlobalStates'
 import { makeFieldsArrByLabel } from '../../Utils/Helpers'
+import { __ } from '../../Utils/i18nwrap'
 
 /* eslint-disable import/prefer-default-export */
+export const actionsTitle = type => {
+  switch (type) {
+    case 'onload': return __('On Load')
+    case 'oninput': return __('On Field Input')
+    case 'onvalidate': return __('On Form Validate')
+    case 'onsubmit': return __('On Form Submit')
+    case 'create_edit': return __('Record Create/Edit')
+    case 'create': return __('Record Create')
+    case 'edit': return __('Record Edit')
+    case 'delete': return __('Record Delete')
+    case 'always': return __('Always')
+    case 'cond': return __('With Condition')
+    default: return ''
+  }
+}
+
 export const accessToNested = (obj, path = '') => {
   if (path === '') return obj
   const paths = path.split('.')
@@ -62,9 +79,9 @@ export const filterFormFields = condGrp => {
   // search through by all repeater fields from nested layouts if any of its fields are selected
   let selectedRepeaterFld = ''
   repeaterFlds.forEach(rptFld => {
-    const layout = nestedLayouts[rptFld].lg
-    const fldsInLayout = layout.map(l => l.i)
-    const isAnyFldSelected = fldsInLayout.some(fld => allSelectedFlds.includes(fld))
+    const layout = nestedLayouts[rptFld]?.lg
+    const fldsInLayout = layout?.map(l => l.i)
+    const isAnyFldSelected = fldsInLayout?.some(fld => allSelectedFlds.includes(fld))
     if (isAnyFldSelected) selectedRepeaterFld = rptFld
   })
   // if any of repeater fields are selected, then remove all other fields of other repeaters from formFields
@@ -79,4 +96,13 @@ export const filterFormFields = condGrp => {
     return formFields.filter(fld => !allFldKeysOfOtherRepeater.includes(fld.key) && !repeaterFlds.includes(fld.key))
   }
   return formFields
+}
+
+export const isConfirmField = (field) => {
+  const type = ['email', 'password']
+
+  if (type.includes(field?.typ?.toLowerCase()) && field?.parentFieldKey) {
+    return true
+  }
+  return false
 }

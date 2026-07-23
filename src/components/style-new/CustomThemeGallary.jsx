@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-param-reassign */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { Link, useParams } from 'react-router-dom'
-import { useAtom, useAtomValue } from 'jotai'
 import { $fields, $selectedFieldId } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import CheckMarkIcn from '../../Icons/CheckMarkIcn'
@@ -11,11 +11,8 @@ import EditIcn from '../../Icons/EditIcn'
 import EyeIcon from '../../Icons/EyeIcon'
 import { addToBuilderHistory, generateHistoryData, reCalculateFldHeights } from '../../Utils/FormBuilderHelper'
 import Tip from '../Utilities/Tip'
-import noStyleTheme from './themes/0_noStyle'
-import bitformDefaultTheme from './themes/1_bitformDefault'
-import atlassianTheme from './themes/2_atlassian'
-import individual from './themes/individual/individual'
 import themes from './themes/themeList'
+import { getSingleFieldStyle } from './themes/themeProvider'
 
 export default function CustomThemeGallary({ fldKey }) {
   const { css } = useFela()
@@ -29,15 +26,13 @@ export default function CustomThemeGallary({ fldKey }) {
 
   const themesForFld = [...themes, ...customThemes.filter(theme => theme.allowedFlds.includes(fieldType))]
 
-  const getStyle = (slug, fk, type) => {
-    const obj = {
-      bitformDefault: bitformDefaultTheme({ fieldKey: fk, type }),
-      atlassian: atlassianTheme({ fieldKey: fk, type }),
-      individual: individual({ fieldKey: fk, type }),
-      noStyle: noStyleTheme({ fieldKey: fk, type }),
-    }
-    return obj[slug]
-  }
+  const getStyle = (slug, fk, type) =>
+    // Use getSingleFieldStyle helper to get field style for any theme (base or derived)
+    getSingleFieldStyle(slug, fk, type, {
+      breakpoint: 'lg',
+      colorScheme: 'light',
+      direction: 'ltr',
+    })
 
   const handleThemeApply = (themeSlug) => {
     const fk = fldKey || selectedFieldId

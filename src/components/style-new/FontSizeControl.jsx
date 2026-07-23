@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
+import { useAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
 import { $styles } from '../../GlobalStates/StylesState'
 import { $themeVars } from '../../GlobalStates/ThemeVarsState'
 import ut from '../../styles/2.utilities'
@@ -10,6 +10,7 @@ import { addToBuilderHistory, generateHistoryData, getLatestState } from '../../
 import SizeControl from '../CompSettings/StyleCustomize/ChildComp/SizeControl'
 import ResetStyle from './ResetStyle'
 import { assignNestedObj, getNumFromStr, getStrFromStr, getValueByObjPath, getValueFromStateVar, unitConverter } from './styleHelpers'
+import ThemeStylePropertyBlock from './ThemeStylePropertyBlock'
 
 export default function FontSizeControl({ stateObjName, propertyPath, id }) {
   const [themeVars, setThemeVars] = useAtom($themeVars)
@@ -56,8 +57,7 @@ export default function FontSizeControl({ stateObjName, propertyPath, id }) {
   const fldFsSizeHandler = ({ value, unit }) => updateHandler(value, unit, fldFSUnit)
 
   return (
-    <div className={css(ut.flxcb, ut.mt2)}>
-      <span className={css(ut.fw500)}>Font Size</span>
+    <ThemeStylePropertyBlock label="Font Size">
       <div className={css(ut.flxc)}>
         <ResetStyle id={id} propertyPath={propertyPath} stateObjName={stateObjName} />
         <SizeControl
@@ -70,6 +70,6 @@ export default function FontSizeControl({ stateObjName, propertyPath, id }) {
           dataTestId={id}
         />
       </div>
-    </div>
+    </ThemeStylePropertyBlock>
   )
 }

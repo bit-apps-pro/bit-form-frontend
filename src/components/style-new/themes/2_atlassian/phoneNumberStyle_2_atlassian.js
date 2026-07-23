@@ -1,12 +1,12 @@
 /* eslint-disable object-curly-newline */
 /* eslint-disable camelcase */
 import { mergeNestedObj } from '../../../../Utils/globalHelpers'
-import phoneNumberStyle_1_bitformDefault from '../1_bitformDefault/phoneNumberStyle_1_bitformDefault'
+import phoneNumberStyle_1_bitformLegacy from '../1_bitformLegacy/phoneNumberStyle_1_bitformLegacy'
 
 export default function phoneNumberStyle_2_atlassian({ fk, direction, breakpoint, colorScheme }) {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return mergeNestedObj(
-      phoneNumberStyle_1_bitformDefault({ fk, direction, breakpoint, colorScheme }),
+      phoneNumberStyle_1_bitformLegacy({ fk, direction, breakpoint, colorScheme }),
       {
         [`.${fk}-option-list .option`]: {
           'border-radius': '',
@@ -15,6 +15,7 @@ export default function phoneNumberStyle_2_atlassian({ fk, direction, breakpoint
           'border-color': 'transparent',
           margin: '0 !important',
           transition: '',
+          border: '',
         },
         [`.${fk}-option-list .option:hover:not(.selected-opt)`]: {
           'border-color': 'var(--global-accent-color)',

@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
+import { useAtom } from 'jotai'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
 import { $styles } from '../../GlobalStates/StylesState'
 import { $themeColors } from '../../GlobalStates/ThemeColorsState'
 import TrashIcn from '../../Icons/TrashIcn'
@@ -243,7 +243,7 @@ export default function FilterControlMenu({ title = 'Filters', objectPaths, id }
                   <button
                     title="Clear Value"
                     onClick={() => handleClearProperties(filter.name)}
-                    className={`${css(c.delBtn, { rt: -14 })} delete-btn`}
+                    className={`${css(ut.stylePropDeleteBtn, { rt: -14 })} delete-btn`}
                     type="button"
                     aria-label="Clear Filter"
                     data-testid={`${id}-clear-filter`}
@@ -333,7 +333,7 @@ export default function FilterControlMenu({ title = 'Filters', objectPaths, id }
               <button
                 title="Clear Value"
                 onClick={() => handleClearProperties(filter.name)}
-                className={`${css(c.delBtn)} delete-btn`}
+                className={`${css(ut.stylePropDeleteBtn)} delete-btn`}
                 type="button"
                 aria-label="Clear Filter"
                 data-testid={`${id}-clear-filter`}
@@ -395,22 +395,6 @@ const c = {
       b: '1px solid #afafaf',
       brs: '10px !important',
     },
-  },
-  delBtn: {
-    se: 20,
-    flx: 'center',
-    b: 'none',
-    p: 0,
-    mr: 1,
-    tn: '.2s all',
-    curp: 1,
-    brs: '50%',
-    tm: 'scale(0)',
-    bd: 'none',
-    cr: 'var(--red-100-61)',
-    pn: 'absolute',
-    rt: -8,
-    ':hover': { bd: '#ffd0d0', cr: '#460000' },
   },
   containerHover: {
     pn: 'relative',

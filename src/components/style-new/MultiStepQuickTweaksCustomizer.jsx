@@ -28,11 +28,9 @@ import SimpleColorPicker from './SimpleColorPicker'
 import ThemeStylePropertyBlock from './ThemeStylePropertyBlock'
 import ThemeStyleReset from './ThemeStyleReset'
 import { changeFormStylesDir, changeFormThemeVarsDir } from './formDirectionHelpers'
-import bitformDefaultTheme from './themes/1_bitformDefault'
-import { updateFieldStyleByFieldSizing } from './themes/1_bitformDefault/fieldSizeControlStyle'
-import atlassianTheme from './themes/2_atlassian'
+import { updateFieldStyleByFieldSizing } from './themes/1_bitformLegacy/fieldSizeControlStyle'
 import individual from './themes/individual/individual'
-import themeProvider from './themes/themeProvider'
+import themeProvider, { getSingleFieldStyle } from './themes/themeProvider'
 
 export default function MultiStepQuickTweaksCustomizer() {
   const { css } = useFela()
@@ -88,8 +86,9 @@ export default function MultiStepQuickTweaksCustomizer() {
   }
 
   const getThemeWiseStyle = (theme, fk, type, dir) => {
-    if (theme === 'bitformDefault') return bitformDefaultTheme({ fieldKey: fk, type, direction: dir })
-    if (theme === 'atlassian') return atlassianTheme({ fieldKey: fk, type, direction: dir })
+    // if (theme === 'bitformLegacy' || theme === 'bitformDefault') return bitformLegacyTheme({ fieldKey: fk, type, direction: dir })
+    // if (theme === 'atlassian') return atlassianTheme({ fieldKey: fk, type, direction: dir })
+    if (theme !== 'individual') return getSingleFieldStyle(theme, fk, type, { breakpoint: 'lg', colorScheme: 'light', direction: dir })
     return individual({ fieldKey: fk, type, direction: dir })
   }
 

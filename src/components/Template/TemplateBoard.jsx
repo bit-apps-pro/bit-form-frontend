@@ -6,9 +6,7 @@ export default function TemplateBoard() {
           <div className="search-wrapper">
             <input type="text" placeholder="Search" />
           </div>
-          <div className="template-categroy-list">
-
-          </div>
+          <div className="template-categroy-list" />
         </div>
         <div className="template-board__content">
           <div className="template-board__content__item">

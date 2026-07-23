@@ -27,7 +27,6 @@ export default function MailSendTest({ settab }) {
         setisTestLoading(false)
         if (res !== undefined && res.success) {
           if (res.data) {
-
             return __('Email sent successfully.')
           }
           return __(`${res?.data?.errors?.[0]}`)

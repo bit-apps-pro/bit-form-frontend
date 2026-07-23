@@ -1,7 +1,7 @@
+import { useAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
 import { $draggableModal } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import { $themeColors } from '../../GlobalStates/ThemeColorsState'
@@ -55,7 +55,7 @@ export default function FilterController({ subtitle, action, value, objectPaths,
 
   return (
     <div className={css(ut.flxc, { cg: 3 })}>
-      {allowImportant && getValue() && (<Important id={id} propertyPath={paths?.filter} />)}
+      {allowImportant && getValue() && (<Important id={id} propertyPath={paths?.filter} stateObjName={object} />)}
       <div title={getValue() || 'Configure'} className={css(c.preview_wrp, draggableModal.id === id && c.active)}>
         <button
           onClick={e => showDraggableModal(e, setDraggableModal, {
@@ -90,7 +90,7 @@ const c = {
     bd: 'var(--white-0-95)',
     w: 130,
     mnw: 130,
-    brs: 10,
+    brs: 'var(--bf-bdr-radius-sm)',
     p: 7,
     pr: '3px !important',
     flx: 'center-between',

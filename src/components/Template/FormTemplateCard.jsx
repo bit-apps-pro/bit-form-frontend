@@ -104,9 +104,9 @@ export default function FormTemplateCard({ item }) {
       if (typeof isPaymentConfigured() !== 'undefined' && !isPaymentConfigured()) {
         return
       }
-      navigate(`/form/builder/${slug}/${newFormId}/fields-list`, { replace: true, state: true })
+      navigate(`/form/builder/${slug}/${newFormId}/add-fields`, { replace: true, state: true })
     } else {
-      navigate(`/form/builder/${slug}/${newFormId}/fields-list`, { replace: true, state: true })
+      navigate(`/form/builder/${slug}/${newFormId}/add-fields`, { replace: true, state: true })
     }
   }
   const navigateToPaymentSettings = () => {
@@ -151,7 +151,7 @@ export default function FormTemplateCard({ item }) {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {__('See Demo')}
+                  {__('Preview')}
                 </a>
               </Btn>
             )}
@@ -208,9 +208,10 @@ const cardStyles = {
     rt: 0,
     vy: 'none',
     tn: '0.5s ease',
-    bc: 'rgb(49 49 49 / 50%)',
+    bc: 'rgb(185 185 185 / 50%)',
     oy: 0,
-    brs: 7,
+    // brs: 7,
+    brs: 'var(--bf-bdr-radius-md)',
   },
   overlay_buttons: {
     pn: 'absolute',
@@ -252,7 +253,8 @@ const cardStyles = {
     pn: 'relative',
     ow: 'hidden',
     b: '1px solid #ccc',
-    brs: '10px',
+    // brs: '10px',
+    brs: 'var(--bf-bdr-radius-md)',
     tn: 'transform 0.3s ease',
     ':hover': {
       bs: '0 0 0 2px var(--b-50) !important',

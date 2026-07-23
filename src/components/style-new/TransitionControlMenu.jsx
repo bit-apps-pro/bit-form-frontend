@@ -2,11 +2,11 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable no-param-reassign */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { memo } from 'react'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom, useAtomValue } from 'jotai'
 import { $styles } from '../../GlobalStates/StylesState'
 import { $themeVars } from '../../GlobalStates/ThemeVarsState'
 import CloseIcn from '../../Icons/CloseIcn'
@@ -26,7 +26,7 @@ function TransitionControlMenu({ stateObjName, propertyPath, id }) {
   const [styles, setStyles] = useAtom($styles)
   let checkImportant = ''
   const getTransitionStyleVal = () => {
-    let transitionValue = getValueByObjPath(styles, propertyPath)
+    let transitionValue = getValueByObjPath(styles, propertyPath) || ''
 
     if (transitionValue.match(/var/gi)?.[0] === 'var') {
       const themeVarTransition = transitionValue?.replace(/\(|var|,.*|\)/gi, '')
@@ -114,7 +114,7 @@ function TransitionControlMenu({ stateObjName, propertyPath, id }) {
                   <button
                     type="button"
                     title="Remove"
-                    className={css(c.delBtn)}
+                    className={css(ut.stylePropDeleteBtn)}
                     onClick={() => deleteTransition(indx)}
                     data-testid={`${id}-del-transn-${indx}`}
                   >
@@ -233,16 +233,6 @@ const c = {
     fs: 12,
   },
   divider: { bb: '1px solid var(--white-0-83)', mx: 3, my: 3 },
-  delBtn: {
-    se: 18,
-    p: 1,
-    curp: 1,
-    bd: 'transparent',
-    oe: 'none',
-    b: 'none',
-    brs: '50%',
-    '&:hover': { bd: 'var(--white-0-86)' },
-  },
   footer: { flx: 'center' },
   addBtn: {
     se: 25,

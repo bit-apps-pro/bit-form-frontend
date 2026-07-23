@@ -8,8 +8,8 @@ export const changeFormStylesDir = (style, dir) => create(style, drft => {
     const fieldKey = fieldsKeysArr[i]
     if (Object.hasOwnProperty.call(drft.fields, fieldKey)) {
       if (drft.fields[fieldKey].overrideGlobalTheme.length === 0) {
-        if (drft.theme === 'bitformDefault') {
-          bitformDefaultThemeDirStyle(drft, fieldKey, dir)
+        if (drft.theme === 'bitformLegacy' || drft.theme === 'bitformDefault') {
+          bitformLegacyThemeDirStyle(drft, fieldKey, dir)
         } else if (drft.theme === 'atlassian') {
           atlassianThemeDirStyle(drft, fieldKey, dir)
         }
@@ -18,7 +18,7 @@ export const changeFormStylesDir = (style, dir) => create(style, drft => {
   }
 })
 
-const bitformDefaultThemeDirStyle = (style, fieldKey, dir) => {
+const bitformLegacyThemeDirStyle = (style, fieldKey, dir) => {
   const { classes = {}, fieldType = '' } = style.fields[fieldKey]
   if (isObjectEmpty(classes)) return
   switch (fieldType) {

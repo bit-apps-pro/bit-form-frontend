@@ -18,31 +18,33 @@ import {
 import { deepCopy, forEach, getIconsGlobalFilterVariable, getIconsParentElement, isObjectEmpty, trimCSS } from '../../Utils/Helpers'
 import css2json from '../../Utils/css2json'
 import { select } from '../../Utils/globalHelpers'
-import editorConfig from './NewStyleEditorConfig'
+import elementCssPropertiesConfig from './NewStyleEditorConfig'
 import { hslToHex } from './colorHelpers'
-import advancedFileUp_1_bitformDefault from './themes/1_bitformDefault/advancedFileUp_1_bitformDefault'
-import buttonStyle1BitformDefault from './themes/1_bitformDefault/buttonStyle_1_bitformDefault'
-import checkboxNradioStyle1BitformDefault from './themes/1_bitformDefault/checkboxNradioStyle_1_bitformDefault'
-import countryStyle_1_BitformDefault from './themes/1_bitformDefault/countryStyle_1_bitformDefault'
-import currencyStyle_1_BitformDefault from './themes/1_bitformDefault/currencyStyle_1_bitformDefault'
-import dividerStyle1BitformDefault from './themes/1_bitformDefault/dividerStyle_1_bitformDefault'
-import dropdownStyle_1_BitformDefault from './themes/1_bitformDefault/dropdownStyle_1_bitformDefault'
-import fileUploadStyle_1_BitformDefault from './themes/1_bitformDefault/fileUpload_1_bitformDefault'
-import hiddenStyle_1_bitformDefault from './themes/1_bitformDefault/hiddenStyle_1_bitformDefault'
-import htmlStyle_1_bitformDefault from './themes/1_bitformDefault/htmlStyle_1_bitformDefault'
-import imageSelectStyle_1_bitformDefault from './themes/1_bitformDefault/imageSelectStyle_1_bitformDefault'
-import imageStyle1BitformDefault from './themes/1_bitformDefault/imageStyle_1_bitformDefault'
-import phoneNumberStyle_1_bitformDefault from './themes/1_bitformDefault/phoneNumberStyle_1_bitformDefault'
-import ratingStyle_1_bitformDefault from './themes/1_bitformDefault/ratingStyle_1_bitformDefault'
-import recaptchaStyle_1_bitformDefault from './themes/1_bitformDefault/recaptchaStyle_1_bitformDefault'
-import repeaterStyle_1_bitformDefault from './themes/1_bitformDefault/repeaterStyle_1_bitformDefault'
-import sectionStyle_1_bitformDefault from './themes/1_bitformDefault/sectionStyle_1_bitformDefault'
-import selectStyle_1_BitformDefault from './themes/1_bitformDefault/selectStyle_1_bitformDefault'
-import shortcodeStyle_1_bitformDefault from './themes/1_bitformDefault/shortcodeStyle_1_bitformDefault'
-import sliderStyle1BitformDefault from './themes/1_bitformDefault/sliderStyle_1_bitformDefault'
-import spacerStyle_1_bitformDefault from './themes/1_bitformDefault/spacerStyle_1_bitformDefault'
-import textStyle1BitformDefault from './themes/1_bitformDefault/textStyle_1_bitformDefault'
-import titleStyle1BitformDefault from './themes/1_bitformDefault/titleStyle_1_bitformDefault'
+import advancedFileUp_1_bitformLegacy from './themes/1_bitformLegacy/advancedFileUp_1_bitformLegacy'
+import buttonStyle_1_BitformLegacy from './themes/1_bitformLegacy/buttonStyle_1_bitformLegacy'
+import checkboxNradioStyle_1_BitformLegacy from './themes/1_bitformLegacy/checkboxNradioStyle_1_bitformLegacy'
+import countryStyle_1_bitformLegacy from './themes/1_bitformLegacy/countryStyle_1_bitformLegacy'
+import currencyStyle_1_bitformLegacy from './themes/1_bitformLegacy/currencyStyle_1_bitformLegacy'
+import dividerStyle_1_BitformLegacy from './themes/1_bitformLegacy/dividerStyle_1_bitformLegacy'
+import dropdownStyle_1_bitformLegacy from './themes/1_bitformLegacy/dropdownStyle_1_bitformLegacy'
+import emailOtpStyle_1_bitformLegacy from './themes/1_bitformLegacy/emailOtpStyle_1_bitformLegacy'
+import fileUploadStyle_1_bitformLegacy from './themes/1_bitformLegacy/fileUpload_1_bitformLegacy'
+import hiddenStyle_1_bitformLegacy from './themes/1_bitformLegacy/hiddenStyle_1_bitformLegacy'
+import htmlStyle_1_bitformLegacy from './themes/1_bitformLegacy/htmlStyle_1_bitformLegacy'
+import imageSelectStyle_1_bitformLegacy from './themes/1_bitformLegacy/imageSelectStyle_1_bitformLegacy'
+import imageStyle_1_BitformLegacy from './themes/1_bitformLegacy/imageStyle_1_bitformLegacy'
+import phoneNumberStyle_1_bitformLegacy from './themes/1_bitformLegacy/phoneNumberStyle_1_bitformLegacy'
+import ratingStyle_1_bitformLegacy from './themes/1_bitformLegacy/ratingStyle_1_bitformLegacy'
+import recaptchaStyle_1_bitformLegacy from './themes/1_bitformLegacy/recaptchaStyle_1_bitformLegacy'
+import repeaterStyle_1_bitformLegacy from './themes/1_bitformLegacy/repeaterStyle_1_bitformLegacy'
+import sectionStyle_1_bitformLegacy from './themes/1_bitformLegacy/sectionStyle_1_bitformLegacy'
+import selectStyle_1_bitformLegacy from './themes/1_bitformLegacy/selectStyle_1_bitformLegacy'
+import shortcodeStyle_1_bitformLegacy from './themes/1_bitformLegacy/shortcodeStyle_1_bitformLegacy'
+import sliderStyle_1_bitformLegacy from './themes/1_bitformLegacy/sliderStyle_1_bitformLegacy'
+import spacerStyle_1_bitformLegacy from './themes/1_bitformLegacy/spacerStyle_1_bitformLegacy'
+import textStyle_1_bitformLegacy from './themes/1_bitformLegacy/textStyle_1_bitformLegacy'
+import titleStyle_1_bitformLegacy from './themes/1_bitformLegacy/titleStyle_1_bitformLegacy'
+import addressStyle_1_bitformLegacy from './themes/1_bitformLegacy/addressStyle_1_bitformLegacy'
 
 export const assignNestedObj = (obj, keyPath, value) => {
   const paths = keyPath?.split('->') || []
@@ -63,7 +65,7 @@ export const assignNestedObj = (obj, keyPath, value) => {
 
 // eslint-disable-next-line import/prefer-default-export
 export const showDraggableModal = (e, setDraggableModal, props) => {
-  const settingsMenu = select('#settings-menu')
+  const settingsMenu = select('#theme-style-menu')
   const offset = { top: 55 }
   const x = Math.round((window.innerWidth - settingsMenu.getBoundingClientRect().width) - (props.width || 250))
   const currentTargetTop = e.target.getBoundingClientRect().top
@@ -301,6 +303,160 @@ export const removeHighlight = (selector = '[data-highlight]') => {
   elms?.forEach(elm => { elm.remove() })
 }
 
+/**
+ * Scroll to and highlight element by selector
+ * @param {string} selector - CSS selector for the element(s)
+ * @param {object} options - Scroll and highlight options
+ */
+export function scrollToElement(selector, options = {}) {
+  const {
+    behavior = 'smooth',
+    block = 'center',
+    inline = 'center',
+    highlightAfterScroll = true,
+    selectType = 'element padding margin',
+    focusFirst = true,
+  } = options
+
+  try {
+    const iframe = document.getElementById('bit-grid-layout')
+    const iframeDoc = iframe?.contentWindow?.document
+
+    if (!iframeDoc) {
+      console.warn('Could not find iframe document')
+      return false
+    }
+
+    const elements = iframeDoc.querySelectorAll(selector)
+
+    if (!elements || elements.length === 0) {
+      console.warn(`No elements found for selector: ${selector}`)
+      return false
+    }
+
+    // Helper function to check if element is in viewport
+    const isInViewport = (element) => {
+      const rect = element.getBoundingClientRect()
+      const iframeWindow = iframe.contentWindow
+
+      return (
+        rect.top >= 0
+        && rect.left >= 0
+        && rect.bottom <= (iframeWindow.innerHeight || iframeDoc.documentElement.clientHeight)
+        && rect.right <= (iframeWindow.innerWidth || iframeDoc.documentElement.clientWidth)
+      )
+    }
+
+    // Find the first element that's not in viewport, or use the first element
+    let targetElement = null
+
+    if (focusFirst) {
+      // Always scroll to the first element
+      targetElement = elements[0]
+    } else {
+      // Find first element not in viewport
+      targetElement = Array.from(elements).find(el => !isInViewport(el)) || elements[0]
+    }
+
+    // Scroll the element into view
+    targetElement.scrollIntoView({
+      behavior,
+      block,
+      inline,
+    })
+
+    // Optionally highlight after scrolling
+    if (highlightAfterScroll) {
+      // Wait a bit for scroll animation to complete
+      setTimeout(() => {
+        highlightElm(selector, selectType)
+      }, behavior === 'smooth' ? 300 : 0)
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error scrolling to element:', error)
+    return false
+  }
+}
+
+/**
+ * Scroll to and highlight element (combined action)
+ * @param {string} selector - CSS selector for the element(s)
+ * @param {string} selectType - Highlight type
+ */
+export function scrollAndHighlight(selector, selectType = 'element padding margin') {
+  // Remove any existing highlights first
+  removeHighlight()
+
+  // Scroll to element with highlighting
+  // ⭐ NEW: Check if visible first
+  if (isElementInViewport(selector)) {
+    highlightElm(selector, selectType) // Just highlight
+  } else {
+    scrollToElement(selector, {
+      behavior: 'smooth',
+      block: 'center',
+      highlightAfterScroll: true,
+      selectType,
+      focusFirst: true,
+    })
+  }
+}
+
+/**
+   * Check if any element matching selector is in viewport
+   * @param {string} selector - CSS selector
+   * @returns {boolean}
+   */
+export function isElementInViewport(selector) {
+  try {
+    const iframe = document.getElementById('bit-grid-layout')
+    const iframeDoc = iframe?.contentWindow?.document
+
+    if (!iframeDoc) return false
+
+    const elements = iframeDoc.querySelectorAll(selector)
+    if (!elements || elements.length === 0) return false
+
+    const iframeWindow = iframe.contentWindow
+
+    return Array.from(elements).some(element => {
+      const rect = element.getBoundingClientRect()
+      const windowHeight = iframeWindow.innerHeight || iframeDoc.documentElement.clientHeight
+      const windowWidth = iframeWindow.innerWidth || iframeDoc.documentElement.clientWidth
+
+      return (
+      // rect.top >= 0
+      // && rect.bottom <= windowHeight
+      // && rect.left >= 0
+      // && rect.right <= windowWidth
+
+        // conditions for partial visibility:
+        rect.bottom > 0
+        && rect.top < windowHeight
+        // && rect.right > 0
+        // && rect.left < windowWidth
+      )
+    })
+  } catch (error) {
+    console.error('Error checking viewport:', error)
+    return false
+  }
+}
+
+/**
+   * Enhanced highlight function with scroll check
+   * Automatically scrolls if element is not in viewport
+   */
+export function highlightWithAutoScroll(selector, selectType = 'element padding margin', autoScroll = false) {
+  if (autoScroll && !isElementInViewport(selector)) {
+    scrollAndHighlight(selector, selectType)
+  } else {
+    highlightElm(selector, selectType)
+  }
+}
+
 export const splitValueBySpaces = str => str?.split(/(?!\(.*)\s(?![^(]*?\))/g) || []
 
 export const getObjByKey = (objName, obj) => obj[objName]
@@ -339,8 +495,32 @@ export function arrDiff(arr1, arr2) {
     .filter(x => !arr2.includes(x))
     .concat(arr2.filter(x => !arr1.includes(x)))
 }
-export const addableCssPropsObj = (fieldType, elementKey = 'fld-wrp') => editorConfig[fieldType][elementKey]?.properties
-export const addableCssPropsByField = (fieldType, elementKey = 'fld-wrp') => Object.keys(editorConfig[fieldType][elementKey]?.properties || {})
+export const addableCssPropsObj = (fieldType, elementKey = 'fld-wrp') => (fieldType ? elementCssPropertiesConfig[fieldType][elementKey]?.properties : elementCssPropertiesConfig[elementKey]?.properties)
+export const addableCssPropsByField = (fieldType, elementKey = 'fld-wrp') => Object.keys(addableCssPropsObj(fieldType, elementKey) || {})
+
+/**
+ * Get existing CSS properties with compound properties included.
+ * Compound properties are added if at least one of their sub-properties exists.
+ *
+ * @param {Object} existCssPropsObj - Object containing existing CSS properties
+ * @param {string} fieldType - The field type
+ * @param {string} elementKey - The element key
+ * @returns {Array<string>} Array of CSS property names including compound properties
+ */
+export const getExistingCssPropsWithCompounds = (existCssPropsObj, fieldType, elementKey) => {
+  const baseProps = Object.keys(existCssPropsObj)
+  const basePropSet = new Set(baseProps)
+
+  // Find compound properties where at least one sub-property exists
+  const compoundProps = Object.entries(addableCssPropsObj(fieldType, elementKey) || {})
+    .filter(([prop, propObj]) => {
+      if (typeof propObj !== 'object' || basePropSet.has(prop)) return false
+      return Object.keys(propObj).some(propName => basePropSet.has(propName))
+    })
+    .map(([prop]) => prop)
+
+  return [...baseProps, ...compoundProps]
+}
 
 export const styleClasses = {
   logo: ['logo'],
@@ -473,7 +653,7 @@ const filterUnusedStyles = (styles) => {
         case 'color':
         case 'textarea':
           if (!fld.prefixIcn) deleteStyles(draftStyle, styleClasses.prefixIcn, fldkey)
-          if (!fld.suffixIcn) deleteStyles(draftStyle, styleClasses.suffixIcn, fldkey)
+          if (!fld.suffixIcn && !fld?.config?.showPasswordIcon) deleteStyles(draftStyle, styleClasses.suffixIcn, fldkey)
           break
 
         case 'title':
@@ -596,6 +776,9 @@ export const mergeOtherStylesWithAtomicCSS = () => {
   if (Object.keys(fields).find((f) => fields[f].typ === 'advanced-datetime')) {
     const styleFix = `.flatpickr-current-month .numInputWrapper{
         width: 6ch !important;
+    }
+    .flatpickr-calendar:empty{
+        display: none !important;
     }`
     cssText += generateCombinedCSSWithImportantRule(flatpickrCSS + styleFix, { combined: false })
   }
@@ -648,60 +831,64 @@ export const addDefaultStyleClasses = (fk, element) => {
         case 'week':
         case 'color':
         case 'textarea':
-          const textStyleBitFormDefault = textStyle1BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const textStyleBitFormDefault = textStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: textStyleBitFormDefault })
           break
         case 'range':
-          const sliderStyleBitFormDefault = sliderStyle1BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const sliderStyleBitFormDefault = sliderStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: sliderStyleBitFormDefault })
           break
         case 'title':
-          const titleStyleBitFormDefault = titleStyle1BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const titleStyleBitFormDefault = titleStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: titleStyleBitFormDefault })
           break
         case 'divider':
-          const dividerStyleBitFormDefault = dividerStyle1BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const dividerStyleBitFormDefault = dividerStyle_1_BitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: dividerStyleBitFormDefault })
           break
         case 'spacer':
-          const spacerStyleBitFormDefault = spacerStyle_1_bitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const spacerStyleBitFormDefault = spacerStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: spacerStyleBitFormDefault })
           break
         case 'image':
-          const imageStyleBitFormDefault = imageStyle1BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const imageStyleBitFormDefault = imageStyle_1_BitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: imageStyleBitFormDefault })
           break
         case 'button':
-          const buttonStyleBitFormDefault = buttonStyle1BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const buttonStyleBitFormDefault = buttonStyle_1_BitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: buttonStyleBitFormDefault })
           break
         case 'check':
         case 'radio':
-          const checkBoxStyleBitFormDefault = checkboxNradioStyle1BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const checkBoxStyleBitFormDefault = checkboxNradioStyle_1_BitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: checkBoxStyleBitFormDefault })
           break
         case 'advanced-file-up':
-          const advanceFileUpBitFormDefault = advancedFileUp_1_bitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const advanceFileUpBitFormDefault = advancedFileUp_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: advanceFileUpBitFormDefault })
           break
         case 'html':
-          const htmlBitFormDefault = htmlStyle_1_bitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const htmlBitFormDefault = htmlStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: htmlBitFormDefault })
           break
         case 'shortcode':
-          const shortcodeBitformDefault = shortcodeStyle_1_bitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const shortcodeBitformDefault = shortcodeStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: shortcodeBitformDefault })
           break
         case 'currency':
-          const currencyStyle1BitformDefault = currencyStyle_1_BitformDefault({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const currencyStyle1BitformDefault = currencyStyle_1_bitformLegacy({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: currencyStyle1BitformDefault })
           break
         case 'country':
-          const countryStyle1BitformDefault = countryStyle_1_BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const countryStyle1BitformDefault = countryStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: countryStyle1BitformDefault })
           break
+        case 'address':
+          const addressStyle1BitformDefault = addressStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: addressStyle1BitformDefault })
+          break
         case 'file-up':
-          const fileUploadStyle1BitformDefault = fileUploadStyle_1_BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const fileUploadStyle1BitformDefault = fileUploadStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: fileUploadStyle1BitformDefault })
           // if ([`.${fk}-file-wrpr`] in fileUploadStyle1BitformDefault) {
           //   addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: fileUploadStyle1BitformDefault })
@@ -713,48 +900,52 @@ export const addDefaultStyleClasses = (fk, element) => {
           //   addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: fileUploadStyle1BitformDefault })
           // }
           break
+        case 'email-otp':
+          const emailOtpStyle1BitformDefault = emailOtpStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: emailOtpStyle1BitformDefault })
+          break
         case 'recaptcha':
-          const recaptchaStyle1BitformDefault = recaptchaStyle_1_bitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const recaptchaStyle1BitformDefault = recaptchaStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: recaptchaStyle1BitformDefault })
           break
         case 'html-select':
-          const selectStyle1BitformDefault = selectStyle_1_BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const selectStyle1BitformDefault = selectStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: selectStyle1BitformDefault })
           break
         case 'select':
-          const dropdownStyle1BitformDefault = dropdownStyle_1_BitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const dropdownStyle1BitformDefault = dropdownStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: dropdownStyle1BitformDefault })
           break
         case 'hidden':
-          const hiddenStyle1BitformDefault = hiddenStyle_1_bitformDefault({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const hiddenStyle1BitformDefault = hiddenStyle_1_bitformLegacy({ fk, fldTyp, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: hiddenStyle1BitformDefault })
           break
         case 'phone-number':
-          const phoneNumberStyleBitformDefault = phoneNumberStyle_1_bitformDefault({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const phoneNumberStyleBitformDefault = phoneNumberStyle_1_bitformLegacy({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: phoneNumberStyleBitformDefault })
           break
         case 'section':
-          const sectionStyleBitformDefault = sectionStyle_1_bitformDefault({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const sectionStyleBitformDefault = sectionStyle_1_bitformLegacy({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: sectionStyleBitformDefault })
           break
         case 'repeater':
-          const repeaterStyleBitformDefault = repeaterStyle_1_bitformDefault({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const repeaterStyleBitformDefault = repeaterStyle_1_bitformLegacy({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: repeaterStyleBitformDefault })
           break
         case 'signature':
-          const signatureStyleBitformDefault = repeaterStyle_1_bitformDefault({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const signatureStyleBitformDefault = repeaterStyle_1_bitformLegacy({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: signatureStyleBitformDefault })
           break
         case 'rating':
-          const ratingStyleBitformDefault = ratingStyle_1_bitformDefault({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const ratingStyleBitformDefault = ratingStyle_1_bitformLegacy({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: ratingStyleBitformDefault })
           break
         case 'image-select':
-          const imageSelectStyleBitformDefault = imageSelectStyle_1_bitformDefault({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const imageSelectStyleBitformDefault = imageSelectStyle_1_bitformLegacy({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: imageSelectStyleBitformDefault })
           break
         case 'advanced-datetime':
-          const advancedDataTimeStyleBitformDefault = imageSelectStyle_1_bitformDefault({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
+          const advancedDataTimeStyleBitformDefault = imageSelectStyle_1_bitformLegacy({ fk, ...breakpointAndColorScheme[brkPntColorSchema] })
           addStyleInState({ element, brkPntColorSchema, fk, drftAllStyles, fieldStyle: advancedDataTimeStyleBitformDefault })
           break
 
@@ -931,7 +1122,7 @@ export const setIconFilterValue = (iconType, fldKey) => {
       })
       setAtom($styles, newStyles)
     } else {
-      const setFilterValue = hexToCSSFilter('#000000')
+      const setFilterValue = hexToCSSFilter('#4a4a4a')
       const newStyles = create(styles, drftStyles => {
         drftStyles.fields[fldKey].classes[`.${fldKey}-${elementKey}`].filter = setFilterValue.filter
         if (!checkExistElmntInOvrdThm(drftStyles.fields[fldKey], elementKey)) {
@@ -1123,3 +1314,215 @@ export const getActualElementKey = (elmKey, fldType = '') => {
 }
 
 export const truncatedString = (str = '', len = 100) => (str.length > len ? (`${str.substring(0, len)}...`) : str)
+
+export const replaceObjectKeyWithNewId = (obj, newId) => {
+  // Convert the form object to a JSON string
+  let formString = JSON.stringify(obj, null, 2)
+
+  // Regular expression to match -b followed by any positive integer
+  const pattern = /-b\d+/g
+
+  // Replace all occurrences with the new ID
+  const newPattern = `-b${newId}`
+  formString = formString.replace(pattern, newPattern)
+
+  // Parse back to object
+  return JSON.parse(formString)
+}
+
+// Helper function to extract form, font, and fieldsSize from styles
+export const extractCustomStyles = (styles) => ({
+  lgLightStyles: {
+    form: styles?.lgLightStyles?.form || {},
+    font: styles?.lgLightStyles?.font || {},
+    fieldsSize: styles?.lgLightStyles?.fieldsSize || 'medium',
+  },
+  lgDarkStyles: {
+    form: styles?.lgDarkStyles?.form || {},
+    font: styles?.lgDarkStyles?.font || {},
+    fieldsSize: styles?.lgDarkStyles?.fieldsSize || 'medium',
+  },
+  mdLightStyles: {
+    form: styles?.mdLightStyles?.form || {},
+    font: styles?.mdLightStyles?.font || {},
+    fieldsSize: styles?.mdLightStyles?.fieldsSize || 'medium',
+  },
+  mdDarkStyles: {
+    form: styles?.mdDarkStyles?.form || {},
+    font: styles?.mdDarkStyles?.font || {},
+    fieldsSize: styles?.mdDarkStyles?.fieldsSize || 'medium',
+  },
+  smLightStyles: {
+    form: styles?.smLightStyles?.form || {},
+    font: styles?.smLightStyles?.font || {},
+    fieldsSize: styles?.smLightStyles?.fieldsSize || 'medium',
+  },
+  smDarkStyles: {
+    form: styles?.smDarkStyles?.form || {},
+    font: styles?.smDarkStyles?.font || {},
+    fieldsSize: styles?.smDarkStyles?.fieldsSize || 'medium',
+  },
+})
+
+// ============================================
+// DYNAMIC CSS VARIABLE GENERATION HELPERS
+// ============================================
+
+/**
+ * Generate a dynamic CSS variable name based on element, state, and property
+ * Format: --bf-{element}-{state}-{property} or --bf-{element}-{property} for normal state
+ * @param {string} element - The element key (e.g., 'fld', 'lbl', 'pre-i')
+ * @param {string} state - The state (e.g., 'hover', 'focus', '' for normal)
+ * @param {string} property - The CSS property name (e.g., 'color', 'background-color')
+ * @returns {string} The generated CSS variable name
+ */
+export const generateDynamicCssVar = (element, state, property) => {
+  const sanitizedElement = element.replace(/[:\s]+/g, '-').replace(/-+/g, '-').toLowerCase()
+  const sanitizedProperty = property.replace(/\s+/g, '-').toLowerCase()
+  if (state) {
+    const sanitizedState = state.replace(/:/g, '').toLowerCase()
+    return `--bf-${sanitizedElement}-${sanitizedState}-${sanitizedProperty}`
+  }
+  return `--bf-${sanitizedElement}-${sanitizedProperty}`
+}
+
+/**
+ * Determine if a CSS property should be stored in themeColors or themeVars
+ * Color-related properties go to themeColors, others go to themeVars
+ * @param {string} property - The CSS property name
+ * @returns {boolean} True if property is color-related
+ */
+export const isColorProperty = (property) => {
+  const colorProps = [
+    'color',
+    'background-color',
+    'border-color',
+    'outline-color',
+    'box-shadow',
+    'text-shadow',
+    'fill',
+    'stroke',
+    'accent-color',
+    'background',
+  ]
+  // Check exact match or if property contains 'color'
+  return colorProps.includes(property) || property.includes('color')
+}
+
+/**
+ * Propagate a CSS variable to all non-overridden field elements
+ * This function modifies the styles draft to add variable references to field element classes
+ * @param {Object} drftStyles - The mutable draft styles object (from mutative)
+ * @param {string} element - The element key (e.g., 'fld', 'lbl')
+ * @param {string} state - The state selector (e.g., ':hover', ':focus', '' for normal)
+ * @param {string} property - The CSS property name
+ * @param {string} cssVarName - The CSS variable name to reference
+ */
+export const propagateCssVarToFields = (drftStyles, element, state, property, cssVarName) => {
+  const fields = drftStyles?.fields
+  if (!fields) return
+
+  const stateSelector = state ? `:${state.toLowerCase()}` : ''
+  const varReference = `var(${cssVarName})`
+
+  Object.keys(fields).forEach(fieldKey => {
+    const fieldStyleObj = fields[fieldKey]
+    if (!fieldStyleObj) return
+
+    // Check if this element is overridden for this field
+    const isOverridden = isLabelOverrideStyles({ fields }, fieldKey, element)
+    if (isOverridden) return // Skip - preserve user's custom value
+
+    // Build the class selector for this field element
+    const classSelector = `.${fieldKey}-${element}${stateSelector}`
+
+    // Ensure the classes object exists
+    if (!fieldStyleObj.classes) {
+      fieldStyleObj.classes = {}
+    }
+
+    // Ensure the element class object exists
+    if (!fieldStyleObj.classes[classSelector]) {
+      fieldStyleObj.classes[classSelector] = {}
+    }
+
+    // Add/replace the property with the variable reference
+    fieldStyleObj.classes[classSelector][property] = varReference
+  })
+}
+
+/**
+ * Extract CSS variable name from a var() reference
+ * @param {string} value - The CSS value that might be a var() reference
+ * @returns {string|null} The variable name (e.g., '--bf-fld-hover-color') or null if not a var() reference
+ */
+export const extractCssVarName = (value) => {
+  if (!value || typeof value !== 'string') return null
+  const match = value.match(/var\(([^)]+)\)/)
+  return match ? match[1].trim() : null
+}
+
+/**
+ * Check if a value is a dynamic CSS variable (starts with --bf-)
+ * @param {string} varName - The CSS variable name
+ * @returns {boolean} True if it's a dynamic variable created by the theme customizer
+ */
+export const isDynamicCssVar = (varName) => {
+  if (!varName) return false
+  return varName.startsWith('--bf-')
+}
+
+/**
+ * Remove a dynamic CSS variable from all non-overridden field elements
+ * and restore the default theme style value for that property
+ * @param {Object} drftStyles - The mutable draft styles object (from mutative)
+ * @param {string} element - The element key (e.g., 'fld', 'lbl')
+ * @param {string} state - The state selector (e.g., 'hover', 'focus', '' for normal)
+ * @param {string} property - The CSS property name
+ * @param {Function} getDefaultFieldStyle - Function to get default field style: (fieldKey, fieldType) => { classes: {...} }
+ */
+export const removeDynamicCssVarFromFields = (drftStyles, element, state, property, getDefaultFieldStyle) => {
+  const fields = drftStyles?.fields
+  if (!fields) return
+
+  const stateSelector = state ? `:${state.toLowerCase()}` : ''
+
+  Object.keys(fields).forEach(fieldKey => {
+    const fieldStyleObj = fields[fieldKey]
+    if (!fieldStyleObj) return
+
+    // Check if this element is overridden for this field
+    const isOverridden = isLabelOverrideStyles({ fields }, fieldKey, element)
+    if (isOverridden) return // Skip - preserve user's custom value
+
+    // Build the class selector for this field element
+    const classSelector = `.${fieldKey}-${element}${stateSelector}`
+
+    // Check if the field has this class and property
+    if (!fieldStyleObj.classes?.[classSelector]?.[property]) return
+
+    // Check if the property value is a dynamic CSS variable
+    const currentValue = fieldStyleObj.classes[classSelector][property]
+    const varName = extractCssVarName(currentValue)
+    if (!varName || !isDynamicCssVar(varName)) return // Not a dynamic variable, skip
+
+    // Get the default theme style for this field
+    const { fieldType } = fieldStyleObj
+    const defaultStyle = getDefaultFieldStyle ? getDefaultFieldStyle(fieldKey, fieldType) : null
+    const defaultClasses = defaultStyle?.classes || {}
+    const defaultValue = defaultClasses[classSelector]?.[property]
+
+    if (defaultValue !== undefined) {
+      // Restore the default theme value
+      fieldStyleObj.classes[classSelector][property] = defaultValue
+    } else {
+      // No default value exists, remove the property
+      delete fieldStyleObj.classes[classSelector][property]
+
+      // Clean up empty class object
+      if (Object.keys(fieldStyleObj.classes[classSelector]).length === 0) {
+        delete fieldStyleObj.classes[classSelector]
+      }
+    }
+  })
+}

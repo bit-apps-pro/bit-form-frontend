@@ -23,7 +23,17 @@ function CalculatorField({
   const { css } = useFela()
   const fields = useAtomValue($fields)
   const fieldArr = makeFieldsArrByLabel(fields)
-  const [expressions, setExpressions] = useState(() => initialExpression(value, fieldArr))
+  const expressionIdRef = useRef(0)
+  const createExpressionToken = (tokenType, dataObj) => {
+    const expressionId = expressionIdRef.current
+    expressionIdRef.current += 1
+    return {
+      id: expressionId,
+      type: tokenType,
+      dataObj,
+    }
+  }
+  const [expressions, setExpressions] = useState(() => initialExpression(value, fieldArr, createExpressionToken))
   const [caretPosition, setCaretPosition] = useState(expressions.length)
   const [keyboardActive, setKeyboardActive] = useState(false)
   const expRef = useRef(null)
@@ -58,7 +68,7 @@ function CalculatorField({
 
   const onFocusInAction = () => {
     !keyboardActive && setExpressions(oldExp => create(oldExp, draftExp => {
-      draftExp.splice(caretPosition, 0, { id: 0, type: 'caret', dataObj: { content: '' } })
+      draftExp.splice(caretPosition, 0, createExpressionToken('caret', { content: '' }))
     }))
   }
 
@@ -75,7 +85,7 @@ function CalculatorField({
     if ((key === 'ArrowUp' || key === 'Home') && caretPosition > 0) {
       setExpressions(oldExp => {
         const exps = oldExp.filter(exp => exp.type !== 'caret')
-        exps.unshift({ id: 0, type: 'caret', dataObj: { content: '' } })
+        exps.unshift(createExpressionToken('caret', { content: '' }))
         return exps
       })
       setCaretPosition(0)
@@ -83,7 +93,7 @@ function CalculatorField({
       const newCaretPos = expressions.length - 1
       setExpressions(oldExp => {
         const exps = oldExp.filter(exp => exp.type !== 'caret')
-        exps.push({ id: 0, type: 'caret', dataObj: { content: '' } })
+        exps.push(createExpressionToken('caret', { content: '' }))
         return exps
       })
       setCaretPosition(newCaretPos)
@@ -111,27 +121,27 @@ function CalculatorField({
       }
     } else if (/^\s{1}/.test(key)) {
       setExpressions(oldExp => create(oldExp, draftExp => {
-        draftExp.splice(caretPosition, 0, { type: 'space', dataObj: { content: key } })
+        draftExp.splice(caretPosition, 0, createExpressionToken('space', { content: key }))
       }))
       setCaretPosition(oldPosition => oldPosition + 1)
     } else if ((!isNaN(key)) || key === '.') {
       setExpressions(oldExp => create(oldExp, draftExp => {
-        draftExp.splice(caretPosition, 0, { type: 'number', dataObj: { content: key } })
+        draftExp.splice(caretPosition, 0, createExpressionToken('number', { content: key }))
       }))
       setCaretPosition(oldPosition => oldPosition + 1)
     } else if ('+-*/(),<>'.indexOf(key) !== -1) {
       setExpressions(oldExp => create(oldExp, draftExp => {
-        draftExp.splice(caretPosition, 0, { type: 'operator', dataObj: { content: key } })
+        draftExp.splice(caretPosition, 0, createExpressionToken('operator', { content: key }))
       }))
       setCaretPosition(oldPosition => oldPosition + 1)
     } else if (/^[!@#$%^&*()\\=,.?"':{}[\]|_<>]$/.test(key)) {
       setExpressions(oldExp => create(oldExp, draftExp => {
-        draftExp.splice(caretPosition, 0, { type: 'symbol', dataObj: { content: key } })
+        draftExp.splice(caretPosition, 0, createExpressionToken('symbol', { content: key }))
       }))
       setCaretPosition(oldPosition => oldPosition + 1)
     } else if (/^([A-Z]|[a-z]){1}\b/.test(key)) {
       setExpressions(oldExp => create(oldExp, draftExp => {
-        draftExp.splice(caretPosition, 0, { type: 'letters', dataObj: { content: key } })
+        draftExp.splice(caretPosition, 0, createExpressionToken('letters', { content: key }))
       }))
       setCaretPosition(oldPosition => oldPosition + 1)
     }
@@ -143,7 +153,7 @@ function CalculatorField({
       if (caretPosition !== newPosition) {
         setExpressions(oldExpression => {
           const exps = oldExpression.filter(exp => exp.type !== 'caret')
-          exps.splice(newPosition, 0, { id: 0, type: 'caret', dataObj: { content: '' } })
+          exps.splice(newPosition, 0, createExpressionToken('caret', { content: '' }))
           return exps
         })
         setCaretPosition(newPosition)
@@ -152,7 +162,7 @@ function CalculatorField({
       if (caretPosition < newPosition) newPosition -= 1
       setExpressions(oldExpression => {
         const exps = oldExpression.filter(exp => exp.type !== 'caret')
-        exps.splice(newPosition, 0, { id: 0, type: 'caret', dataObj: { content: '' } })
+        exps.splice(newPosition, 0, createExpressionToken('caret', { content: '' }))
         return exps
       })
       setCaretPosition(newPosition)
@@ -161,7 +171,7 @@ function CalculatorField({
       if (caretPosition < newPosition) newPosition -= 1
       setExpressions(oldExpression => {
         const exps = oldExpression.filter(exp => exp.type !== 'caret')
-        exps.splice(newPosition, 0, { id: 0, type: 'caret', dataObj: { content: '' } })
+        exps.splice(newPosition, 0, createExpressionToken('caret', { content: '' }))
         return exps
       })
       setCaretPosition(newPosition)
@@ -243,7 +253,7 @@ function CalculatorField({
         onChange(newValue)
       } else {
         const newValue = `${value.slice(0, caretPosition)}\${${dataObj.content}}${value.slice(caretPosition)}`
-        const newExp = initialExpression(newValue, fieldArr)
+        const newExp = initialExpression(newValue, fieldArr, createExpressionToken)
         setExpressions(newExp)
         setCaretPosition(oldPosition => oldPosition + (valueLength || 1))
       }
@@ -253,11 +263,22 @@ function CalculatorField({
         setCaretPosition(oldPosition => oldPosition - (valueLength || 1))
       }
     } else if (dataObj.isFunction) {
-      dataObj.content = dataObj.content.slice(0, dataObj.content.indexOf('('))
-      setExpressions(oldExpression => oldExpression.slice(0, caretPosition).concat([{ id, type: btnType, dataObj }, { id: id + 1, type: 'operator', dataObj: { content: '(' } }], oldExpression.slice(caretPosition, caretPosition + 1), [{ id: id + 2, type: 'operator', dataObj: { content: ')' } }], oldExpression.slice(caretPosition + 1)))
+      const functionDataObj = {
+        ...dataObj,
+        content: dataObj.content.slice(0, dataObj.content.indexOf('(')),
+      }
+      setExpressions(oldExpression => oldExpression.slice(0, caretPosition).concat(
+        [
+          createExpressionToken(btnType, functionDataObj),
+          createExpressionToken('operator', { content: '(' }),
+        ],
+        oldExpression.slice(caretPosition, caretPosition + 1),
+        [createExpressionToken('operator', { content: ')' })],
+        oldExpression.slice(caretPosition + 1),
+      ))
       setCaretPosition(oldPosition => oldPosition + (valueLength || 2))
     } else {
-      setExpressions(oldExpression => oldExpression.slice(0, caretPosition).concat([{ id, type: btnType, dataObj }], oldExpression.slice(caretPosition)))
+      setExpressions(oldExpression => oldExpression.slice(0, caretPosition).concat([createExpressionToken(btnType, dataObj)], oldExpression.slice(caretPosition)))
 
       setCaretPosition(oldPosition => oldPosition + (valueLength || 1))
     }
@@ -265,7 +286,7 @@ function CalculatorField({
   }
 
   return (
-    <div className={css(style.wrp)}>
+    <div className={`${css(style.wrp)} calculator-field-wrp`}>
       {
         enableCalculator && (
           <div
@@ -279,10 +300,9 @@ function CalculatorField({
             tabIndex={0}
           >
             {
-              // eslint-disable-next-line react/no-array-index-key
-              expressions.map((expElemnet, index) => (
+              expressions.map((expElemnet) => (
                 expElemnet && (
-                  <span key={`sp-${index}`} className={`${css(style[expElemnet.type])} ${expElemnet.dataObj.isFunction ? css(style.function) : ''}`}>
+                  <span key={`sp-${expElemnet.id}`} className={`${css(style[expElemnet.type])} ${expElemnet.dataObj.isFunction ? css(style.function) : ''}`}>
                     {expElemnet.dataObj.label || expElemnet.dataObj.content}
                     {expElemnet.type === 'caret' && (<span className="caret" />)}
                   </span>
@@ -332,7 +352,7 @@ function CalculatorField({
         )}
       >
         <span className={css(style.dotOpt)}>
-          <BdrDottedIcn size="20" />
+          <BdrDottedIcn size="15" rotateDeg={90} />
         </span>
       </Tippy>
     </div>
@@ -341,21 +361,21 @@ function CalculatorField({
 
 export default CalculatorField
 
-function initialExpression(value, fieldArr) {
+function initialExpression(value, fieldArr, createExpressionToken) {
   const expArr = []
   if (/\${\w[^ ${}]*}|^\(/g.test(value)) {
     const tempArr = value.match(/\${\w[^ ${}]*}|\d|\D/g)
-    tempArr?.map((content, id) => {
+    tempArr?.map((content) => {
       if (/^\s{1}/g.test(content)) {
-        expArr.push({ id, type: 'space', dataObj: { content } })
+        expArr.push(createExpressionToken('space', { content }))
       } else if (/^([A-Z]|[a-z]){1}\b/g.test(content)) {
-        expArr.push({ id, type: 'letters', dataObj: { content } })
+        expArr.push(createExpressionToken('letters', { content }))
       } else if ((!isNaN(content)) || content === '.') {
-        expArr.push({ id, type: 'number', dataObj: { content } })
+        expArr.push(createExpressionToken('number', { content }))
       } else if (/^[+\-*/(),<>]{1}$/g.test(content)) {
-        expArr.push({ id, type: 'operator', dataObj: { content } })
+        expArr.push(createExpressionToken('operator', { content }))
       } else if (/^[!@#$%^&*()\\=,.?"':{}[\]|_<>]$/g.test(content)) {
-        expArr.push({ id, type: 'symbol', dataObj: { content } })
+        expArr.push(createExpressionToken('symbol', { content }))
       } else if (/\${\w[^]*[\d\D\s]\)}/g.test(content)) {
         let functionName = content.replace(/^\${|}$/g, '')
         const params = functionName.slice(functionName.indexOf('('))
@@ -363,18 +383,18 @@ function initialExpression(value, fieldArr) {
 
         const smartTag = SmartTagField.find(fld => fld.name === functionName)
         functionName = functionName.replace(/\([ \d\D]*\)/g, '')
-        expArr.push({ id, type: 'field', dataObj: { label: smartTag?.label, content: functionName, isFunction: true } })
+        expArr.push(createExpressionToken('field', { label: smartTag?.label, content: functionName, isFunction: true }))
 
-        expArr.push(...initialExpression(params, fieldArr))
+        expArr.push(...initialExpression(params, fieldArr, createExpressionToken))
       } else if (/\${\w[^ ${}]*}/g.test(content)) {
         const fldKey = content.replace(/^\${|}$/g, '')
         const fldData = fieldArr.find(fld => fld.key === fldKey)
         if (fldData) {
-          expArr.push({ id, type: 'field', dataObj: { label: fldData?.name, content: fldData?.key } })
+          expArr.push(createExpressionToken('field', { label: fldData?.name, content: fldData?.key }))
         } else {
           const smartTag = SmartTagField.find(fld => fld.name === fldKey)
-          if (smartTag) expArr.push({ id, type: 'field', dataObj: { label: smartTag?.label, content: smartTag?.name } })
-          else expArr.push({ id, type: 'field', dataObj: { label: 'Separator', content } })
+          if (smartTag) expArr.push(createExpressionToken('field', { label: smartTag?.label, content: smartTag?.name }))
+          else expArr.push(createExpressionToken('field', { label: 'Separator', content }))
         }
       }
     })
@@ -416,9 +436,9 @@ const style = {
     dy: 'inline-flex',
     ai: 'center',
     bc: 'hsl(0deg 0% 85%)',
-    p: 5,
+    p: 2,
     b: 'none',
-    brs: '0px 8px 8px 0px',
+    brs: '0px var(--bf-bdr-radius-sm) var(--bf-bdr-radius-sm) 0px',
     ':hover': { bc: 'hsl(0deg 0% 80%)' },
   },
   field: {

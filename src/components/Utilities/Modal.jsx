@@ -1,11 +1,16 @@
 import { useEffect, useRef } from 'react'
 import { CSSTransition } from 'react-transition-group'
 import CloseIcn from '../../Icons/CloseIcn'
+import { IS_PRO } from '../../Utils/Helpers'
 import { searchKey } from '../style-new/styleHelpers'
+import ProBadge from './ProBadge'
 
 export default function Modal({
-  show, setModal, sm, lg, style, className, title, warning, hdrActn: headerAction, children, subTitle, autoHeight, closeOnOutsideClick, onCloseMdl = null, width, showCloseBtn = true,
+  show,
+  setModal,
+  sm, lg, style, className, title, warning, hdrActn: headerAction, children, subTitle, autoHeight, closeOnOutsideClick, onCloseMdl = null, width, showCloseBtn = true,
   escKeyEvent = true,
+  isPro,
 }) {
   const nodeRef = useRef(null)
   const handleClickOutside = e => {
@@ -87,7 +92,13 @@ export default function Modal({
                 <CloseIcn size={16} stroke={3} />
               </button>
             )}
-            {typeof title === 'string' && <h2 className="btcd-mdl-title flx" style={{ color: warning ? 'red' : '' }}>{title}</h2>}
+            {typeof title === 'string' && (
+              <h2 className="btcd-mdl-title flx" style={{ color: warning ? 'red' : '' }}>
+                {title}
+                {' '}
+                {isPro && !IS_PRO && <ProBadge />}
+              </h2>
+            )}
             {typeof title === 'object' && title}
             <small className="btcd-mdl-subtitle">{subTitle}</small>
             {!sm && <div className="btcd-mdl-div" />}

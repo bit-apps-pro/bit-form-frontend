@@ -13,6 +13,7 @@ function SegmentControl({
   show,
   activeShow,
   square,
+  classNames = '',
 }) {
   const { css } = useFela()
   const baseSize = Number(size) // 100
@@ -23,6 +24,12 @@ function SegmentControl({
     clr.tabBg = 'var(--white-0-95)'
     clr.selectorBg = 'var(--white-100)'
     clr.active = 'var(--b-50) !important'
+  }
+  if (variant === 'tertiary') {
+    clr.tabBg = 'var(--white-100)'
+    clr.selectorBg = 'var(--bf-tertiary)'
+    clr.active = 'var(--bf-white-100) !important'
+    clr.tabClr = 'var(--bf-text-clr-gray)'
   }
   if (variant === 'blue') {
     // clr.selectorBg = 'linear-gradient(0deg, #0043d9, var(--b-50))'
@@ -49,7 +56,7 @@ function SegmentControl({
       bd: clr.tabBg, // '#f1f1f1',
       ls: 'none',
       dy: 'inline-block',
-      brs: floor(7.15), // 14,
+      brs: 'var(--bf-bdr-radius-sm)', // 14,
       pn: 'relative',
       '& .active': { cr: clr.active },
       '& button': {
@@ -67,7 +74,8 @@ function SegmentControl({
       tp: '50%',
       tm: 'translatey(-50%)',
       zx: 1,
-      brs: floor(9.09), // 11,
+      // brs: floor(9.09), // 11,
+      brs: 'var(--bf-bdr-radius-sm)', // 11,
       tdn: '0.3s',
       ttf: 'cubic-bezier(0.42, 0.44, 0.57, 1.35)',
       bd: clr.selectorBg, // '#fff',
@@ -90,12 +98,13 @@ function SegmentControl({
         h: 30,
         flxi: 'center',
       },
-      tdy: '0.3s',
+      tdy: variant === 'tertiary' ? '0s' : '0.3s',
       tdn: '0.6s',
       cr: clr.tabClr,
       'transition-property': 'color',
       ':hover:not(.active)': {
-        cr: 'var(--white-0-100-90)', // '#333',
+        cr: variant === 'tertiary' ? 'var(--bf-text-clr-tertiary)' : 'var(--white-0-100-90)', // '#333',
+        fw: variant === 'tertiary' ? 600 : 500,
         tdy: '0s',
         tdn: '300ms',
       },
@@ -174,13 +183,13 @@ function SegmentControl({
   }
 
   return (
-    <div className={css(style.wrapper)}>
+    <div className={`${css(style.wrapper)} ${classNames}`}>
       <div ref={tabsRef} className={`${css(style.tabs)} tabs`}>
         <div ref={selectorRef} className={`selector ${css(style.selector)}`} />
         {options?.map((item, i) => (
           <As
             key={`segment-option-${i * 10}`}
-            className={`${css(style.tab_link)} ${active === item.label ? ' active' : ''}`}
+            className={`${css(style.tab_link)} tab-link ${active === item.label ? ' active' : ''}`}
             onClick={e => eventHandler(e, i)}
             onKeyDown={e => eventHandler(e, i)}
             data-label={item.label}

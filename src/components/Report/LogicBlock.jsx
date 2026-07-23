@@ -1,7 +1,8 @@
 import { useAtomValue } from 'jotai'
 import MultiSelect from 'react-multiple-select-dropdown-lite'
 import 'react-multiple-select-dropdown-lite/dist/index.css'
-import { $bits, $fields, $fieldsArr } from '../../GlobalStates/GlobalStates'
+import { $fields, $fieldsArr } from '../../GlobalStates/GlobalStates'
+import useWPUsers from '../../hooks/useWPUsers'
 import TrashIcn from '../../Icons/TrashIcn'
 import { __ } from '../../Utils/i18nwrap'
 import Button from '../Utilities/Button'
@@ -18,8 +19,7 @@ function LogicBlock({
   const flds = useAtomValue($fieldsArr)
   const formFields = flds.concat(additionalFields)
 
-  const bits = useAtomValue($bits)
-  const { userMail } = bits
+  const { userMail } = useWPUsers()
   const disabledLogics = disabledLogicType
 
   let type = ''

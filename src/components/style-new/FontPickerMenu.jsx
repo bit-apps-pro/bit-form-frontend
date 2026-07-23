@@ -135,6 +135,7 @@ export default function FontPickerMenu({ id }) {
       draft.font.fontWeightVariants = weight
       draft.font.fontStyle = style
       draft.font.fontURL = url
+      draft.font.fontFamily = fontFamily
       draft.form[`._frm-bg-b${formID}`]['font-family'] = fontFamily
     }))
     setThemeVars(prvState => create(prvState, draft => {
@@ -166,6 +167,7 @@ export default function FontPickerMenu({ id }) {
       draft.font.fontURL = ''
       draft.font.fontStyle = []
       draft.font.fontWeightVariants = []
+      draft.font.fontFamily = font
     }))
     addToBuilderHistory(generateHistoryData(element, fieldKey, 'Font', font, { styles: getLatestState('styles'), themeVars: getLatestState('themeVars') }))
   }
@@ -188,6 +190,7 @@ export default function FontPickerMenu({ id }) {
         draft.font.fontType = 'Custom'
         draft.font.fontStyle = []
         draft.font.fontWeightVariants = []
+        draft.font.fontFamily = value
       }))
       setThemeVars(prvState => create(prvState, draft => {
         draft['--g-font-family'] = value

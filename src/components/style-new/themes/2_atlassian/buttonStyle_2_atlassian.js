@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { mergeNestedObj } from '../../../../Utils/globalHelpers'
-import buttonStyle_1_bitformDefault from '../1_bitformDefault/buttonStyle_1_bitformDefault'
+import buttonStyle_1_bitformLegacy from '../1_bitformLegacy/buttonStyle_1_bitformLegacy'
 
 /* eslint-disable camelcase */
 export default function buttonStyle_2_atlassian({
@@ -8,7 +8,7 @@ export default function buttonStyle_2_atlassian({
 }) {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return mergeNestedObj(
-      buttonStyle_1_bitformDefault({
+      buttonStyle_1_bitformLegacy({
         fk, breakpoint, colorScheme, align, txtAlign, btnTyp, fulW,
       }),
       {

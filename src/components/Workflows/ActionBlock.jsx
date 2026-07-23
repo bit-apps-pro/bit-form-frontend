@@ -11,7 +11,7 @@ import { __ } from '../../Utils/i18nwrap'
 import Button from '../Utilities/Button'
 import CalculatorField from '../Utilities/CalculationField/CalculatorField'
 import MtSelect from '../Utilities/MtSelect'
-import { extraFields } from './WorkflowHelpers'
+import { extraFields, isConfirmField } from './WorkflowHelpers'
 
 function ActionBlock({
   action, lgcGrp, lgcGrpInd, actionInd, condGrpInd, actionType, formFields,
@@ -133,12 +133,14 @@ function ActionBlock({
       >
         <option value="">{__('Select One')}</option>
         {formFields.map(itm => (
-          <option
-            key={`ff-Ab-${itm.key}`}
-            value={itm.key}
-          >
-            {itm.name}
-          </option>
+          !isConfirmField(itm) && (
+            <option
+              key={`ff-Ab-${itm.key}`}
+              value={itm.key}
+            >
+              {itm.name}
+            </option>
+          )
         ))}
         {extraFields.map(itm => (
           <option
@@ -205,10 +207,10 @@ function ActionBlock({
         </>
       )}
       <div className="btcd-li-side-btn">
-        <Button onClick={cloneAction} icn className="ml-2 sh-sm white">
+        <Button onClick={cloneAction} icn className="sh-sm white">
           <CopyIcn />
         </Button>
-        <Button onClick={delAction} icn className="ml-2 sh-sm white">
+        <Button onClick={delAction} icn className="sh-sm white">
           <TrashIcn />
         </Button>
       </div>

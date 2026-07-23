@@ -5,6 +5,7 @@ import ChevronDownIcn from "../../../Icons/ChevronDownIcn"
 import { IS_PRO } from "../../../Utils/Helpers"
 import ProBadge from "../../Utilities/ProBadge"
 import SingleToggle from "../../Utilities/SingleToggle"
+import accordionVariantStyles from "./Accordion.styles"
 
 
 type AccordionsPropsType = {
@@ -19,12 +20,13 @@ type AccordionsPropsType = {
   checked?: boolean,
   isPro?: boolean,
   proProperty?: string,
-  open?: boolean
+  open?: boolean,
+  variant?: string
 }
 
 
 function Accordion({
-  title, subtitle, children, cls, onExpand, onCollapse, toggle, action, checked, isPro, proProperty, open,
+  title, subtitle, children, cls, onExpand, onCollapse, toggle, action, checked, isPro, proProperty, open, variant = 'default',
 }: AccordionsPropsType) {
   const [tgl, setTgl] = useState(open)
   const [H, setH] = useState(open ? 'auto' : 0)
@@ -51,17 +53,19 @@ function Accordion({
     }
   }
 
+  const styles = accordionVariantStyles[variant] || accordionVariantStyles.default
+
   return (
-    <div className={`btcd-accr ${cls} ${css(accordion.main)}`}>
+    <div className={`btcd-accr ${cls} ${css(accordion.main, styles.main)}`}>
       <div
-        className={`btcd-accr-btn ${tgl && 'active'} flx flx-between`}
+        className={`btcd-accr-btn ${tgl && 'active'} flx flx-between ${css(styles.header)}`}
         onClick={handleTgl}
         onKeyDown={handleTgl}
         role="button"
         tabIndex={0}
       >
         <div className="btcd-accr-title w-10">
-          <div className={css({ flx: 'align-center', fw: 700 })}>
+          <div className={`title ${css({ flx: 'align-center' }, styles.title)}`}>
             {title}
             {isPro && !IS_PRO && (<ProBadge proProperty={proProperty} />)}
           </div>
@@ -84,7 +88,7 @@ function Accordion({
           onExit={onAccordionCollapse}
           unmountOnExit
         >
-          <div className={css({ py: 10 })} ref={nodeRef}>
+          <div className={css(styles.content)} ref={nodeRef}>
             {children}
           </div>
         </CSSTransition>

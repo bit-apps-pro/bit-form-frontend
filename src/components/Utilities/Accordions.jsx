@@ -10,10 +10,10 @@ import ProBadge from './ProBadge'
 import SingleToggle2 from './SingleToggle2'
 
 function Accordions({
-  title, customTitle, subtitle, children, titleEditable, onTitleChange, cls, notScroll, header, onExpand, onCollapse, toggle, action, checked, isPro, proProperty,
+  title, customTitle, subtitle, children, titleEditable, onTitleChange, cls, notScroll, header, onExpand, onCollapse, toggle, tag, action, checked, isPro, proProperty, isExpanded,
 }) {
-  const [tgl, setTgl] = useState(false)
-  const [H, setH] = useState(0)
+  const [tgl, setTgl] = useState(isExpanded || false)
+  const [H, setH] = useState(isExpanded ? 'auto' : 0)
   const inp = useRef(null)
   const nodeRef = useRef(null)
   const { css } = useFela()
@@ -45,7 +45,7 @@ function Accordions({
 
   return (
     <div className={`btcd-accr sh-sm ${cls}`}>
-      <div className={`btcd-accr-btn ${tgl && 'blue active'} flx flx-between`} onClick={handleTgl} onKeyDown={handleTgl} role="button" tabIndex={0}>
+      <div className={`btcd-accr-btn ${tgl && 'tertiary active'} flx flx-between`} onClick={handleTgl} onKeyDown={handleTgl} role="button" tabIndex={0}>
         <div className="btcd-accr-title w-10">
           <div className={css({ flx: 'align-center' })}>
             {customTitle}
@@ -55,7 +55,7 @@ function Accordions({
                 title={title}
                 ref={inp}
                 className={titleEditable && 'edit'}
-                style={{ color: tgl ? 'white' : 'inherit' }}
+                style={{ color: tgl ? 'white' : 'inherit', width: tgl ? '70%' : 'auto' }}
                 type="text"
                 onChange={onTitleChange}
                 value={title}
@@ -74,6 +74,11 @@ function Accordions({
               </button>
             )}
             {!tgl && header}
+            {tag && (
+              <span className="btcd-badge btcd-badge-light ml-2">
+                {tag}
+              </span>
+            )}
             {isPro && !IS_PRO && (<ProBadge proProperty={proProperty} />)}
           </div>
           {subtitle !== undefined && <small>{subtitle}</small>}

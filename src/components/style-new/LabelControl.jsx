@@ -24,7 +24,7 @@ const c = {
     bd: 'var(--white-0-95)',
     w: 130,
     mnw: 130,
-    brs: 10,
+    brs: 'var(--bf-bdr-radius-sm)',
     px: 5,
     py: 3,
     flx: 'center-between',

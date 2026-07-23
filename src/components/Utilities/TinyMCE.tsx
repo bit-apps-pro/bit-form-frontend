@@ -145,7 +145,7 @@ export default function TinyMCE({
           shortCodeList
             && editor.addButton('addShortCode', {
               text: 'Shortcodes',
-              tooltip: 'Add Short Code',
+              tooltip: 'Add Shortcode',
               type: 'menubutton',
               icon: false,
               menu:

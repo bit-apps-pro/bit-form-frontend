@@ -1,11 +1,11 @@
 /* eslint-disable camelcase */
 import { mergeNestedObj } from '../../../../Utils/globalHelpers'
-import textStyle_1_bitformDefault from '../1_bitformDefault/textStyle_1_bitformDefault'
+import textStyle_1_bitformLegacy from '../1_bitformLegacy/textStyle_1_bitformLegacy'
 
 export default function textStyle_2_atlassian({ fk, type, breakpoint, colorScheme, fldPrefix, fldSuffix }) {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return mergeNestedObj(
-      textStyle_1_bitformDefault({ fk, type, breakpoint, colorScheme, fldPrefix, fldSuffix }),
+      textStyle_1_bitformLegacy({ fk, type, breakpoint, colorScheme, fldPrefix, fldSuffix }),
       {
         [`.${fk}-fld:hover`]: {
           'border-color': 'none !important',

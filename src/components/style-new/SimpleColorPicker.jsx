@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
+import { useAtom, useSetAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom, useSetAtom } from 'jotai'
 import { $draggableModal } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import { $themeColors } from '../../GlobalStates/ThemeColorsState'
@@ -21,6 +21,7 @@ export default function SimpleColorPicker({
   title,
   stateObjName,
   propertyPath,
+  stylesPropertyPath,
   subtitle,
   value,
   objectPaths,
@@ -94,14 +95,14 @@ export default function SimpleColorPicker({
           <button
             title="Delete Property"
             onClick={delPropertyHandler}
-            className={`${css(c.delBtn)} delete-btn`}
+            className={`${css(ut.stylePropDeleteBtn)} delete-btn`}
             type="button"
             data-testid={`${modalId}-delete-btn`}
           >
             <TrashIcn size="14" />
           </button>
         )}
-        <span className={css(ut.fw500)}>{__(title)}</span>
+        <span className={css(ut.stylePropertyLabel)}>{__(title)}</span>
       </div>
       <div className={css(ut.flxc)}>
         <ResetStyle stateObjName={stateObjName} propertyPath={propertyPath} id={modalId} />
@@ -110,6 +111,7 @@ export default function SimpleColorPicker({
             className={css({ mr: 3 })}
             stateObjName={stateObjName}
             propertyPath={propertyPath}
+            stylesPropertyPath={stylesPropertyPath}
             id={modalId}
           />
         )}
@@ -147,28 +149,12 @@ export default function SimpleColorPicker({
 }
 
 const c = {
-  delBtn: {
-    se: 20,
-    flx: 'center',
-    b: 'none',
-    p: 0,
-    mr: 1,
-    tn: '.2s all',
-    curp: 1,
-    brs: '50%',
-    tm: 'scale(0)',
-    bd: 'none',
-    cr: 'var(--red-100-61)',
-    pn: 'absolute',
-    lt: -15,
-    ':hover': { bd: '#ffd0d0', cr: '#460000' },
-  },
   containerHover: { '&:hover .delete-btn': { tm: 'scale(1)' } },
   preview_wrp: {
     bd: 'var(--white-0-95)',
     w: 130,
     mnw: 130,
-    brs: 10,
+    brs: 'var(--bf-bdr-radius-sm)',
     p: 3,
     flx: 'center-between',
     ':hover': { bs: '0 0 0 1px var(--white-0-83)' },

@@ -20,7 +20,7 @@ import TitleFieldQuickTweaks from './QuickTweaks/TitleFieldQuickTweaks'
 import SimpleColorPicker from './SimpleColorPicker'
 import { assignNestedObj, getNumFromStr, getStrFromStr, getValueByObjPath, getValueFromStateVar, unitConverter } from './styleHelpers'
 import ThemeControl from './ThemeControl'
-import { updateFieldStyleByFieldSizing } from './themes/1_bitformDefault/fieldSizeControlStyle'
+import { updateFieldStyleByFieldSizing } from './themes/1_bitformLegacy/fieldSizeControlStyle'
 import ThemeStyleReset from './ThemeStyleReset'
 import StripeQuickTweaks from './QuickTweaks/StripeQuickTweaks'
 
@@ -256,7 +256,6 @@ export default function FieldQuickTweaks({ fieldKey }) {
       {fieldType === 'stripe' && (
         <StripeQuickTweaks />
       )}
-
 
       {fieldType === 'title' && (
         <TitleFieldQuickTweaks />

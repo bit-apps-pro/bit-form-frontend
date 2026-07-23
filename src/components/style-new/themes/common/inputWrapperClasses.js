@@ -82,6 +82,7 @@ export default function inputWrapperClasses(fk) {
       color: 'var(--hlp-txt-c, inherit)',
       'font-size': 'var(--hlp-txt-fs)',
       display: 'flex',
+      'flex-wrap': 'wrap',
       'align-items': 'center',
       // 'text-align': 'var(--hlp-txt-al, init)',
       'justify-content': 'var(--hlp-txt-al, initial)',

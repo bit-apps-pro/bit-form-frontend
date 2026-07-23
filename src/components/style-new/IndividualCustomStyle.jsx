@@ -31,7 +31,7 @@ import FilterColorPicker from './FilterColorPicker'
 import FilterController from './FilterController'
 import Important from './Important'
 import IndividualShadowControl from './IndividualShadowControl'
-import editorConfig from './NewStyleEditorConfig'
+import elementCssPropertiesConfig from './NewStyleEditorConfig'
 import ResetStyle from './ResetStyle'
 import SimpleColorPicker from './SimpleColorPicker'
 import SizeControler from './SizeControler'
@@ -269,7 +269,7 @@ export default function IndividualCustomStyle({ elementKey: elmKey, fldKey }) {
   const fldZIndexHandler = (value) => updateHandler(value, '', '', 'z-index')
 
   const addDynamicCssProps = (property, state = '') => {
-    const configProperty = editorConfig?.[fieldType]?.[elementKey]?.properties[property]
+    const configProperty = elementCssPropertiesConfig?.[fieldType]?.[elementKey]?.properties[property]
     if (typeof configProperty === 'object') {
       setStyles(prvStyle => create(prvStyle, drft => {
         Object.keys(configProperty).map(prop => {
@@ -283,7 +283,7 @@ export default function IndividualCustomStyle({ elementKey: elmKey, fldKey }) {
       addToBuilderHistory(generateHistoryData(elementKey, fldKey, `${property} Properties Added`, '', { styles: getLatestState('styles') }))
     } else {
       const propPath = getPropertyPath(property, state)
-      const defaultPropValue = editorConfig?.[fieldType]?.[elementKey]?.properties[property]
+      const defaultPropValue = elementCssPropertiesConfig?.[fieldType]?.[elementKey]?.properties[property]
       const getValFromState = getValueByObjPath(styles, getPropertyPath(property))
 
       setStyles(prvStyle => create(prvStyle, drft => {
@@ -311,7 +311,7 @@ export default function IndividualCustomStyle({ elementKey: elmKey, fldKey }) {
     setStyles(prvStyle => create(prvStyle, drft => {
       deleteNestedObj(drft, getPropertyPath(property, state))
     }))
-    Object.keys(editorConfig[fieldType][elementKey].properties[property] || {})?.map(propName => {
+    Object.keys(elementCssPropertiesConfig[fieldType][elementKey].properties[property] || {})?.map(propName => {
       setStyles(prvStyle => create(prvStyle, drft => {
         deleteNestedObj(drft, getPropertyPath(propName, state))
       }))
@@ -368,16 +368,16 @@ export default function IndividualCustomStyle({ elementKey: elmKey, fldKey }) {
   }
 
   const options = [
-    { label: 'Default', icn: 'Default', show: ['icn'], tip: 'Default Style' },
+    { label: 'Normal', icn: 'Normal', show: ['icn'], tip: 'Normal Style' },
   ]
-  const { states } = editorConfig[fieldType][elementKey] || {}
+  const { states } = elementCssPropertiesConfig[fieldType][elementKey] || {}
   states?.map(state => {
-    const stateLabel = state ? ucFirst(state) : 'Default'
+    const stateLabel = state ? ucFirst(state) : 'Normal'
     options.push({ label: stateLabel, icn: stateLabel, show: ['icn'], tip: `${stateLabel} Style` })
   })
 
   const setController = lblName => {
-    if (lblName === 'Default') setStateController('')
+    if (lblName === 'Normal') setStateController('')
     else setStateController(lblName)
   }
 
@@ -388,7 +388,7 @@ export default function IndividualCustomStyle({ elementKey: elmKey, fldKey }) {
       paths: {},
     }
 
-    const configProperty = editorConfig?.[fieldType]?.[elementKey]?.properties?.[propName]
+    const configProperty = elementCssPropertiesConfig?.[fieldType]?.[elementKey]?.properties?.[propName]
     let propertyKeys = [propName]
     if (typeof configProperty === 'object') {
       propertyKeys = Object.keys(configProperty)
@@ -1248,7 +1248,7 @@ export default function IndividualCustomStyle({ elementKey: elmKey, fldKey }) {
       <StyleSegmentControl
         square
         noShadow
-        defaultActive="Default"
+        defaultActive="Normal"
         options={options}
         size={60}
         component="button"
@@ -1330,22 +1330,6 @@ export default function IndividualCustomStyle({ elementKey: elmKey, fldKey }) {
 
 const cls = {
   container: { ml: 12, mr: 15, pn: 'relative' },
-  delBtn: {
-    se: 20,
-    flx: 'center',
-    b: 'none',
-    p: 0,
-    mr: 1,
-    tn: '.2s all',
-    curp: 1,
-    brs: '50%',
-    tm: 'scale(0)',
-    bd: 'none',
-    cr: 'var(--red-100-61)',
-    pn: 'absolute',
-    lt: -15,
-    ':hover': { bd: '#ffd0d0', cr: '#460000' },
-  },
   containerHover: { '&:hover .delete-btn': { tm: 'scale(1)' } },
   space: { p: 5 },
   warningBorder: { b: '1px solid yellow' },

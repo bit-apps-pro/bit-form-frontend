@@ -12,7 +12,7 @@ const s = {
   wrp: {
     dy: 'inline-block',
     ow: 'hidden',
-    brs: 8,
+    brs: 'var(--bf-bdr-radius-sm)',
     bs: '0 0 0 1px #dadada',
     bc: '#fff',
     bi: 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJUlEQVQYV2N89erVfwY0ICYmxoguxjgUFKI7GsTH5m4M3w1ChQC1/Ca8i2n1WgAAAABJRU5ErkJggg==)',

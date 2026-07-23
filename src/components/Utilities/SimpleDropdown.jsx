@@ -141,7 +141,7 @@ const simppleDpdStyle = {
   dpd: {
     ow: 'hidden',
     p: 3,
-    brs: 8,
+    brs: 'var(--bf-bdr-radius-sm)',
     pn: 'absolute',
     w: '100%',
     tn: 'box-shadow 0.2s',

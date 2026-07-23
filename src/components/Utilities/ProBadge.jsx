@@ -1,17 +1,23 @@
-import { useFela } from 'react-fela'
 import { useSetAtom } from 'jotai'
+import { useFela } from 'react-fela'
 import 'tippy.js/animations/shift-away.css'
 import 'tippy.js/dist/backdrop.css'
 import 'tippy.js/dist/tippy.css'
 import 'tippy.js/themes/material.css'
 import { $proModal } from '../../GlobalStates/GlobalStates'
+import CrownIcn from '../../Icons/CrownIcn'
 import proHelperData from '../../Utils/StaticData/proHelperData'
 
 export default function ProBadge({
-  className, children, width = 'auto', icnSize = 18, tip = false, proProperty, text = 'PRO',
+  className, children, width = 'auto', icnSize = 12, tip = false, proProperty, text = 'PRO', isNewBadge = false,
 }) {
   const { css } = useFela()
   const setProModal = useSetAtom($proModal)
+  const handleOnClick = (e) => {
+    if (isNewBadge) return
+    e.stopPropagation()
+    setProModal({ show: true, ...proHelperData[proProperty] })
+  }
   return (
     // <Tippy
     //   animateFill
@@ -28,11 +34,15 @@ export default function ProBadge({
       tabIndex="0"
       data-tipbtn
       className={`${css(c.popper_icn)} ${className}`}
-      onClick={() => setProModal({ show: true, ...proHelperData[proProperty] })}
-      onKeyDown={() => setProModal({ show: true, ...proHelperData[proProperty] })}
+      onClick={handleOnClick}
+      onKeyDown={handleOnClick}
     >
       {/* {tip ? children : <ProBadgeIcn size={icnSize} />} */}
-      <span className={css(c.proBadge)}>{text}</span>
+
+      <span className={`${css(c.proBadge)} pro-badge`}>
+        {!isNewBadge && <CrownIcn size={icnSize} stroke={1} />}
+        {text}
+      </span>
     </div>
     // </Tippy>
   )
@@ -40,15 +50,20 @@ export default function ProBadge({
 
 const c = {
   proBadge: {
-    bd: '#999999',
-    cr: '#fff',
+    // bd: '#999999',
+    flx: 'center',
+    cr: 'var(--bf-text-clr-secondary)',
+    gp: 3,
+    b: '.5px solid var(--bf-stroke-clr)',
     fs: 10,
-    fw: 700,
-    brs: 8,
+    fw: 'var(--bf-font-medium)',
+    brs: 'var(--bf-bdr-radius-sm)',
     p: '2px 4px',
     ml: 5,
     ':hover': {
       cur: 'pointer',
+      cr: 'var(--bf-text-clr-tertiary)',
+      fw: 'var(--bf-font-semibold)',
     },
   },
   popper_icn: {

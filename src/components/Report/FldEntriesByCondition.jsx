@@ -1,40 +1,32 @@
 /* eslint-disable react/jsx-props-no-multi-spaces */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import Tippy from '@tippyjs/react'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { hideAll, roundArrow } from 'tippy.js'
-import 'tippy.js/animations/scale.css'
-import 'tippy.js/animations/shift-away-extreme.css'
-import 'tippy.js/dist/svg-arrow.css'
-import 'tippy.js/dist/tippy.css'
-import 'tippy.js/themes/light-border.css'
+import { hideAll } from 'tippy.js'
 
 import Scrollbars from 'react-custom-scrollbars-2'
 import { useFela } from 'react-fela'
 import { $bits, $fieldsArr, $reportId, $reports, $reportSelector, $updateBtn } from '../../GlobalStates/GlobalStates'
+import CheckMarkIcn from '../../Icons/CheckMarkIcn'
 import EditIcn from '../../Icons/EditIcn'
-import MoreVerticalIcn from '../../Icons/MoreVerticalIcn'
-import PlusIcn from '../../Icons/PlusIcn'
+import ListFilterIcn from '../../Icons/ListFilterIcn'
+import ListFilterPlusIcn from '../../Icons/ListFilterPlusIcn'
 import RefreshIcn from '../../Icons/RefreshIcn'
+import SearchIcon from '../../Icons/SearchIcon'
 import TrashIcn from '../../Icons/TrashIcn'
 import ut from '../../styles/2.utilities'
-import tableStyle from '../../styles/table.style'
 import bitsFetch from '../../Utils/bitsFetch'
 import { deepCopy } from '../../Utils/Helpers'
 import { __ } from '../../Utils/i18nwrap'
 import LoaderSm from '../Loaders/LoaderSm'
 import Btn from '../Utilities/Btn'
 import ConfirmModal from '../Utilities/ConfirmModal'
+import Downmenu from '../Utilities/Downmenu'
 import Modal from '../Utilities/Modal'
 import SnackMsg from '../Utilities/SnackMsg'
-import Tip from '../Utilities/Tip'
 import ConditionalLogic from './ConditionalLogic'
-import SearchIcon from '../../Icons/SearchIcon'
-import FilterIcn from '../../Icons/FilterIcn'
-import Downmenu from '../Utilities/Downmenu'
 
 export default function FldEntriesByCondition({ fetchData, setRefreshResp }) {
   const currentReport = useAtomValue($reportSelector)
@@ -88,8 +80,6 @@ export default function FldEntriesByCondition({ fetchData, setRefreshResp }) {
 
   const reportFetchById = (rprtId) => {
     const rprt = reports.find(r => r?.id?.toString() === rprtId.toString())
-    // const { pageIndex, pageSize, sortBy, filters, globalFilter, conditions } = rprt.details
-    // fetchData({ pageIndex, pageSize, sortBy, filters, conditions })
     setReportId({ id: rprtId, isDefault: rprt?.isDefault === '1' })
     setRefreshResp(1)
   }
@@ -189,28 +179,42 @@ export default function FldEntriesByCondition({ fetchData, setRefreshResp }) {
     <>
       <SnackMsg snack={snack} setSnackbar={setSnackbar} />
 
-      <div className="flx ml-2">
+      <div className="flx">
 
         <Downmenu>
-          <div className="flx btcd-custom-report-dpdw mr-2 b-none" style={{ height: 28 }}>
-            <span className="flx sm b-none pos-rel mr-1">
-              <FilterIcn size="16" stroke="2" />
-            </span>
-            <div className="btcd-custom-report-title">
+          <div className={`flx ${css(reportSearch.filterDropdownTrigger)}`}>
+            <div className={css(reportSearch.filterName)}>
               {currentReport?.details?.report_name}
             </div>
-            <button
-              className={`flx sm b-none tooltip pos-rel ${css(reportSearch.refreshBtn, { pr: 0, cur: 'pointer' })}`}
-              onClick={() => { hideAll(); setRefreshResp(1) }}
-              type="button"
-              style={{ '--tooltip-txt': `'${__('Refresh')}'` }}
-            >
-              <RefreshIcn size="20" />
-            </button>
+            <span className={css(reportSearch.filterIconRight)}>
+              <ListFilterIcn size="16" stroke="2" />
+            </span>
           </div>
-          <ReportsList availableReports={availableReports} setAvailableReports={setAvailableReports} setAvailableReport={setAvailableReport} reportFetchById={reportFetchById} setReportIndex={setReportIndex} setReportUpdate={setReportUpdate} setProModal={setProModal} confMdl={confMdl} setconfMdl={setconfMdl} setshowMdl={setshowMdl} />
+          <ReportsListMenu
+            availableReports={availableReports}
+            setAvailableReports={setAvailableReports}
+            setAvailableReport={setAvailableReport}
+            reportFetchById={reportFetchById}
+            setReportIndex={setReportIndex}
+            setReportUpdate={setReportUpdate}
+            setProModal={setProModal}
+            confMdl={confMdl}
+            setconfMdl={setconfMdl}
+            setshowMdl={setshowMdl}
+            createNewReport={createNewReport}
+          />
         </Downmenu>
-        <div className="mr-2">
+
+        <button
+          className={css(reportSearch.refreshButton)}
+          onClick={() => { setRefreshResp(1) }}
+          type="button"
+          title={__('Refresh')}
+        >
+          <RefreshIcn size="18" />
+        </button>
+
+        <div>
           <ConfirmModal
             show={confMdl.show}
             close={closeConfMdl}
@@ -219,24 +223,6 @@ export default function FldEntriesByCondition({ fetchData, setRefreshResp }) {
             body={confMdl.body}
             action={confMdl.action}
           />
-
-          <Tippy
-            animation="shift-away-extreme"
-            theme="light-border"
-            trigger="click"
-            arrow={roundArrow}
-            interactive="true"
-            placement="bottom"
-            appendTo="parent"
-            className={css(reportSearch.reportTippyBox)}
-            content={(<ReportsList availableReports={availableReports} setAvailableReports={setAvailableReports} setAvailableReport={setAvailableReport} reportFetchById={reportFetchById} setReportIndex={setReportIndex} setReportUpdate={setReportUpdate} setProModal={setProModal} confMdl={confMdl} setconfMdl={setconfMdl} setshowMdl={setshowMdl} />)}
-          >
-            <button className={css(tableStyle.tableActionBtn)} type="button">
-              <Tip msg="View all filters">
-                <MoreVerticalIcn size="14" />
-              </Tip>
-            </button>
-          </Tippy>
 
           <Modal
             md
@@ -267,8 +253,6 @@ export default function FldEntriesByCondition({ fetchData, setRefreshResp }) {
                   setDataConf={setReports}
                   reportInd={reportIndex || 0}
                 />
-                {/* </div>
-              <div className="mt-2 f-left"> */}
                 <Btn
                   className={css(ut.ftRight, ut.mb3)}
                   onClick={saveReport}
@@ -280,17 +264,6 @@ export default function FldEntriesByCondition({ fetchData, setRefreshResp }) {
             </>
           </Modal>
         </div>
-
-        <Tip msg="Create new filter">
-          <button
-            className={css(tableStyle.tableActionBtn, { w: '100%', gp: 5 })}
-            onClick={createNewReport}
-            type="button"
-          >
-            <PlusIcn size={16} />
-            Create Filter
-          </button>
-        </Tip>
 
         <div>
           <Modal
@@ -319,48 +292,202 @@ export default function FldEntriesByCondition({ fetchData, setRefreshResp }) {
   )
 }
 const reportSearch = {
-  reportTippyBox: {
-    bm: '7px',
-    bds: '8px !important',
-    mnw: '241px !important',
-  },
-  reportBox: {
-    pn: 'relative',
-    '& span': {
-      clr: 'hsla(0, 0%, 50%, 100%)',
-      pn: 'absolute !important',
-      tp: 7,
-      lt: 6,
-      // ':foucs': { bcr: 'var(--b-92-62) !important' },
-    },
-  },
-  dpdwInputBox: {
-    bxs: 'border-box',
-    b: '1px solid #E6E6E6!important',
-    brs: '8px!important',
-    p: '3px 0 3px 24px!important',
-    ff: '"Outfit", sans-serif !important',
+  filterDropdownTrigger: {
+    bd: '#fff',
+    cr: 'var(--bf-text-clr-darkgray)',
+    b: '1px solid var(--bf-stroke-clr)',
+    mnw: 180,
+    brs: 'var(--bf-bdr-radius-sm)',
+    px: '12px',
+    ff: 'var(--bf-font-family-base) !important',
     fts: 'normal',
     fw: 500,
-    fs: 12,
-    lh: 15,
-    w: '100%',
-    mnh: 'auto!important',
-    oe: 'none!important',
-    tn: '0.1s all ease',
-    ':focus': {
-      '& ~ span': { cr: 'var(--b-50)' },
-      focusShadow: 1,
+    fs: 14,
+    lh: '17px',
+    w: 200,
+    jc: 'space-between',
+    ai: 'center',
+    cur: 'pointer',
+    h: 'var(--bf-thead-inp-height)',
+    '&:hover': {
+      cr: 'var(--bf-text-clr-dark)',
+      bd: 'var(--b-79-96)',
     },
   },
-  refreshBtn: {
+  filterName: {
+    ws: 'nowrap',
+    ow: 'hidden',
+    toe: 'ellipsis',
+    flx: 1,
+  },
+  filterIconRight: {
+    flx: 'center',
+    pl: 8,
+    // cr: 'var(--bf-text-clr-gray)',
+    h: '100%',
+    bl: '1px solid var(--bf-stroke-clr)',
+  },
+  refreshButton: {
+    flx: 'center',
+    b: '1px solid #e2e2e2',
+    p: 8,
+    ml: 8,
+    brs: 'var(--bf-bdr-radius-sm)',
+    cur: 'pointer',
+    bd: '#fff',
+    cr: 'var(--bf-text-clr-darkgray)',
+    ':hover': { bd: 'var(--b-79-96)', cr: 'var(--blue)' },
+    ':focus-visible': { focusOutline: 1 },
+    h: 'var(--bf-thead-inp-height)',
+  },
+  filterListContainer: {
+    p: '10px 5px',
+    w: 270,
+  },
+  filterListHeader: {
+    dy: 'flex',
+    ai: 'center',
+    jc: 'space-between',
+    mb: 8,
+  },
+  filterListTitle: {
+    cr: 'rgb(63, 63, 63)',
+    fw: 700,
+    fs: 15,
+  },
+  newFilterBtn: {
+    h: 'var(--bf-thead-inp-height) !important',
+    gp: 5,
+    w: '50% !important',
+  },
+  searchAndNewFilterRow: {
+    dy: 'flex',
+    ai: 'center',
+    gp: 8,
+    pb: 10,
+    mb: 10,
+    bb: '1px solid var(--bf-stroke-clr)',
+  },
+  searchBoxWrapper: {
+    pn: 'relative',
+    flx: 1,
+    tn: 'all 0.2s ease',
+    w: '50%',
+    '&:focus-within': {
+      w: '60%',
+    },
+    '&:focus-within ~ button': {
+      w: '40% !important',
+      // dy: 'none',
+    },
+  },
+  searchIcon: {
+    pn: 'absolute !important',
+    tp: '50%',
+    lt: 10,
+    transform: 'translateY(-50%)',
+    cr: 'hsla(0, 0%, 50%, 100%)',
+    pointerEvents: 'none',
+    lh: 0,
+    // h: '100%'
+  },
+  searchInput: {
+    bxs: 'border-box',
+    b: '1px solid #E6E6E6!important',
+    brs: 'var(--bf-bdr-radius-sm) !important',
+    p: '8px 10px 8px 32px!important',
+    ff: 'var(--bf-font-family-base) !important',
+    fts: 'normal',
+    fw: 500,
+    fs: 13,
+    lh: 15,
+    w: '100%',
+    h: 'var(--bf-thead-inp-height)',
+    mnh: 'auto!important',
+    oe: 'none!important',
+    tn: '0.2s all ease',
+    ':focus': {
+      focusShadow: 1,
+    },
+    '::placeholder': {
+      cr: '#999',
+    },
+  },
+  filterItem: {
+    dy: 'flex',
+    ai: 'center',
+    jc: 'space-between',
+    p: '8px 10px',
+    brs: 'var(--bf-bdr-radius-sm)',
+    mb: 4,
+    h: 42,
+    tn: 'all 0.3s ease',
+    cur: 'pointer',
+    ':hover': {
+      bd: 'var(--b-79-96)',
+    },
+    ':hover .actions': {
+      oy: 1,
+      dy: 'inline-flex',
+    },
+    '&.active': {
+      b: '1px solid var(--bf-stroke-clr)',
+    },
+  },
+  filterItemContent: {
+    dy: 'flex',
+    ai: 'center',
+    gp: 8,
+    flx: 1,
+    ow: 'hidden',
+  },
+  filterItemLabel: {
+    fs: 14,
+    fw: 500,
+    ff: 'var(--bf-font-family-base) !important',
+    ws: 'nowrap',
+    ow: 'hidden',
+    toe: 'ellipsis',
+  },
+  tickIcon: {
+    cr: 'var(--bf-text-clr-darkgray)',
+    flxs: 0,
+    mr: 4,
+  },
+  filterActions: {
+    dy: 'none',
+    ai: 'center',
+    gp: 4,
+    oy: 0,
+    tn: 'opacity 1s ease',
+  },
+  filterActionsVisible: {
+    op: 1,
+    dy: 'flex',
+  },
+  actionBtn: {
+    flx: 'center',
+    b: 'none',
+    bd: 'transparent',
+    p: 4,
+    brs: 4,
+    cur: 'pointer',
     cr: 'hsl(0deg 1% 29%)',
-    '&:hover': { cr: 'var(--blue)', bd: 'var(--b-79-96)' },
+    ':hover': { bd: 'var(--b-79-96)', cr: 'var(--blue)' },
+  },
+  deleteBtn: {
+    ':hover': { cr: 'var(--red-100-61)' },
+  },
+  noResults: {
+    cr: '#666',
+    fs: 13,
+    ta: 'center',
+    p: '20px 0',
   },
 }
 
-const ReportsList = ({
-  availableReports, setAvailableReports, setAvailableReport, reportFetchById, setProModal, confMdl, setconfMdl, setReportUpdate, setReportIndex, setshowMdl,
+const ReportsListMenu = ({
+  availableReports, setAvailableReports, setAvailableReport, reportFetchById, setProModal, confMdl, setconfMdl, setReportUpdate, setReportIndex, setshowMdl, createNewReport,
 }) => {
   const { css } = useFela()
   const bits = useAtomValue($bits)
@@ -368,6 +495,7 @@ const ReportsList = ({
   const currentReport = useAtomValue($reportSelector)
   const [reports, setReports] = useAtom($reports)
   const setUpdateBtn = useSetAtom($updateBtn)
+  // const [hoveredReport, setHoveredReport] = useState(null)
 
   const searchReport = (e) => {
     const { value } = e.target
@@ -379,9 +507,11 @@ const ReportsList = ({
     if (val === currentReport?.id) return
     reportFetchById(val)
     setUpdateBtn(oldUpdateBtn => ({ ...oldUpdateBtn, unsaved: true }))
+    hideAll()
   }
 
-  const editCurrentReport = (val) => {
+  const editCurrentReport = (val, e) => {
+    e.stopPropagation()
     if (!isPro) {
       setProModal({ show: true, msg: 'Edit option available in the pro version!' })
       return
@@ -392,6 +522,7 @@ const ReportsList = ({
       setReportIndex(rprtIndex)
       setshowMdl(true)
     }, 1)
+    hideAll()
   }
 
   const closeConfMdl = () => {
@@ -399,7 +530,8 @@ const ReportsList = ({
     setconfMdl({ ...confMdl })
   }
 
-  const deleteReportAlert = (val) => {
+  const deleteReportAlert = (val, e) => {
+    e.stopPropagation()
     confMdl.btnTxt = __('Delete')
     confMdl.body = __('Are you sure to delete this report')
     confMdl.btnClass = ''
@@ -430,62 +562,107 @@ const ReportsList = ({
     })
   }
 
+  const handleNewFilterClick = () => {
+    createNewReport()
+    hideAll()
+  }
+
   return (
-    <div style={{ height: 250, padding: 3 }}>
-      <div className="mb-2" style={{ color: 'rgb(63, 63, 63)', fontWeight: 700 }}>Filters</div>
-      <div className={css(reportSearch.reportBox, ut.mb2)}>
-        <span><SearchIcon size="16" /></span>
-        <input
-          aria-label="Search reports"
-          type="text"
-          placeholder="Search filters"
-          onChange={searchReport}
-          className={css(reportSearch.dpdwInputBox)}
-        />
+    <div className={css(reportSearch.filterListContainer)}>
+      <div className={css(reportSearch.filterListHeader)}>
+        <span className={css(reportSearch.filterListTitle)}>{__('Filter List')}</span>
       </div>
+
+      <div className={css(reportSearch.searchAndNewFilterRow)}>
+        <div className={css(
+          reportSearch.searchBoxWrapper,
+          // isSearchFocused && reportSearch.searchBoxWrapperExpanded,
+        )}
+        >
+          <span className={css(reportSearch.searchIcon)}>
+            <SearchIcon size="14" />
+          </span>
+          <input
+            aria-label="Search filters"
+            type="text"
+            placeholder={__('Search filters...')}
+            onChange={searchReport}
+            className={css(reportSearch.searchInput)}
+          />
+        </div>
+        <Btn
+          className={css(
+            reportSearch.newFilterBtn,
+            // isSearchFocused && reportSearch.newFilterBtnHidden,
+          )}
+          onClick={handleNewFilterClick}
+          size="sm"
+        >
+          <ListFilterPlusIcn size={15} stroke="2" />
+          {__('New Filter')}
+        </Btn>
+
+      </div>
+
       {availableReports.length === 0 && (
-        <div style={{ color: '#000' }}>No matching report found</div>
+        <div className={css(reportSearch.noResults)}>{__('No matching filter found')}</div>
       )}
-      <Scrollbars style={{ height: '70%' }} autoHide>
+
+      <Scrollbars style={{ height: 200 }} autoHide>
         <div>
-          {availableReports?.map((report, indx) => (
-            <div
-              key={`fld-condition-${indx * 5}`}
-              className={`report-content-item flx ${report.value === currentReport?.id ? 'report-dpdw-active' : ''}`}
-            >
-              <button
-                type="button"
-                className="report-content-btn-item"
-                title={report?.label}
+          {availableReports?.map((report) => {
+            const isActive = report.value === currentReport?.id
+            // const isHovered = hoveredReport === report.value
+            const isNonDefault = report.isDefault.toString() === '0'
+
+            return (
+              <div
+                key={`filter-item-${report.value}`}
+                className={`${css(reportSearch.filterItem)} ${isActive && 'active'}`}
                 onClick={() => handleInput(report.value)}
+                // onMouseEnter={() => setHoveredReport(report.value)}
+                // onMouseLeave={() => setHoveredReport(null)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && handleInput(report.value)}
               >
-                {report?.label}
-              </button>
-              {(report.isDefault.toString() === '0') && (
-                <div className="show_tippy_action">
-                  <button
-                    className={`icn-btn sm ${css(reportSearch.refreshBtn)} ${css(ut.p0)}`}
-                    title="Edit"
-                    onClick={() => editCurrentReport(report.value)}
-                    type="button"
-                  >
-                    <EditIcn size="17" />
-                  </button>
-                  {report.value !== currentReport?.id && (
-                    <button
-                      // className="icn-btn sm"
-                      className={`icn-btn sm ${css(reportSearch.refreshBtn)}`}
-                      title="Delete"
-                      onClick={() => deleteReportAlert(report.value)}
-                      type="button"
-                    >
-                      <TrashIcn size="15" />
-                    </button>
+                <div className={css(reportSearch.filterItemContent)}>
+                  <span className={css(reportSearch.filterItemLabel)} title={report?.label}>
+                    {report?.label}
+                  </span>
+                </div>
+
+                <div>
+                  {isActive && (
+                    <span className={`${css(reportSearch.tickIcon)} check-icon`}>
+                      <CheckMarkIcn size={18} stroke={2} />
+                    </span>
+                  )}
+
+                  {isNonDefault && (
+                    <div className={`${css(reportSearch.filterActions)} actions`}>
+                      <button
+                        className={css(reportSearch.actionBtn)}
+                        title={__('Edit')}
+                        onClick={(e) => editCurrentReport(report.value, e)}
+                        type="button"
+                      >
+                        <EditIcn size="18" />
+                      </button>
+                      <button
+                        className={css(reportSearch.actionBtn, reportSearch.deleteBtn)}
+                        title={__('Delete')}
+                        onClick={(e) => deleteReportAlert(report.value, e)}
+                        type="button"
+                      >
+                        <TrashIcn size="18" />
+                      </button>
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+            )
+          })}
         </div>
       </Scrollbars>
     </div>

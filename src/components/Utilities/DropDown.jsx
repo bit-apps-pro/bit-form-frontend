@@ -50,7 +50,8 @@ const dropdownCls = {
     mt: 10,
     '& .msl': {
       // h: '32px!important',
-      bd: 'var(--b-79-96)',
+      // bd: 'var(--b-79-96)',
+      bd: 'var(--bf-bg-white)',
       b: 0,
       '&.msl-active-up': {
         'border-bottom-left-radius': 0,
@@ -66,16 +67,23 @@ const dropdownCls = {
       '-webkit-clip-path': 'inset(0px -10px 0 -10px)',
       'clip-path': 'inset(0px -10px 0 -10px)',
     },
-    '&.msl-vars': { w: '99% !important', '--font-size': '12px' },
+    '&.msl-vars': {
+      w: '99% !important',
+      '--font-size': '12px',
+      '--border-radius': 'var(--bf-bdr-radius-sm)',
+    },
     '&.msl-wrp > .msl-options': {
       // pn: 'relative !important',
       pn: 'absolute !important',
       'border-top-left-radius': 0,
       'border-top-right-radius': 0,
-      '& div > .msl-option': { p: '4px 4px' },
+      '& div > .msl-option': {
+        p: '4px 4px',
+        brs: 'var(--bf-bdr-radius-sm)',
+      },
     },
     '& > .msl-wrp > .msl-active-up': {
-      brs: 8,
+      brs: 'var(--bf-bdr-radius-sm)',
       bblr: '0 !important',
       bbrr: '0 !important',
     },

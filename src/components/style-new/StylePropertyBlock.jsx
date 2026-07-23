@@ -12,12 +12,12 @@ export default function StylePropertyBlock({ title, delPropertyHandler, children
         <button
           title="Delete Property"
           onClick={delPropertyHandler}
-          className={`${css(sc.propsDelBtn)} delete-btn`}
+          className={`${css(ut.stylePropDeleteBtn)} delete-btn`}
           type="button"
         >
           <TrashIcn size="14" />
         </button>
-        <span className={css(ut.fw500)}>{__(title)}</span>
+        <span className={css(ut.stylePropertyLabel)}>{__(title)}</span>
       </div>
       {children}
     </div>

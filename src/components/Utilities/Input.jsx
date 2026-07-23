@@ -17,7 +17,7 @@ export default function Input({
       px: 8,
       py: 2,
       bs: 'none !important',
-      brs: '8px !important',
+      brs: 'var(--bf-bdr-radius-sm) !important',
       tn: 'box-shadow .3s',
       b: '1px solid #e6e6e6 !important',
       '::placeholder': { cr: 'hsl(215deg 16% 67%)', fs: 12, fw: 400 },

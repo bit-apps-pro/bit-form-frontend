@@ -147,7 +147,9 @@ export default function phoneNumberDefaultStyles(formId) {
     [`.bc${formId}-phone-number-input`]: {
       'border-width': '0 !important',
       outline: '0',
-      width: 'calc(100% - 50px)',
+      flex: '1 1 auto',
+      'min-width': '0',
+      width: 'auto',
       padding: '8px 26px 8px 8px !important',
       'font-size': `var(--bc${formId}-fld-fs) !important`,
       'font-family': 'inherit',

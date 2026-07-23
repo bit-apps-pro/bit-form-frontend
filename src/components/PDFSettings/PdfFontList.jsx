@@ -2,8 +2,8 @@ import { useAtom } from 'jotai'
 import { useState } from 'react'
 import { useFela } from 'react-fela'
 import { $bits } from '../../GlobalStates/GlobalStates'
-import { __ } from '../../Utils/i18nwrap'
 import { pdfFontList } from '../../Utils/StaticData/pdfConfigurationData'
+import ProOverlay from '../Utilities/ProOverlay'
 import SnackMsg from '../Utilities/SnackMsg'
 import FontBlock from './FontBlock'
 
@@ -15,18 +15,7 @@ export default function PdfFontList() {
   return (
     <div className="btcd-captcha mb-4">
       <div className="pos-rel">
-        {!isPro && (
-          <div className="pro-blur flx" style={{ height: '110%', left: -15, width: '104%', top: -3 }}>
-            <div className="pro">
-              <a href="https://www.bitapps.pro/bit-form" target="_blank" rel="noreferrer">
-                <span className="txt-pro">
-                  {' '}
-                  {__('Available On Pro')}
-                </span>
-              </a>
-            </div>
-          </div>
-        )}
+        {!isPro && <ProOverlay style={{ height: '105%', marginTop: 0, width: '100%' }} />}
         <SnackMsg snack={snack} setSnackbar={setSnackbar} />
 
         <div className={css(styleFontList.wrp)}>

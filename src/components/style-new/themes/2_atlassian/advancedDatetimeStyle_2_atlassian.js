@@ -1,11 +1,11 @@
 /* eslint-disable camelcase */
 import { mergeNestedObj } from '../../../../Utils/globalHelpers'
-import advancedDateTimeStyle_1_bitformDefault from '../1_bitformDefault/advancedDatetimeStyle_1_bitformDefault'
+import advancedDateTimeStyle_1_bitformLegacy from '../1_bitformLegacy/advancedDatetimeStyle_1_bitformLegacy'
 
 export default function advancedDatetimeStyle_2_atlassian({ fk, type, breakpoint, colorScheme, fldPrefix, fldSuffix }) {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return mergeNestedObj(
-      advancedDateTimeStyle_1_bitformDefault({ fk, type, breakpoint, colorScheme, fldPrefix, fldSuffix }),
+      advancedDateTimeStyle_1_bitformLegacy({ fk, type, breakpoint, colorScheme, fldPrefix, fldSuffix }),
       {
         [`.${fk}-fld:hover`]: {
           'border-color': 'none !important',

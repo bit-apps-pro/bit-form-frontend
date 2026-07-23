@@ -14,6 +14,7 @@ import LoaderSm from '../Loaders/LoaderSm'
 import { compareVersions } from '../Template/templateHelpers'
 import Btn from '../Utilities/Btn'
 import CheckBox from '../Utilities/CheckBox'
+import ProOverlay from '../Utilities/ProOverlay'
 import SnackMsg from '../Utilities/SnackMsg'
 import { assignNestedObj } from '../style-new/styleHelpers'
 
@@ -156,18 +157,7 @@ export default function PdfGlobalSetting() {
   return (
     <div className="btcd-captcha mb-4 pr-2">
       <div className="pos-rel">
-        {!isPro && (
-          <div className="pro-blur flx" style={{ height: '110%', left: -15, width: '104%', top: -3 }}>
-            <div className="pro">
-              <a href="https://www.bitapps.pro/bit-form" target="_blank" rel="noreferrer">
-                <span className="txt-pro">
-                  {' '}
-                  {__('Available On Pro')}
-                </span>
-              </a>
-            </div>
-          </div>
-        )}
+        {!isPro && <ProOverlay style={{ height: '110%', marginTop: 0, width: '100%' }} />}
         <SnackMsg snack={snack} setSnackbar={setSnackbar} />
         <small className="d-blk mt-3">
           <a

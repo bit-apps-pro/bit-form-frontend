@@ -33,6 +33,19 @@ export default function conversationalDefaultStyles(formId, conversationalSettin
       'background-size': 'cover',
       ...allSteps.background,
     },
+    // Floating Card: wrapper transparent so form background shows around the card.
+    // Only redirect step background to card when the user has set a real color;
+    // transparent (the default) falls through to the white CSS fallback.
+    [`.centered-card-layout.bc${formId}-step`]: {
+      'background-color': 'transparent',
+      'background-image': 'none',
+    },
+    ...(allSteps.background && Object.keys(allSteps.background).length > 0
+      && (allSteps.background['background-image'] || (allSteps.background['background-color'] && allSteps.background['background-color'] !== 'transparent'))) && {
+      [`.bc${formId}-step.centered-card-layout .bc${formId}-step-content`]: {
+        ...allSteps.background,
+      },
+    },
     [`._frm-bg-b${formId}`]: {
       position: 'relative',
       height: '100%',
@@ -80,6 +93,17 @@ export default function conversationalDefaultStyles(formId, conversationalSettin
       stylesObject = Object.assign(stylesObject, {
         [`.bc${formId}-step.bc${formId}-${key}`]: {
           ...value.background,
+        },
+        // Floating Card: transparent wrapper. Only push real (non-transparent) colors to card.
+        [`.centered-card-layout.bc${formId}-step.bc${formId}-${key}`]: {
+          'background-color': 'transparent',
+          'background-image': 'none',
+        },
+        ...(value.background && Object.keys(value.background).length > 0
+          && (value.background['background-image'] || (value.background['background-color'] && value.background['background-color'] !== 'transparent'))) && {
+          [`.bc${formId}-step.centered-card-layout.bc${formId}-${key} .bc${formId}-step-content`]: {
+            ...value.background,
+          },
         },
         ...value.buttonBgColor && {
           [`.bc${formId}-${key} .bc${formId}-btn`]: {

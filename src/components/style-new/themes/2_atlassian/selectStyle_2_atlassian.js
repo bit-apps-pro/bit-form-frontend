@@ -1,11 +1,11 @@
 /* eslint-disable camelcase */
 import { mergeNestedObj } from '../../../../Utils/globalHelpers'
-import selectStyle_1_BitformDefault from '../1_bitformDefault/selectStyle_1_bitformDefault'
+import selectStyle_1_bitformLegacy from '../1_bitformLegacy/selectStyle_1_bitformLegacy'
 
 export default function selectStyle_2_atlassian({ fk, breakpoint, colorScheme }) {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return mergeNestedObj(
-      selectStyle_1_BitformDefault({ fk, breakpoint, colorScheme }),
+      selectStyle_1_bitformLegacy({ fk, breakpoint, colorScheme }),
       {
         [`.${fk}-fld`]: {
           transition: 'background 0.2s ease',

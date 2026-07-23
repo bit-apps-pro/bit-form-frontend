@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-return-assign */
+import { Fragment } from 'react'
 import { useFela } from 'react-fela'
 import { hideAll } from 'tippy.js'
 import BackIcn from '../../../Icons/BackIcn'
@@ -40,13 +41,13 @@ function KeyBoard({ clickAction, options, formFields }) {
           <>
             <h4 className={css({ m: 0, td: 'underline', mt: 5 })}>Options</h4>
             {options.map((option, index) => (option.type === 'group' ? (
-              <>
+              <Fragment key={`group-${option.title}-${index + 1}`}>
                 <h4 className={css({ m: 0 })}>{option.title}</h4>
                 {option.childs.map((child) => (
                   <div
                     role="button"
                     className={css(style.field, ut.ml1)}
-                    key={`${child.value}${index + 1}`}
+                    key={`group-child-${option.title}-${child.value}`}
                     onClick={() => clickAction(`${index + 1}`, 'option', { label: child.label, content: child.value }, child.value.length)}
                     tabIndex={0}
                     onKeyDown={undefined}
@@ -54,12 +55,12 @@ function KeyBoard({ clickAction, options, formFields }) {
                     {child.label}
                   </div>
                 ))}
-              </>
+              </Fragment>
             ) : (
               <div
                 role="button"
                 className={css(style.field)}
-                key={`${option.value}${index + 1}`}
+                key={`option-${option.value}-${index + 1}`}
                 onClick={() => clickAction(`${index + 1}`, 'option', { label: option.label, content: option.value }, option.value.length)}
                 tabIndex={0}
                 onKeyDown={undefined}
@@ -83,7 +84,7 @@ function KeyBoard({ clickAction, options, formFields }) {
           <div
             role="button"
             className={css(style.field)}
-            key={`field-${index}`}
+            key={`field-${field.key || field.name || index}`}
             onClick={() => clickAction(`${index + 1}`, 'field', { label: field.name, content: field.key })}
             tabIndex={0}
             onKeyDown={undefined}

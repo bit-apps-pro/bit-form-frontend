@@ -1,7 +1,7 @@
+import { useAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
 import { $draggableModal } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import { $themeVars } from '../../GlobalStates/ThemeVarsState'
@@ -69,6 +69,7 @@ export default function SpacingControl({
       {allowImportant && getValue() && (
         <Important
           propertyPath={paths?.margin || paths?.padding}
+          stateObjName={object}
           id={id}
         />
       )}
@@ -105,7 +106,7 @@ const c = {
     bd: 'var(--white-0-95)',
     w: 130,
     mnw: 130,
-    brs: 10,
+    brs: 'var(--bf-bdr-radius-sm)',
     p: 7,
     pr: '3px !important',
     flx: 'center-between',

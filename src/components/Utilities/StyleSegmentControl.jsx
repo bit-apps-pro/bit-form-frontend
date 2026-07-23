@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useLayoutEffect } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useFela } from 'react-fela'
 import { __ } from '../../Utils/i18nwrap'
 import { lowerCaseAllAndReplaceSpaceToHipen } from '../style-new/styleHelpers'
@@ -14,7 +14,7 @@ export default function StyleSegmentControl({
   show,
   width,
   tipPlace = 'top',
-  borderRadius = 10,
+  borderRadius = 'var(--bf-bdr-radius-sm)',
   activeShow,
   noShadow,
   defaultItmWidth,

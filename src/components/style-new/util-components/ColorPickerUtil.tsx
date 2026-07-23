@@ -9,7 +9,7 @@ import { colorPickerProps, valueObject } from './color-picker'
 
 export default function ColorPickerUtil({ id, value, onChangeHandler, allowImportant, allowSolid = true, allowImage = true, allowGradient = true, allowVariable = true, colorProp = 'color' }: colorPickerProps) {
   const { css } = useFela()
-  const valueObj: valueObject = typeof value === 'string' ? { color: value } : value
+  const valueObj: valueObject = (typeof value === 'string' ? { color: value } : value) || {}
   if (colorProp) {
     valueObj.color = valueObj[colorProp]
   }
@@ -51,7 +51,7 @@ export default function ColorPickerUtil({ id, value, onChangeHandler, allowImpor
           <Downmenu
             onShow={() => { }}
             onHide={() => { }}
-            hideOnClick='toggle'
+            // hideOnClick='toggle'
           >
             <button
               type="button"
@@ -92,28 +92,12 @@ export default function ColorPickerUtil({ id, value, onChangeHandler, allowImpor
 }
 
 const style = {
-  delBtn: {
-    se: 20,
-    flx: 'center',
-    b: 'none',
-    p: 0,
-    mr: 1,
-    tn: '.2s all',
-    curp: 1,
-    brs: '50%',
-    tm: 'scale(0)',
-    bd: 'none',
-    cr: 'var(--red-100-61)',
-    pn: 'absolute',
-    lt: -15,
-    ':hover': { bd: '#ffd0d0', cr: '#460000' },
-  },
   containerHover: { '&:hover .delete-btn': { tm: 'scale(1)' } },
   preview_wrp: {
     bd: 'var(--white-0-95)',
     w: 130,
     mnw: 130,
-    brs: 10,
+    brs: 'var(--bf-bdr-radius-sm)',
     p: 3,
     flx: 'center-between',
     ':hover': { bs: '0 0 0 1px var(--white-0-83)' },

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useFela } from 'react-fela'
 import tableStyle from '../../styles/table.style'
 
-export default function Menu({ children, title, icn }) {
+export default function Menu({ children, title, icn, className }) {
   const [isComponentVisible, setIsComponentVisible] = useState(false)
   const ref = useRef(null)
   const { css } = useFela()
@@ -27,11 +27,11 @@ export default function Menu({ children, title, icn }) {
   }
 
   return (
-    <div className="btcd-menu">
+    <div className={`btcd-menu ${className || ''}`}>
       <button
         ref={ref}
         onClick={handleMenu}
-        className={css(tableStyle.tableActionBtn)}
+        className={`${css(tableStyle.tableActionBtn)} btcd-menu-btn`}
         style={{ '--tooltip-txt': '"Column  Visibility"', '--tt-left': '148%' }}
         aria-label="icon-btn"
         type="button"

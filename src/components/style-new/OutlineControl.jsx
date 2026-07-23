@@ -1,9 +1,9 @@
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable no-param-reassign */
+import { useAtom } from 'jotai'
 import { create } from 'mutative'
 import { useFela } from 'react-fela'
 import { useParams } from 'react-router-dom'
-import { useAtom } from 'jotai'
 import { $draggableModal } from '../../GlobalStates/GlobalStates'
 import { $styles } from '../../GlobalStates/StylesState'
 import { $themeColors } from '../../GlobalStates/ThemeColorsState'
@@ -127,6 +127,7 @@ export default function OutlineControl({ subtitle, objectPaths, id, allowImporta
           className={css({ mr: 3 })}
           paths={objectPaths.paths}
           propertyPath={outlinePropsFirst}
+          stateObjName={objectPaths.object || 'styles'}
         />
       )}
       <div title={valueStr || 'Add outline Style'} className={css(c.preview_wrp, draggableModel.id === id && c.active)}>
@@ -161,7 +162,7 @@ const c = {
     bd: 'var(--white-0-95)',
     w: 130,
     mnw: 130,
-    brs: 10,
+    brs: 'var(--bf-bdr-radius-sm)',
     p: 3,
     flx: 'center-between',
     ':hover': { bs: '0 0 0 1px var(--white-0-83)' },

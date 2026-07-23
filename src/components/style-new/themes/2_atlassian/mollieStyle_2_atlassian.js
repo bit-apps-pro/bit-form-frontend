@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { mergeNestedObj } from '../../../../Utils/globalHelpers'
-import mollieStyle_1_BitformDefault from '../1_bitformDefault/mollieStyle_1_BitformDefault'
+import mollieStyle_1_bitformLegacy from '../1_bitformLegacy/mollieStyle_1_bitformLegacy'
 
 /* eslint-disable camelcase */
 export default function mollieStyle_2_atlassian({
@@ -8,7 +8,7 @@ export default function mollieStyle_2_atlassian({
 }) {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return mergeNestedObj(
-      mollieStyle_1_BitformDefault({
+      mollieStyle_1_bitformLegacy({
         fk, breakpoint, colorScheme, align, txtAlign, btnTyp, fulW,
       }),
       {

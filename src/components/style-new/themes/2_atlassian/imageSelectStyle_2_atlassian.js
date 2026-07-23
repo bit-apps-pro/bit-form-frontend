@@ -1,18 +1,18 @@
 /* eslint-disable camelcase */
 /* eslint-disable object-curly-newline */
 import { mergeNestedObj } from '../../../../Utils/globalHelpers'
-import imageSelectStyle_1_bitformDefault from '../1_bitformDefault/imageSelectStyle_1_bitformDefault'
+import imageSelectStyle_1_bitformLegacy from '../1_bitformLegacy/imageSelectStyle_1_bitformLegacy'
 
 /* eslint-disable camelcase */
 export default function imageSelectStyle_2_atlassian({ fk, type, direction, breakpoint, colorScheme }) {
   if (breakpoint === 'lg' && colorScheme === 'light') {
     return mergeNestedObj(
-      imageSelectStyle_1_bitformDefault({ fk, type, direction, breakpoint, colorScheme }),
+      imageSelectStyle_1_bitformLegacy({ fk, type, direction, breakpoint, colorScheme }),
       {
         [`.${fk}-check-box`]: {
           background: 'var(--global-accent-color)',
           'border-style': 'var(--global-fld-bdr) !important',
-          'border-color': 'hsla(var(--gfh), var(--gfs), var(--gfl), 0.3)',
+          'border-color': 'hsla(var(--fic-h), var(--fic-s), var(--fic-l), 0.3)',
           'border-width': '3px',
           position: 'absolute',
           top: '10px',
@@ -33,7 +33,7 @@ export default function imageSelectStyle_2_atlassian({ fk, type, direction, brea
           outline: 'none',
           'box-shadow': '0 0 0 2px hsla(209, 100%, 50%, 100%)',
           transition: 'all 0.2s',
-          'border-color': 'hsla(var(--gfh), var(--gfs), var(--gfl), 0.4)',
+          'border-color': 'hsla(var(--fic-h), var(--fic-s), var(--fic-l), 0.4)',
         },
 
         [`.${fk}-img-inp:focus~.${fk}-img-wrp .${fk}-img-card-wrp`]: {
@@ -43,7 +43,7 @@ export default function imageSelectStyle_2_atlassian({ fk, type, direction, brea
           transition: 'outline-offset 0.2s ease',
         },
         [`.${fk}-img-card-wrp`]: {
-          'border-radius': '3px',
+          'border-radius': 'var(--g-bdr-rad)',
         },
 
         [`.${fk}-select-img`]: {

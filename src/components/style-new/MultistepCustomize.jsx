@@ -1,18 +1,11 @@
-/* eslint-disable no-continue */
-/* eslint-disable no-extra-label */
-/* eslint-disable no-labels */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-loop-func */
-/* eslint-disable no-prototype-builtins */
-/* eslint-disable no-param-reassign */
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useEffect } from 'react'
 import { useFela } from 'react-fela'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { $builderRightPanelScroll, $flags } from '../../GlobalStates/GlobalStates'
-import ChevronLeft from '../../Icons/ChevronLeft'
-import ut from '../../styles/2.utilities'
-import style from '../../styles/FieldSettingTitle.style'
+import { __ } from '../../Utils/i18nwrap'
+import RightPanelTopBar from '../UIv3/CompSettings/RightPanelTopBar'
+import StyleSectionHeader from '../UIv3/CompSettings/StyleCustomize/StyleSectionHeader'
 import MultiStepCommonStyle from './MultiStepCommonStyle'
 
 export default function MultiStepCustomize() {
@@ -28,47 +21,46 @@ export default function MultiStepCustomize() {
 
   const genarateTitle = () => {
     const title = {
-      'quick-tweaks': 'Multi Step Quick Tweaks',
-      'stp-cntnr': 'Step Container',
-      'stp-hdr-wrpr': 'Step Header Wrapper',
-      'stp-hdr': 'Step Header',
-      'stp-icn-cntn': 'Step Icon',
-      'stp-hdr-lbl': 'Step Header Label',
-      'stp-hdr-sub-titl': 'Step Header Subtitle',
-      'stp-wrpr': 'Step Wrapper',
-      'stp-progress-wrpr': 'Step Progress Wrapper',
-      'stp-progress-bar': 'Step Progress Bar',
-      'stp-cntn': 'Step Content',
-      'stp-btn-wrpr': 'Step Button Wrapper',
-      'stp-btn': 'Step Button',
+      'quick-tweaks': __('Multi Step Quick Tweaks'),
+      'stp-cntnr': __('Step Container'),
+      'stp-hdr-wrpr': __('Step Header Wrapper'),
+      'stp-hdr': __('Step Header'),
+      'stp-icn-cntn': __('Step Icon'),
+      'stp-hdr-lbl': __('Step Header Label'),
+      'stp-hdr-sub-titl': __('Step Header Subtitle'),
+      'stp-wrpr': __('Step Wrapper'),
+      'stp-progress-wrpr': __('Step Progress Wrapper'),
+      'stp-progress-bar': __('Step Progress Bar'),
+      'stp-cntnt': __('Step Content'),
+      'stp-btn-wrpr': __('Step Button Wrapper'),
+      'stp-btn': __('Step Button'),
+      'stp-lbl-pre-i': __('Step Label Prefix Icon'),
+      'stp-lbl-suf-i': __('Step Label Suffix Icon'),
+      'stp-sub-titl-pre-i': __('Step Subtitle Prefix Icon'),
+      'stp-sub-titl-suf-i': __('Step Subtitle Suffix Icon'),
+      'prev-step-btn-pre-i': __('Previous Button Prefix Icon'),
+      'prev-step-btn-suf-i': __('Previous Button Suffix Icon'),
+      'next-step-btn-pre-i': __('Next Button Prefix Icon'),
+      'next-step-btn-suf-i': __('Next Button Suffix Icon'),
+
     }
-    return title[element] || 'Theme Customization'
+    return title[element] || __('Theme Customization')
   }
 
   return (
     <div className={css(cls.mainWrapper)}>
-      <div className={css(ut.pb1, style.flxColumn, style.fixed, scrollTo && style.shw)}>
-        <span className={css({ flxi: 'center', mt: 10 })}>
-          <Link
-            to={`/form/builder/${formType}/${formID}/themes`}
-            className={css([cls.breadcumbLink, ut.fontBody, cls.l1])}
-          >
-            <ChevronLeft size="14" />
-            {' '}
-            Themes /
-            {' '}
-          </Link>
-          <span className={css([cls.breadcumbLink, ut.fontBody, cls.l2])}>Multi Step Customize</span>
-        </span>
-        <h4 className={css(cls.title)}>
-          {genarateTitle()}
-          {' '}
-          (Global)
-        </h4>
-      </div>
-      <div className={css(cls.wrp)}>
-        {element === 'quick-tweaks' && <span>Multi step quick tweaks is not availabe. this feature will comming soon.</span>}
-        {element !== 'quick-tweaks' && <MultiStepCommonStyle element={element} isMultistep />}
+      <RightPanelTopBar title={__('Multi Step Customize')} />
+      <div className={css(cls.contentWrapper)}>
+
+        <StyleSectionHeader
+          title={genarateTitle()}
+          isCommon
+          highlightSelector={`[data-dev-${element}]`}
+        />
+        <div className={css(cls.wrp)}>
+          {element === 'quick-tweaks' && <span>{__('Multi step quick tweaks is not available. this feature will coming soon.')}</span>}
+          {element !== 'quick-tweaks' && <MultiStepCommonStyle element={element} isMultistep />}
+        </div>
       </div>
     </div>
   )
@@ -80,7 +72,12 @@ const cls = {
   l1: { cr: 'var(--white-0-61)', ':hover': { textDecoration: 'underline !important' } },
   l2: { cr: 'var(--white-0-21)' },
   wrp: { ml: 5, mr: 8, mt: 10, fs: 12 },
-  mainWrapper: { bd: 'var(--white-100)', w: '97%' },
+  mainWrapper: {
+    bd: 'var(--white-100)',
+  },
+  contentWrapper: {
+    p: '15px 20px',
+  },
   subTitle: { mt: 10, mb: 5, fs: 15, cr: 'var(--white-0-31)' },
   divider: { bb: '1px solid var(--white-0-83)', mx: 3, my: 10 },
   thmBtn: {

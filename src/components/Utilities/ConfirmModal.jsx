@@ -3,7 +3,6 @@ import { useEffect } from 'react'
 import { useFela } from 'react-fela'
 import { $alertModal } from '../../GlobalStates/GlobalStates'
 import { __ } from '../../Utils/i18nwrap'
-import ut from '../../styles/2.utilities'
 import LoaderSm from '../Loaders/LoaderSm'
 import Btn from './Btn'
 import Modal from './Modal'
@@ -37,19 +36,39 @@ function ConfirmModal({
           {body}
           {children}
         </div>
-        <div className={`d-flx flx-center ${warning && 'mt-3'}`}>
+        <div className={`d-flx gap-2 flx-center ${warning && 'mt-3'}`}>
           {(!btn2Txt && cancelBtn) && (
-            <Btn size="md" width="150px" onClick={close} rounded variant="default" className={css(ut.mr2)}>
+            <Btn
+              size="md"
+              width="150px"
+              onClick={close}
+              // rounded
+              variant="default"
+            >
               {__('Cancel')}
             </Btn>
           )}
           {btn2Txt && (
-            <Btn size="md" width="150px" variant="success" rounded onClick={btn2Action}>
+            <Btn
+              size="md"
+              width="150px"
+              variant="success"
+              // rounded
+              onClick={btn2Action}
+            >
               {btn2Txt}
             </Btn>
           )}
 
-          <Btn size="md" width="200px" variant="danger" rounded onClick={action} className={`${css(ut.mr2)} ${btnClass}`} disabled={isLoading}>
+          <Btn
+            size="md"
+            width="200px"
+            variant="danger"
+            // rounded
+            onClick={action}
+            className={`${btnClass}`}
+            disabled={isLoading}
+          >
             {btnTxt}
             {isLoading && <LoaderSm size={17} clr="#fff" className="ml-2" />}
           </Btn>

@@ -1,17 +1,16 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-param-reassign */
+import { useAtom, useAtomValue } from 'jotai'
 import { create } from 'mutative'
 import { useState } from 'react'
 import { useFela } from 'react-fela'
-import { useParams } from 'react-router-dom'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { hideAll } from 'tippy.js'
-import { $builderSettings, $fields, $formId } from '../../GlobalStates/GlobalStates'
-import { $savedStyles, $savedThemeColors, $savedThemeVars } from '../../GlobalStates/SavedStylesAndVars'
-import { $allStyles, $styles } from '../../GlobalStates/StylesState'
-import { $allThemeColors, $themeColors } from '../../GlobalStates/ThemeColorsState'
-import { $allThemeVars, $themeVars } from '../../GlobalStates/ThemeVarsState'
-import StyleResetIcn from '../../Icons/StyleResetIcn'
+import { Link, useParams } from 'react-router-dom'
+import { $customThemes } from '../../GlobalStates/CustomThemesState'
+import { $builderSettings } from '../../GlobalStates/GlobalStates'
+import { $styles } from '../../GlobalStates/StylesState'
+import { $themeColors } from '../../GlobalStates/ThemeColorsState'
+import { $themeVars } from '../../GlobalStates/ThemeVarsState'
+import SettingsIcn from '../../Icons/SettingsIcn'
 import ut from '../../styles/2.utilities'
 import sc from '../../styles/commonStyleEditorStyle'
 import {
@@ -22,10 +21,8 @@ import {
 } from '../../Utils/FormBuilderHelper'
 import { deepCopy } from '../../Utils/Helpers'
 import { __ } from '../../Utils/i18nwrap'
-import Btn from '../Utilities/Btn'
-import CheckBox from '../Utilities/CheckBox'
+import SimpleAccordion from '../CompSettings/StyleCustomize/ChildComp/SimpleAccordion'
 import Cooltip from '../Utilities/Cooltip'
-import Downmenu from '../Utilities/Downmenu'
 import SingleToggle from '../Utilities/SingleToggle'
 import BorderControl from './BorderControl'
 import FontPicker from './FontPicker'
@@ -34,37 +31,39 @@ import { changeFormStylesDir, changeFormThemeVarsDir } from './formDirectionHelp
 import LabelControl from './LabelControl'
 import ResetStyle from './ResetStyle'
 import SimpleColorPicker from './SimpleColorPicker'
-import bitformDefaultTheme from './themes/1_bitformDefault'
-import { updateFieldStyleByFieldSizing } from './themes/1_bitformDefault/fieldSizeControlStyle'
-import atlassianTheme from './themes/2_atlassian'
-import individual from './themes/individual/individual'
-import themeProvider from './themes/themeProvider'
+import { updateFieldStyleByFieldSizing } from './themes/1_bitformLegacy/fieldSizeControlStyle'
+import themes from './themes/themeList'
 import ThemeStylePropertyBlock from './ThemeStylePropertyBlock'
 import ThemeStyleReset from './ThemeStyleReset'
 
 export default function ThemeQuickTweaksCustomizer() {
   const { css } = useFela()
-  const { fieldKey, element, formType } = useParams()
+  const { fieldKey, element, formType, formID } = useParams()
   const [themeVars, setThemeVars] = useAtom($themeVars)
   const [themeColors, setThemeColors] = useAtom($themeColors)
   const [styles, setStyles] = useAtom($styles)
-  const fields = useAtomValue($fields)
+  const customThemes = useAtomValue($customThemes)
   const { '--dir': direction } = themeVars
-  const tmpStyles = useAtomValue($savedStyles)
-  const tmpThemeColors = useAtomValue($savedThemeColors)
-  const tmpThemeVars = useAtomValue($savedThemeVars)
-  const formId = useAtomValue($formId)
-  const fieldsArray = Object.entries(fields)
-  const setAllThemeColors = useSetAtom($allThemeColors)
-  const setAllThemeVars = useSetAtom($allThemeVars)
-  const setAllStyles = useSetAtom($allStyles)
-  const [styleResetTo, setStyleResetTo] = useState('initial')
   const { '--global-accent-color': globalPrimaryColor,
     '--global-font-color': globalFontColor,
     '--global-bg-color': globalBgColor,
-    '--global-fld-bg-color': globalFldBgClr } = themeColors
-  const [{ addImportantRuleToStyles }, setBuilderSettings] = useAtom($builderSettings)
+    '--global-fld-bg-color': globalFldBgClr,
+    '--fld-lbl-c': fldLblColor,
+    '--fld-inp-c': fldInpColor } = themeColors
+  const [{ addImportantRuleToStyles, atomicClassPrefix }, setBuilderSettings] = useAtom($builderSettings)
+  // console.log('Styles', styles)
+  // console.log('customThemes', customThemes)
+  const [activeTheme] = useState(() => {
+    const allThemes = [
+      ...themes,
+      ...Object.values(customThemes).map((theme) => ({
+        ...theme,
+      })),
+    ]
 
+    const activeThemeSlug = styles.theme
+    return allThemes.find(theme => theme.slug === activeThemeSlug || theme.id === activeThemeSlug)
+  })
   const setSizes = ({ target: { value } }) => {
     const tmpThemeVar = deepCopy(themeVars)
 
@@ -95,243 +94,217 @@ export default function ThemeQuickTweaksCustomizer() {
     addToBuilderHistory(generateHistoryData(element, fieldKey, 'Direction', dir, { styles: getLatestState('styles'), themeVars: getLatestState('themeVars') }))
   }
 
-  const getThemeWiseStyle = (theme, fk, type, dir) => {
-    if (theme === 'bitformDefault') return bitformDefaultTheme({ fieldKey: fk, type, direction: dir })
-    if (theme === 'atlassian') return atlassianTheme({ fieldKey: fk, type, direction: dir })
-    return individual({ fieldKey: fk, type, direction: dir })
-  }
-
-  const resetStyle = () => {
-    if (styleResetTo === 'initial') {
-      const existingFields = Object.keys(styles.fields)
-      const previousFields = Object.keys(tmpStyles.fields)
-
-      setStyles(prv => create(prv, drft => {
-        existingFields.forEach((fldKey) => {
-          if (previousFields.includes(fldKey)) {
-            drft.fields[fldKey] = tmpStyles.fields[fldKey]
-          } else {
-            drft.fields[fldKey] = getThemeWiseStyle(
-              styles.fields[fldKey].theme,
-              fldKey,
-              fields[fldKey].typ,
-              tmpThemeVars['--dir'],
-            )
-          }
-        })
-
-        drft.font = tmpStyles.font
-        drft.theme = tmpStyles.theme
-        drft.fieldSize = tmpStyles.fieldSize
-        drft.form = tmpStyles.form
-      }))
-      setThemeVars(tmpThemeVars)
-      setThemeColors(tmpThemeColors)
-      reCalculateFldHeights()
-      addToBuilderHistory(
-        generateHistoryData(
-          element,
-          fieldKey,
-          'Reset All Styles',
-          '',
-          {
-            styles: getLatestState('styles'),
-            themeVars: getLatestState('themeVars'),
-            themeColors: getLatestState('themeColors'),
-          },
-        ),
-      )
-    } else if (styleResetTo === 'theme') {
-      const { themeColors: newThemeColors, themeVars: newThemeVars, styles: newStyles } = themeProvider(styles.theme, fieldsArray, formId)
-      if (styles.confirmations && newStyles.lgLightStyles) newStyles.lgLightStyles.confirmations = [...styles.confirmations]
-      setAllThemeColors(newThemeColors)
-      setAllThemeVars(newThemeVars)
-      setAllStyles(newStyles)
-      addToBuilderHistory(generateHistoryData('', '', 'Theme', styles.theme, { allThemeColors: newThemeColors, allThemeVars: newThemeVars, allStyles: newStyles }))
-      reCalculateFldHeights()
-    }
-    hideAll()
-  }
-
-  const changeStyleResetTo = e => {
-    setStyleResetTo(e.target.value)
-  }
-
   const handleImportantStyles = e => {
     setBuilderSettings(prv => ({ ...prv, addImportantRuleToStyles: e.target.checked }))
   }
 
+  const handleClassPrefix = (value) => {
+    setBuilderSettings(prv => ({ ...prv, atomicClassPrefix: value }))
+  }
+
   return (
-    <>
-      {formType === 'edit' && (
-        <div className={css(ut.flxcb)}>
-          <Downmenu>
-            <Btn dataTestId="style-reset-btn" size="sm" gap={5} variant="primary-outline">
-              <StyleResetIcn size={12} />
-              {__('Reset Style')}
-            </Btn>
-            <div>
-              <div className={css({ mt: 5, ml: 8 }, ut.fw500)}>Confirm reset style?</div>
-              <div className={css(ut.flxClm)}>
-                <CheckBox radio name="reset" onChange={changeStyleResetTo} checked={styleResetTo === 'initial'} title={<small className="txt-dp"><b>Restore all saved style</b></small>} value="initial" />
-                <CheckBox radio name="reset" onChange={changeStyleResetTo} checked={styleResetTo === 'theme'} title={<small className="txt-dp"><b>Reset Style as theme default</b></small>} value="theme" />
-              </div>
-              <Btn
-                onClick={resetStyle}
-                width="100%"
-                dataTestId="style-reset-confirm"
-                size="sm"
-                className={css({ mb: 5, mx: 'auto' })}
-              >
-                Confirm
-
-              </Btn>
-            </div>
-          </Downmenu>
-        </div>
-      )}
-      <SimpleColorPicker
-        title="Accent Color"
-        subtitle="Theme Quick Tweaks Accent Color"
-        value={globalPrimaryColor}
-        stateObjName="themeColors"
-        propertyPath="--global-accent-color"
-        modalId="global-primary-clr"
-        // eslint-disable-next-line no-sequences
-        hslaPaths={{ h: '--gah', s: '--gas', l: '--gal', a: '--gaa' }}
-      />
-
-      <SimpleColorPicker
-        title="Background color"
-        subtitle="Theme Quick Tweaks Background Color"
-        value={globalBgColor}
-        stateObjName="themeColors"
-        propertyPath="--global-bg-color"
-        modalId="global-bg-clr"
-        hslaPaths={{ h: '--gbg-h', s: '--gbg-s', l: '--gbg-l', a: '--gbg-a' }}
-      />
-
-      <SimpleColorPicker
-        title="Font Color"
-        subtitle="Theme Quick Tweaks Font Color"
-        value={globalFontColor}
-        stateObjName="themeColors"
-        propertyPath="--global-font-color"
-        modalId="global-font-clr"
-        hslaPaths={{ h: '--gfh', s: '--gfs', l: '--gfl', a: '--gfa' }}
-      />
-
-      <SimpleColorPicker
-        title="Field Background Color"
-        subtitle="Theme Quick Tweaks Field Background Color"
-        value={globalFldBgClr}
-        stateObjName="themeColors"
-        propertyPath="--global-fld-bg-color"
-        modalId="global-fld-bg-clr"
-        hslaPaths={{ h: '--gfbg-h', s: '--gfbg-s', l: '--gfbg-l', a: '--gfbg-a' }}
-      />
-
-      <ThemeStylePropertyBlock label="Border">
-        <div className={css(ut.flxc)}>
-          <ResetStyle
-            propertyPath={['--g-bdr-width', '--g-bdr-rad']}
-            stateObjName="themeVars"
-            id="g-bdr"
-          />
-          <BorderControl
-            subtitle="Theme Quick Tweaks Border Color"
-            objectPaths={borderPathsObj}
-            id="global-bdr"
-            hslaPaths={{ h: '--gfbc-h', s: '--gfbc-s', l: '--gfbc-l', a: '--gfbc-a' }}
-          />
-        </div>
-      </ThemeStylePropertyBlock>
-      {/* <ThemeStylePropertyBlock label="Outline">
-        <div className={css(ut.flxc)}>
-          <ResetStyle
-            propertyPath={['--g-bdr-width', '--g-bdr-rad']}
-            stateObjName="themeVars"
-            id="g-bdr"
-          />
-          <OutlineControl
-            subtitle="Theme Quick Tweaks Outline Color"
-            objectPaths={outlinePathsObj}
-            id="global-outline"
-            hslaPaths={{ h: '--gfbc-h', s: '--gfbc-s', l: '--gfbc-l', a: '--gfbc-a' }}
-          />
-        </div>
-      </ThemeStylePropertyBlock> */}
-
-      <div className={css(ut.flxcb, ut.mt2)}>
-        <span className={css(ut.fw500)}>Font Family</span>
-        <span className={css(ut.flxc)}>
-          <ResetStyle
-            id="g-fnt"
-            stateObjName="themeVars"
-            propertyPath="--g-font-family"
-          />
-          <FontPicker id="global-font-fmly" />
-        </span>
-      </div>
-
-      <div className={css(ut.flxcb, ut.mt2)}>
-        <span className={css(ut.fw500)}>Field Sizes</span>
-        <span className={css(ut.flxc)}>
-          <ThemeStyleReset id="global-theme" />
-          <select
-            value={styles.fieldsSize}
-            onChange={setSizes}
-            className={css(sc.select)}
-            data-testid="field-sizes-select"
+    <div className={css(style.sectionWrapper)}>
+      <SimpleAccordion
+        key="form-quick-customizers"
+        id="form-quick-customizers"
+        title="Form"
+        className={css(style.sectionAccordion)}
+        open
+      >
+        <ThemeStylePropertyBlock label="Theme">
+          {/* // place a button or link to navigate to Theme Settings page */}
+          <Link
+            to={`/form/builder/${formType}/${formID}/themes`}
+            className={css([style.preview_wrp])}
+            data-testid="theme-settings-link"
+            title={__('Go to Theme Gallery Settings')}
           >
-            {Object.keys(sizes).map((key, index) => (
-              <option
-                key={`size-${index * 5 * 2}`}
-                value={key}
-                data-testid={`globl-size-${key}`}
-              >
-                {sizes[key]}
-              </option>
-            ))}
-          </select>
-        </span>
-      </div>
+            <span className={css(style.previewLabel)}>{activeTheme ? activeTheme.name : 'Untitled Theme'}</span>
+            <SettingsIcn size={15} />
+          </Link>
+        </ThemeStylePropertyBlock>
+        <SimpleColorPicker
+          title="Accent Color"
+          subtitle="Theme Quick Tweaks Accent Color"
+          value={globalPrimaryColor}
+          stateObjName="themeColors"
+          propertyPath="--global-accent-color"
+          modalId="global-primary-clr"
+          // eslint-disable-next-line no-sequences
+          hslaPaths={{ h: '--gah', s: '--gas', l: '--gal', a: '--gaa' }}
+        />
 
-      <FontSizeControl
-        stateObjName="themeVars"
-        propertyPath="--fld-fs"
-        id="fld-fs"
-      />
+        <SimpleColorPicker
+          title="Form Background Color"
+          subtitle="Theme Quick Tweaks Form Background Color"
+          value={globalBgColor}
+          stateObjName="themeColors"
+          propertyPath="--global-bg-color"
+          modalId="global-bg-clr"
+          hslaPaths={{ h: '--gbg-h', s: '--gbg-s', l: '--gbg-l', a: '--gbg-a' }}
+        />
 
-      <div className={css(ut.flxcb, ut.mt3)}>
-        <span className={css(ut.fw500)}>Label Alignment</span>
-        <LabelControl id="align" />
-      </div>
+        <SimpleColorPicker
+          title="Form Text Color"
+          subtitle="Theme Quick Tweaks Font Color"
+          value={globalFontColor}
+          stateObjName="themeColors"
+          propertyPath="--global-font-color"
+          modalId="global-font-clr"
+          hslaPaths={{ h: '--gfh', s: '--gfs', l: '--gfl', a: '--gfa' }}
+        />
 
-      <div className={css(ut.flxcb, ut.mt3)}>
-        <span className={css(ut.fw500)}>Direction Right To Left (RTL)</span>
-        <SingleToggle id="rtl" isChecked={direction === 'rtl'} action={handleDir} />
-      </div>
+        <ThemeStylePropertyBlock label="Font Family">
+          <span className={css(ut.flxc)}>
+            <ResetStyle
+              id="g-fnt"
+              stateObjName="themeVars"
+              propertyPath="--g-font-family"
+            />
+            <FontPicker id="global-font-fmly" />
+          </span>
+        </ThemeStylePropertyBlock>
+        <ThemeStylePropertyBlock label="Field Sizes">
 
-      <div className={css(ut.flxcb, ut.mt3)}>
-        <span className={css(ut.fw500)}>Add !important rule to all styles</span>
-        <div className={css(ut.flxcb)}>
-          <SingleToggle id="important-rule" action={handleImportantStyles} isChecked={addImportantRuleToStyles} />
-          <Cooltip>
-            Add important rule to all styles to override the conflicting styles in frontend.
-          </Cooltip>
-        </div>
-      </div>
+          <div className={css(ut.flxc)}>
+            <ThemeStyleReset id="global-theme" />
+            <select
+              value={styles.fieldsSize}
+              onChange={setSizes}
+              className={css(sc.select)}
+              data-testid="field-sizes-select"
+            >
+              {Object.keys(sizes).map((key, index) => (
+                <option
+                  key={`size-${index * 5 * 2}`}
+                  value={key}
+                  data-testid={`globl-size-${key}`}
+                >
+                  {sizes[key]}
+                </option>
+              ))}
+            </select>
+          </div>
+        </ThemeStylePropertyBlock>
 
-      {/* <SimpleColorPicker
-        title="Field Wrapper Background Color"
-        subtitle="Theme Quick Tweaks Background Color"
-        value={globalBgColor}
-        stateObjName="themeColors"
-        propertyPath="--global-bg-color"
-        modalId="global-bg-clr"
-      /> */}
-    </>
+      </SimpleAccordion>
+
+      <SimpleAccordion
+        key="label-quick-customizers"
+        id="label-quick-customizers"
+        title="Label"
+        className={css(style.sectionAccordion)}
+      // open
+      >
+        <SimpleColorPicker
+          title="Text Color"
+          subtitle="Label Text Color"
+          value={fldLblColor}
+          stateObjName="themeColors"
+          propertyPath="--fld-lbl-c"
+          modalId="fld-lbl-c"
+        />
+
+        <FontSizeControl
+          stateObjName="themeVars"
+          propertyPath="--fld-lbl-fs"
+          id="fld-lbl-fs"
+        />
+
+        <ThemeStylePropertyBlock label="Alignment">
+          <LabelControl id="align" />
+        </ThemeStylePropertyBlock>
+
+      </SimpleAccordion>
+
+      <SimpleAccordion
+        key="input-quick-customizers"
+        id="input-quick-customizers"
+        title="Input Field"
+        className={css(style.sectionAccordion)}
+      // open
+      >
+        <SimpleColorPicker
+          title="Background Color"
+          subtitle="Theme Quick Tweaks Field Background Color"
+          value={globalFldBgClr}
+          stateObjName="themeColors"
+          propertyPath="--global-fld-bg-color"
+          modalId="global-fld-bg-clr"
+          hslaPaths={{ h: '--gfbg-h', s: '--gfbg-s', l: '--gfbg-l', a: '--gfbg-a' }}
+        />
+
+        <ThemeStylePropertyBlock label="Border">
+          <div className={css(ut.flxc)}>
+            <ResetStyle
+              propertyPath={['--g-bdr-width', '--g-bdr-rad']}
+              stateObjName="themeVars"
+              id="g-bdr"
+            />
+            <BorderControl
+              subtitle="Theme Quick Tweaks Border Color"
+              objectPaths={borderPathsObj}
+              id="global-bdr"
+              hslaPaths={{ h: '--gfbc-h', s: '--gfbc-s', l: '--gfbc-l', a: '--gfbc-a' }}
+            />
+          </div>
+        </ThemeStylePropertyBlock>
+
+        <SimpleColorPicker
+          title="Text Color"
+          subtitle="Input Text Color"
+          value={fldInpColor}
+          stateObjName="themeColors"
+          propertyPath="--fld-inp-c"
+          modalId="fld-c"
+          hslaPaths={{ h: '--fic-h', s: '--fic-s', l: '--fic-l', a: '--fic-a' }}
+        />
+
+        <FontSizeControl
+          stateObjName="themeVars"
+          propertyPath="--fld-fs"
+          id="fld-fs"
+        />
+      </SimpleAccordion>
+
+      <SimpleAccordion
+        key="others-quick-customizers"
+        id="others-quick-customizers"
+        title="Others"
+        className={css(style.sectionAccordion)}
+      // open
+      >
+        <ThemeStylePropertyBlock label="Direction Right To Left (RTL)">
+          <SingleToggle id="rtl" isChecked={direction === 'rtl'} action={handleDir} />
+        </ThemeStylePropertyBlock>
+
+        <ThemeStylePropertyBlock label="Add !important rule to all styles">
+          <div className={css(ut.flxcb)}>
+            <Cooltip className={css({ mr: 5 })}>
+              {__('Add important rule to all styles to override the conflicting styles in frontend.')}
+            </Cooltip>
+            <SingleToggle id="important-rule" action={handleImportantStyles} isChecked={addImportantRuleToStyles} />
+          </div>
+        </ThemeStylePropertyBlock>
+
+        <ThemeStylePropertyBlock label="Atomic Class Prefix">
+          <div className={css(ut.flxcb)}>
+            <Cooltip className={css({ mr: 5 })}>
+              {__('Add prefix to atomic class names to avoid conflicts.')}
+            </Cooltip>
+            <input
+              className={css(style.preview_wrp, style.input)}
+              placeholder="e.g. bf"
+              value={atomicClassPrefix}
+              onChange={e => handleClassPrefix(e.target.value)}
+              onBlur={() => handleClassPrefix(atomicClassPrefix.trim())}
+            />
+          </div>
+
+        </ThemeStylePropertyBlock>
+      </SimpleAccordion>
+
+    </div>
 
   )
 }
@@ -342,6 +315,65 @@ const sizes = {
   // large: 'Large',
   'large-1': 'Large',
   'large-2': 'Extra Large',
+}
+
+const style = {
+  sectionWrapper: {
+    // p: '5px 10px 20px',
+  },
+  previewLabel: {
+    // flx: 'center',
+    ow: 'hidden',
+    to: 'ellipsis',
+    ws: 'nowrap',
+    mr: 5,
+    w: 100,
+  },
+  sectionAccordion: {
+    bb: '1px solid var(--bf-stroke-clr)',
+
+    py: 10,
+    // mb: 10,
+    '& .btgl': {
+      p: '0 5px',
+      curp: 1,
+    },
+    '& .title': {
+      cr: 'var(--bf-text-clr-dark)',
+      fs: 'var(--bf-font-base)',
+    },
+    '& .body': {
+      px: 10,
+      pb: 10,
+    },
+  },
+  preview_wrp: {
+    cr: 'var(--bf-text-clr-dark)',
+    bd: 'var(--white-0-95)',
+    w: 130,
+    mnw: 130,
+    brs: 'var(--bf-bdr-radius-sm)',
+    px: 5,
+    py: 3,
+    flx: 'center-between',
+    h: 30,
+    fw: 500,
+    ':hover': { bs: '0 0 0 1px var(--white-0-83)' },
+    ta: 'left',
+    pl: 5,
+    b: 'none',
+    // curp: 1,
+    // dy: 'block',
+    ':focus': { bs: '0 0 0 1px var(--b-50) !important', bcr: 'var(--b-50)!important' },
+    '::placeholder': { fs: 12 },
+  },
+  clrVal: {
+    w: 70,
+    textOverflow: 'ellipsis',
+    ta: 'left',
+    ow: 'hidden',
+  },
+  // active: { focusShadow: 1 },
 }
 const borderPathsObj = [
   {
@@ -357,27 +389,3 @@ const borderPathsObj = [
     paths: { 'border-color': '--global-fld-bdr-clr' },
   },
 ]
-
-// const outlinePathsObj = {
-//   object: 'themeVars',
-//   paths: {
-//     outline: '--global-outline',
-//     'outline-offset': '--global-outline-offset',
-//   },
-// }
-// const outlinePathsObj = [
-//   {
-//     object: 'themeVars',
-//     paths: {
-//       'outline-width': '--g-o-w',
-//       'outline-offset': '--g-o-offset',
-//       'outline-style': '--g-o-s',
-//     },
-//   },
-//   {
-//     object: 'themeColors',
-//     paths: {
-//       'outline-color': '--g-o-c',
-//     },
-//   },
-// ]

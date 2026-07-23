@@ -11,7 +11,7 @@ import LogicBlock from './LogicBlock'
 import LogicChip from './LogicChip'
 import { accessToNested, filterFormFields } from './WorkflowHelpers'
 
-export default function WorkflowLogicSection({ lgcGrp, lgcGrpInd, condGrp, condGrpInd }) {
+export default function WorkflowLogicSection({ lgcGrp, lgcGrpInd, condGrp, condGrpInd, isBasic }) {
   const { css } = useFela()
   const [workflows, setWorkflows] = useAtom($workflows)
   const setUpdateBtn = useSetAtom($updateBtn)
@@ -254,6 +254,7 @@ export default function WorkflowLogicSection({ lgcGrp, lgcGrpInd, condGrp, condG
             actionType={lgcGrp?.action_type}
             smartTagAllowed={isSmartTagNeeded(condGrp.logics, ind)}
             formFields={filterFormFields(condGrp)}
+            isBasic={isBasic}
           />
         )}
         {typeof logic === 'string' && (
@@ -282,6 +283,7 @@ export default function WorkflowLogicSection({ lgcGrp, lgcGrpInd, condGrp, condG
                     actionType={lgcGrp?.action_type}
                     smartTagAllowed={isSmartTagNeeded(logic, subInd)}
                     formFields={filterFormFields(condGrp)}
+                    isBasic={isBasic}
                   />
                 )}
                 {typeof subLogic === 'string' && (
@@ -315,6 +317,7 @@ export default function WorkflowLogicSection({ lgcGrp, lgcGrpInd, condGrp, condG
                             actionType={lgcGrp?.action_type}
                             smartTagAllowed={isSmartTagNeeded(subLogic, subSubLgcInd)}
                             formFields={filterFormFields(condGrp)}
+                            isBasic={isBasic}
                           />
                         )}
                         {typeof subSubLogic === 'string' && (
@@ -360,52 +363,54 @@ export default function WorkflowLogicSection({ lgcGrp, lgcGrpInd, condGrp, condG
                 )}
               </span>
             ))}
-            <Downmenu
-              place="bottom"
-            >
-              <Tip msg="Add Logic">
-                <Button
-                  icn
-                  className="blue sh-sm"
-                >
-                  <CloseIcn size="14" className="icn-rotate-45" />
-                </Button>
-              </Tip>
-              <div>
-                <button
-                  type="button"
-                  className={css(accordionStyle.addItemBtn)}
-                  onClick={() => addNestedLogic('and', ind)}
-                >
-                  <CloseIcn size="9" className="icn-rotate-45 mr-1" />
-                  Add AND
-                </button>
-                <button
-                  type="button"
-                  className={css(accordionStyle.addItemBtn)}
-                  onClick={() => addNestedLogic('or', ind)}
-                >
-                  <CloseIcn size="9" className="icn-rotate-45 mr-1" />
-                  Add OR
-                </button>
-                <button
-                  type="button"
-                  className={css(accordionStyle.addItemBtn)}
-                  onClick={() => addNestedLogic('and', ind, 1)}
-                >
-                  <CloseIcn size="9" className="icn-rotate-45 mr-1" />
-                  Add AND Group
-                </button>
-                <button
-                  type="button"
-                  className={css(accordionStyle.addItemBtn)}
-                  onClick={() => addNestedLogic('or', ind, 1)}
-                >
-                  <CloseIcn size="9" className="icn-rotate-45 mr-1" />
-                  Add OR Group
-                </button>
-              </div>
-            </Downmenu>
+            {!isBasic && (
+              <Downmenu
+                place="bottom"
+              >
+                <Tip msg="Add Logic">
+                  <Button
+                    icn
+                    className="blue sh-sm"
+                  >
+                    <CloseIcn size="14" className="icn-rotate-45" />
+                  </Button>
+                </Tip>
+                <div>
+                  <button
+                    type="button"
+                    className={css(accordionStyle.addItemBtn)}
+                    onClick={() => addNestedLogic('and', ind)}
+                  >
+                    <CloseIcn size="9" className="icn-rotate-45 mr-1" />
+                    Add AND
+                  </button>
+                  <button
+                    type="button"
+                    className={css(accordionStyle.addItemBtn)}
+                    onClick={() => addNestedLogic('or', ind)}
+                  >
+                    <CloseIcn size="9" className="icn-rotate-45 mr-1" />
+                    Add OR
+                  </button>
+                  <button
+                    type="button"
+                    className={css(accordionStyle.addItemBtn)}
+                    onClick={() => addNestedLogic('and', ind, 1)}
+                  >
+                    <CloseIcn size="9" className="icn-rotate-45 mr-1" />
+                    Add AND Group
+                  </button>
+                  <button
+                    type="button"
+                    className={css(accordionStyle.addItemBtn)}
+                    onClick={() => addNestedLogic('or', ind, 1)}
+                  >
+                    <CloseIcn size="9" className="icn-rotate-45 mr-1" />
+                    Add OR Group
+                  </button>
+                </div>
+              </Downmenu>
+            )}
           </div>
         )}
       </span>
