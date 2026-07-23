@@ -1,0 +1,37 @@
+
+export const toolStyle: Record<string, any> = {
+  flx: 'align-center',
+  b: '1px solid var(--bf-stroke-clr)',
+  bd: 'var(--white)',
+  cr: 'var(--bf-text-clr-darkgray)',
+  fw: 'var(--bf-font-medium)',
+  fs: 15,
+  ws: 'nowrap',
+  wb: 'keep-all',
+  // w: 'calc(100% - 10px)',
+  mxw: 'var(--bf-tool-item-width, 200px)',
+  h: 42,
+  // p: '5px 0px',
+  brs: 'var(--bf-bdr-radius-sm)',
+  cur: 'grab',
+  // my: 5,
+  tn: 'all 200ms',
+  // ':first-child': { mt: 0 },
+
+  ':hover': {
+    cr: 'var(--b-50)',
+    oe: 'none',
+    fw: 'var(--bf-font-medium)',
+    // tm: 'scale(1.05)',
+    bs: '0 0 0 1.5px var(--white-0-86) inset, 0 1px 11px -4px var(--white-0-69)',
+  },
+  ':focus': {
+    cr: 'var(--b-50)',
+    oe: 'none',
+    // tm: 'scale(1.05)',
+    bs: '0 0 0 1.5px var(--white-0-86) inset, 0 1px 11px -4px var(--white-0-69)',
+  },
+  ':hover .tool-icn': { cr: 'var(--b-50) !important' },
+  ':focus .tool-icn': { cr: 'var(--b-50) !important' },
+  ':active': { bs: '0 0 0 1.5px var(--b-50) inset, 0 0 2px var(--white-2-47), 0 1px 11px -4px var(--white-0-69)' },
+}

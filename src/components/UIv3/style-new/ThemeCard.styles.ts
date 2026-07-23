@@ -1,0 +1,185 @@
+const themeCardStyles = {
+  card: {
+    b: '1px solid var(--bf-stroke-clr)',
+    brs: 'var(--bf-bdr-radius-md)', // 6
+    p: '10px 15px',
+    bc: 'var(--bf-bg-white)',
+    tn: 'all 0.2s',
+    '&:hover': {
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+      borderColor: '#D1D5DB',
+    },
+    '&.applied': {
+      // borderColor: 'var(--bf-tertiary)',
+      // boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)',
+    },
+    '&.appliedStylesCard': {
+      // borderWidth: '2px',
+      borderColor: 'var(--bf-tertiary)',
+      position: 'relative',
+    },
+  },
+  cardHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '16px',
+  },
+  themeName: {
+    fontSize: 'var(--bf-font-semibase)',
+    fontWeight: 'var(--bf-font-semibold)',
+    color: 'var(--bf-text-clr-darkgray)',
+    margin: 0,
+    lineHeight: '1.4',
+  },
+  actions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  applyBtn: {
+    p: '5px 10px',
+    fs: 'var(--bf-font-2sm)',
+    fw: 'var(--bf-font-medium)',
+    b: '1px solid var(--bf-stroke-clr)',
+    bc: 'var(--bf-bg-white)',
+    cr: 'var(--bf-text-clr-darkgray)',
+    brs: 15,
+    curp: 1,
+    tn: 'all 0.2s',
+    lineHeight: '1.2',
+    '&:hover': {
+      bc: 'var(--bf-bg-tertiary)',
+      cr: 'var(--bf-text-clr-white)',
+    },
+  },
+  appliedBadge: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+    // p: '4px 8px',
+    fontSize: 'var(--bf-font-2sm)',
+    fontWeight: 500,
+    color: 'var(--bf-text-clr-tertiary)',
+    // bc: 'var(--bf-bg-tertiary)',
+    brs: 15,
+    lineHeight: '1.2',
+  },
+  iconBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '22px',
+    height: '22px',
+    padding: 0,
+    b: 'none',
+    brs: 'var(--bf-bdr-radius-sm)', // 4
+    bc: 'var(--bf-bg-white)',
+    cr: 'var(--bf-text-clr-gray)',
+    curp: 1,
+    tn: 'background-color 0.2s',
+    textDecoration: 'none',
+    ':hover:not(:disabled)': {
+      b: '1px solid #D1D5DB',
+      backgroundColor: 'var(--bf-secondary-100)',
+      color: 'var(--bf-text-clr-tertiary)',
+    },
+    '&:active': {
+      backgroundColor: 'var(--bf-tertiary)',
+      color: 'var(--bf-text-clr-white)',
+    },
+    '&.active': {
+      backgroundColor: 'var(--bf-tertiary)',
+      color: 'var(--bf-text-clr-white)',
+    },
+    ':disabled': {
+      opacity: 0.5,
+      cursor: 'not-allowed',
+    },
+  },
+  menuWrapper: {
+    position: 'relative',
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    top: 'calc(100% + 4px)',
+    right: 0,
+    minWidth: '190px',
+    backgroundColor: '#ffffff',
+    border: '1px solid #E5E7EB',
+    borderRadius: '8px',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)',
+    zIndex: 1000,
+    overflow: 'hidden',
+    paddingTop: '4px',
+    paddingBottom: '4px',
+    '& button': {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+      width: '100%',
+      padding: '10px 14px',
+      fontSize: '14px',
+      color: '#374151',
+      border: 'none',
+      backgroundColor: 'transparent',
+      cursor: 'pointer',
+      transition: 'background-color 0.15s',
+      textAlign: 'left',
+      ':hover': {
+        backgroundColor: '#F3F4F6',
+      },
+    },
+  },
+  menuDivider: {
+    height: '1px',
+    backgroundColor: '#E5E7EB',
+    margin: '4px 0',
+  },
+  deleteBtn: {
+    color: '#EF4444 !important',
+    ':hover': {
+      backgroundColor: '#FEE2E2 !important',
+    },
+  },
+  content: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '12px',
+  },
+  colorPalette: {
+    display: 'flex',
+    // gap: '4px',
+    flexShrink: 0,
+  },
+  colorCircle: {
+    width: '25px',
+    height: '25px',
+    borderRadius: '50%',
+    border: '1px solid rgba(0, 0, 0, 0.08)',
+    flexShrink: 0,
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+    '&:not(:first-child)': {
+      marginLeft: '-6px', // 8px
+    },
+  },
+  fontInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    fontSize: '13px',
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+  },
+  fontLabel: {
+    color: '#6B7280',
+    fontWeight: 400,
+  },
+  fontName: {
+    color: '#1F2937',
+    fontWeight: 600,
+  },
+}
+
+export default themeCardStyles
