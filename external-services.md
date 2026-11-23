@@ -10,7 +10,7 @@ Bit Form connects to external services only when:
 
 1. **You enable a specific integration** (e.g., Zoho CRM, Mailchimp, Google Sheets)
 2. **You use a built-in feature** that requires external processing (e.g., spam protection, icon search)
-3. **You opt in** to optional features (e.g., telemetry)
+3. **You opt in** to optional features (e.g., telemetry, the form template library)
 
 If you do not enable integrations or use those features, the plugin does not send data to external servers (except as noted below for captcha/icon search when those features are enabled).
 
@@ -99,6 +99,23 @@ If you do not enable integrations or use those features, the plugin does not sen
 | **Data sent**        | Basic environment info (PHP version, WP version, plugin version, etc.).                                     |
 | **Terms of Use**     | [Bit Apps Terms of Service](https://bitapps.pro/terms-of-service/)                                          |
 | **Privacy Policy**   | [Bit Apps Privacy Policy](https://bitapps.pro/privacy-policy/)                                              |
+
+---
+
+### 8. Form Template Library (bit-form.com) – Opt-in Only
+
+| Item                 | Details                                                                                                                                                                                                                                                                                       |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **What it does**     | Shows the full library of ready-made form templates on the Form Templates screen (admin only) and downloads the template you choose. A template is a form definition (fields, layout, styles and messages). No code is downloaded or run.                                                      |
+| **When it connects** | Only after an administrator chooses **Load template library** on the Form Templates screen. Off by default. Once it is on, opening the Form Templates screen downloads the template list at most once a day, and choosing a template downloads that template. **Turn off** stops all requests. |
+| **Endpoint**         | `https://bit-form.com/wp-json/bitform-templates/v1`                                                                                                                                                                                                                                           |
+| **Data sent**        | Only the Bit Form, Bit Form Pro (if installed) and WordPress versions, in the request's User-Agent. No form data, entry data, site URL, license key or personal data is sent.                                                                                                                 |
+| **Preview images**   | Loaded by the administrator's browser from bit-form.com, so bit-form.com sees that browser's IP address. The **Open live demo** link opens the template's demo page on bit-form.com in a new tab.                                                                                              |
+| **Caching**          | The template list is kept on your site for a day and each downloaded template for a week, so most visits to the screen make no request.                                                                                                                                                       |
+| **Without it**       | The templates included in the plugin stay available. Developers can disable the library for the whole site with the `bitform_template_remote` filter (return `false`).                                                                                                                         |
+| **Pro templates**    | Templates marked Pro use Bit Form Pro features and need the Bit Form Pro add-on to be used. They are downloaded the same way as free templates; no license check is made.                                                                                                                     |
+| **Terms of Use**     | [Bit Apps Terms of Service](https://bitapps.pro/terms-of-service/)                                                                                                                                                                                                                            |
+| **Privacy Policy**   | [Bit Apps Privacy Policy](https://bitapps.pro/privacy-policy/)                                                                                                                                                                                                                                |
 
 ---
 
